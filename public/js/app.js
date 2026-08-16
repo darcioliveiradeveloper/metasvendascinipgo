@@ -434,8 +434,38 @@ function preencherFiltroVendedor() {
 $('btn-mu-cancelar').addEventListener('click', fecharModalUsuario);
 $('btn-mu-salvar').addEventListener('click', salvarModalUsuario);
 window.addEventListener('keydown', function (e) {
-  if (e.key === 'Escape') fecharModalUsuario();
+  if (e.key === 'Escape') { fecharModalUsuario(); fecharModalSenha(); }
 });
+
+function abrirModalSenha() {
+  $('ms-atual').value = '';
+  $('ms-nova').value = '';
+  $('ms-erro').classList.add('hidden');
+  $('modal-senha').classList.remove('hidden');
+  $('ms-atual').focus();
+}
+function fecharModalSenha() {
+  $('modal-senha').classList.add('hidden');
+}
+async function salvarModalSenha() {
+  try {
+    await api('/api/auth/trocar-senha', {
+      method: 'POST',
+      body: {
+        senhaAtual: $('ms-atual').value,
+        novaSenha: $('ms-nova').value
+      }
+    });
+    fecharModalSenha();
+    alert('Senha alterada com sucesso!');
+  } catch (e) {
+    $('ms-erro').textContent = e.message;
+    $('ms-erro').classList.remove('hidden');
+  }
+}
+$('btn-trocar-senha').addEventListener('click', abrirModalSenha);
+$('btn-ms-cancelar').addEventListener('click', fecharModalSenha);
+$('btn-ms-salvar').addEventListener('click', salvarModalSenha);
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);

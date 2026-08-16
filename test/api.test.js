@@ -1,5 +1,8 @@
 process.env.JWT_SECRET = 'chave-de-teste';
 process.env.PORT = '3999';
+process.env.EMAIL_SUPERVISOR_INICIAL = 'supervisor@exemplo.com';
+process.env.NOME_SUPERVISOR_INICIAL = 'Supervisor';
+process.env.SENHA_SUPERVISOR_INICIAL = 'admin123';
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const path = require('path');
 
@@ -107,6 +110,18 @@ const negocio = require('../src/services/negocio');
   await testar('vendedor pode ajustar a propria meta', async () => {
     const r = await req('POST', '/api/me/meta', { meta: 4300 });
     assert(r.ok && r.j.meta === 4300, 'meta vendedor: ' + JSON.stringify(r.j));
+  });
+
+  await testar('trocar a propria senha', async () => {
+    const t = await req('POST', '/api/auth/trocar-senha', { senhaAtual: 'darci123', novaSenha: 'darci456' });
+    assert(t.ok, 'trocar senha: ' + JSON.stringify(t.j));
+    const l1 = await req('POST', '/api/auth/login', { email: 'darci@exemplo.com', senha: 'darci123' });
+    assert(!l1.ok, 'senha antiga nao deveria funcionar');
+    const l2 = await req('POST', '/api/auth/login', { email: 'darci@exemplo.com', senha: 'darci456' });
+    assert(l2.ok, 'login com senha nova: ' + JSON.stringify(l2.j));
+    const errada = await req('POST', '/api/auth/trocar-senha', { senhaAtual: 'errada', novaSenha: 'x123' });
+    assert(!errada.ok, 'senha atual errada deveria falhar');
+    await req('POST', '/api/auth/trocar-senha', { senhaAtual: 'darci456', novaSenha: 'darci123' });
   });
 
   await testar('vendedor nao acessa rotas de supervisor', async () => {
