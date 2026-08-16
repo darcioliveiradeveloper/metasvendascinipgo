@@ -1,0 +1,26 @@
+document.addEventListener('DOMContentLoaded', function () {
+  const form = document.getElementById('form-login');
+  const erro = document.getElementById('erro-login');
+
+  api('/api/auth/me')
+    .then(function () { window.location.href = '/app.html'; })
+    .catch(function () {});
+
+  form.addEventListener('submit', async function (ev) {
+    ev.preventDefault();
+    erro.classList.add('hidden');
+    try {
+      await api('/api/auth/login', {
+        method: 'POST',
+        body: {
+          email: document.getElementById('inp-email').value,
+          senha: document.getElementById('inp-senha').value
+        }
+      });
+      window.location.href = '/app.html';
+    } catch (e) {
+      erro.textContent = e.message;
+      erro.classList.remove('hidden');
+    }
+  });
+});

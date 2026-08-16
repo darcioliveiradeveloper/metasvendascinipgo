@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Metas de Venda</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="topo">
+    <div class="topo-inner">
+      <strong id="saudacao">Carregando...</strong>
+      <div class="topo-direita">
+        <span class="perfil-badge" id="perfil-badge"></span>
+        <button class="btn btn-fino" id="btn-sair">Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section id="view-vendedor" class="hidden">
+      <div class="mes-titulo">
+        <h2 id="nome-mes"></h2>
+        <span id="data-hoje" class="data"></span>
+      </div>
+      <p class="aviso hidden" id="aviso-fechado"></p>
+
+      <div class="cards">
+        <div class="card"><span class="card-rot">Meta do mês</span><span class="card-val" id="meta-valor">—</span></div>
+        <div class="card">
+          <span class="card-rot">Vendido (acumulado)</span><span class="card-val" id="total-valor">—</span>
+          <span class="card-bar"><i id="barra-alc"></i></span>
+          <span class="card-info" id="alc-info"></span>
+        </div>
+        <div class="card">
+          <span class="card-rot">Tendência</span><span class="card-val" id="tend-valor">—</span>
+          <span class="card-bar"><i id="tend-barra"></i></span>
+          <span class="card-info" id="tend-info"></span>
+        </div>
+        <div class="card"><span class="card-rot">Meta p/ dia útil</span><span class="card-val" id="metadia-valor">—</span><span class="card-info" id="metadia-info"></span></div>
+      </div>
+
+      <div class="chips">
+        <span>Dias úteis: <b id="chip-mes">—</b></span>
+        <span>Trabalhados: <b id="chip-trab">—</b></span>
+        <span>Restantes: <b id="chip-rest">—</b></span>
+        <span>Atualizado: <b id="atualizado">—</b></span>
+      </div>
+
+      <div class="acoes">
+        <div class="card acao">
+          <h3>Lançar vendas do mês</h3>
+          <p class="dica">Total acumulado vendido até hoje (fardos).</p>
+          <div class="linha">
+            <input id="inp-total" type="text" inputmode="decimal" placeholder="Ex.: 1400,50">
+            <button class="btn primario" id="btn-lancar">Salvar</button>
+          </div>
+        </div>
+        <div class="card acao">
+          <h3>Meta do mês</h3>
+          <p class="dica">Defina ou altere a meta em fardos.</p>
+          <div class="linha">
+            <input id="inp-meta" type="text" inputmode="decimal" placeholder="Ex.: 4350">
+            <button class="btn" id="btn-meta">Definir</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="acoes-botoes">
+        <button class="btn hidden" id="btn-iniciar-mes">Iniciar mês atual</button>
+        <button class="btn perigo" id="btn-fechar-mes">Fechar mês</button>
+      </div>
+
+      <div class="card hist">
+        <h3>Histórico mensal</h3>
+        <canvas id="grafico-historico" height="140"></canvas>
+        <div class="tabela-scroll"><table id="tabela-historico"></table></div>
+      </div>
+    </section>
+
+    <section id="view-supervisor" class="hidden">
+      <nav class="tabs">
+        <button class="tab ativa" data-tab="geral">Visão Geral</button>
+        <button class="tab" data-tab="vendedores">Vendedores</button>
+        <button class="tab" data-tab="relatorios">Relatórios</button>
+      </nav>
+
+      <div id="aba-geral" class="aba">
+        <h2>Visão geral — <span id="sup-nome-mes"></span></h2>
+        <div class="cards">
+          <div class="card"><span class="card-rot">Meta total</span><span class="card-val" id="sup-meta">—</span></div>
+          <div class="card"><span class="card-rot">Vendido</span><span class="card-val" id="sup-atingido">—</span></div>
+          <div class="card"><span class="card-rot">Atingido geral</span><span class="card-val" id="sup-pct">—</span></div>
+        </div>
+        <div class="tabela-scroll"><table id="tabela-geral"></table></div>
+      </div>
+
+      <div id="aba-vendedores" class="aba hidden">
+        <h2>Vendedores</h2>
+        <button class="btn primario" id="btn-novo-vendedor">+ Novo vendedor</button>
+        <div class="tabela-scroll"><table id="tabela-vendedores"></table></div>
+      </div>
+
+      <div id="aba-relatorios" class="aba hidden">
+        <h2>Relatórios</h2>
+        <div class="filtros">
+          <select id="filtro-tipo">
+            <option value="1">Mês atual</option>
+            <option value="3">Trimestre (3 meses)</option>
+            <option value="6">Semestre (6 meses)</option>
+            <option value="12">Ano (12 meses)</option>
+          </select>
+          <select id="filtro-vendedor"></select>
+          <button class="btn primario" id="btn-gerar">Gerar</button>
+        </div>
+        <div class="cards">
+          <div class="card"><span class="card-rot">Meta do período</span><span class="card-val" id="rel-meta">—</span></div>
+          <div class="card"><span class="card-rot">Vendido no período</span><span class="card-val" id="rel-atingido">—</span></div>
+          <div class="card"><span class="card-rot">Atingido</span><span class="card-val" id="rel-pct">—</span></div>
+        </div>
+        <div class="card hist"><h3>Meta × Vendido</h3><canvas id="grafico-meta"></canvas></div>
+        <div class="card hist"><h3>Percentual atingido</h3><canvas id="grafico-pct"></canvas></div>
+        <div class="card hist"><h3>Comparativo mês a mês (por vendedor)</h3><canvas id="grafico-comp"></canvas></div>
+        <div class="card hist"><h3>Detalhamento</h3><div class="tabela-scroll"><table id="tabela-relatorio"></table></div></div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="modal-usuario" class="modal hidden">
+    <div class="modal-box">
+      <h3 id="modal-usuario-titulo">Novo vendedor</h3>
+      <label>Nome<input id="mu-nome"></label>
+      <label>Setor<input id="mu-setor"></label>
+      <label>E-mail<input id="mu-email" type="email"></label>
+      <label>Perfil
+        <select id="mu-perfil">
+          <option value="vendedor">Vendedor</option>
+          <option value="supervisor">Supervisor</option>
+        </select>
+      </label>
+      <label class="check"><input id="mu-ativo" type="checkbox" checked> Usuário ativo</label>
+      <label>Senha<input id="mu-senha" type="password" placeholder="Nova senha (para criar, obrigatória)"></label>
+      <div class="modal-acoes">
+        <button class="btn" id="btn-mu-cancelar">Cancelar</button>
+        <button class="btn primario" id="btn-mu-salvar">Salvar</button>
+      </div>
+      <p class="erro hidden" id="mu-erro"></p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

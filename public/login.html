@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entrar — Metas de Venda</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="tela-login">
+  <main class="login-box">
+    <h1>Metas de Venda</h1>
+    <p class="sub">Acompanhamento de vendas — vendedores e supervisor</p>
+    <form id="form-login">
+      <label>E-mail
+        <input id="inp-email" type="email" autocomplete="username" required>
+      </label>
+      <label>Senha
+        <input id="inp-senha" type="password" autocomplete="current-password" required>
+      </label>
+      <button class="btn primario bloco" type="submit">Entrar</button>
+      <p class="erro hidden" id="erro-login"></p>
+    </form>
+  </main>
+  <script src="/js/api.js"></script>
+  <script src="/js/login.js"></script>
+</body>
+</html>
