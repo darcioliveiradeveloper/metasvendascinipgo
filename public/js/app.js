@@ -48,8 +48,8 @@ function iniciarVendedor() {
   $('data-hoje').textContent = new Date().toLocaleDateString('pt-BR', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
   });
-  $('btn-lancar').addEventListener('click', lancarTotal);
-  $('btn-meta').addEventListener('click', definirMeta);
+  $('btn-lancar-card').addEventListener('click', function () { abrirModalValor('lancar'); });
+  $('btn-meta-card').addEventListener('click', function () { abrirModalValor('meta'); });
   $('btn-iniciar-mes').addEventListener('click', iniciarMesAtual);
   $('btn-fechar-mes').addEventListener('click', fecharMes);
   carregarPainelVendedor();
@@ -66,6 +66,7 @@ async function carregarPainelVendedor() {
 
 function renderVendedor(d) {
   const c = d.calc;
+  $('vendedor-titulo').textContent = d.nome + (d.setor ? ' - ' + d.setor : '');
   $('nome-mes').textContent = d.nomeMes;
   $('chip-mes').textContent = c.utMes;
   $('chip-trab').textContent = c.trab;
@@ -96,9 +97,6 @@ function renderVendedor(d) {
   $('atualizado').textContent = d.atualizadoEm
     ? new Date(d.atualizadoEm).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
     : 'Ainda não lançado neste mês';
-
-  $('inp-total').value = d.total || '';
-  $('inp-meta').value = d.meta || '';
 
   const aviso = $('aviso-fechado');
   if (d.fechado) {
@@ -146,19 +144,39 @@ function renderHistorico(hist) {
   });
 }
 
-async function lancarTotal() {
-  const total = numFromInput($('inp-total').value);
-  if (total === null || total < 0) { alert('Informe um valor válido.'); return; }
-  try {
-    renderVendedor(await api('/api/me/lancar', { method: 'POST', body: { total } }));
-  } catch (e) { alert(e.message); }
+let MODO_VALOR = null;
+
+function abrirModalValor(modo) {
+  MODO_VALOR = modo;
+  const ehMeta = modo === 'meta';
+  $('valor-titulo').textContent = ehMeta ? 'Meta do mês' : 'Lançar vendas do mês';
+  $('valor-dica').textContent = ehMeta
+    ? 'Total de fardos a atingir no mês.'
+    : 'Total acumulado vendido até hoje (fardos).';
+  $('inp-valor').value = '';
+  $('valor-erro').classList.add('hidden');
+  $('modal-valor').classList.remove('hidden');
+  $('inp-valor').focus();
 }
 
-async function definirMeta() {
-  const meta = numFromInput($('inp-meta').value);
-  if (meta === null || meta < 0) { alert('Informe uma meta válida.'); return; }
+function fecharModalValor() {
+  $('modal-valor').classList.add('hidden');
+}
+
+async function salvarModalValor() {
+  const valor = numFromInput($('inp-valor').value);
+  if (valor === null || valor < 0) {
+    $('valor-erro').textContent = 'Informe um valor válido.';
+    $('valor-erro').classList.remove('hidden');
+    return;
+  }
   try {
-    renderVendedor(await api('/api/me/meta', { method: 'POST', body: { meta } }));
+    if (MODO_VALOR === 'meta') {
+      renderVendedor(await api('/api/me/meta', { method: 'POST', body: { meta: valor } }));
+    } else {
+      renderVendedor(await api('/api/me/lancar', { method: 'POST', body: { total: valor } }));
+    }
+    fecharModalValor();
   } catch (e) { alert(e.message); }
 }
 
@@ -546,8 +564,13 @@ function preencherFiltroVendedor() {
 $('btn-mu-cancelar').addEventListener('click', fecharModalUsuario);
 $('btn-mu-salvar').addEventListener('click', salvarModalUsuario);
 $('btn-mp-fechar').addEventListener('click', fecharModalPainel);
+$('btn-valor-cancelar').addEventListener('click', fecharModalValor);
+$('btn-valor-ok').addEventListener('click', salvarModalValor);
+$('inp-valor').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') { e.preventDefault(); salvarModalValor(); }
+});
 window.addEventListener('keydown', function (e) {
-  if (e.key === 'Escape') { fecharModalUsuario(); fecharModalSenha(); fecharModalPainel(); }
+  if (e.key === 'Escape') { fecharModalUsuario(); fecharModalSenha(); fecharModalPainel(); fecharModalValor(); }
 });
 
 function abrirModalSenha() {

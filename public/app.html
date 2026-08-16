@@ -22,17 +22,24 @@
 
     <section id="view-vendedor" class="hidden">
       <div class="mes-titulo">
-        <h2 id="nome-mes"></h2>
+        <div>
+          <h2 id="vendedor-titulo"></h2>
+          <span id="nome-mes" class="data"></span>
+        </div>
         <span id="data-hoje" class="data"></span>
       </div>
       <p class="aviso hidden" id="aviso-fechado"></p>
 
       <div class="cards">
-        <div class="card"><span class="card-rot">Meta do mês</span><span class="card-val" id="meta-valor">—</span></div>
+        <div class="card">
+          <span class="card-rot">Meta do mês</span><span class="card-val" id="meta-valor">—</span>
+          <button class="btn bloco primario" id="btn-meta-card">Definir / alterar</button>
+        </div>
         <div class="card">
           <span class="card-rot">Vendido (acumulado)</span><span class="card-val" id="total-valor">—</span>
           <span class="card-bar"><i id="barra-alc"></i></span>
           <span class="card-info" id="alc-info"></span>
+          <button class="btn bloco primario" id="btn-lancar-card">Lançar vendas</button>
         </div>
         <div class="card">
           <span class="card-rot">Tendência</span><span class="card-val" id="tend-valor">—</span>
@@ -47,25 +54,6 @@
         <span>Trabalhados: <b id="chip-trab">—</b></span>
         <span>Restantes: <b id="chip-rest">—</b></span>
         <span>Atualizado: <b id="atualizado">—</b></span>
-      </div>
-
-      <div class="acoes">
-        <div class="card acao">
-          <h3>Lançar vendas do mês</h3>
-          <p class="dica">Total acumulado vendido até hoje (fardos).</p>
-          <div class="linha">
-            <input id="inp-total" type="text" inputmode="decimal" placeholder="Ex.: 1400,50">
-            <button class="btn primario" id="btn-lancar">Salvar</button>
-          </div>
-        </div>
-        <div class="card acao">
-          <h3>Meta do mês</h3>
-          <p class="dica">Defina ou altere a meta em fardos.</p>
-          <div class="linha">
-            <input id="inp-meta" type="text" inputmode="decimal" placeholder="Ex.: 4350">
-            <button class="btn" id="btn-meta">Definir</button>
-          </div>
-        </div>
       </div>
 
       <div class="acoes-botoes">
@@ -128,6 +116,19 @@
     </section>
 
   </main>
+
+  <div id="modal-valor" class="modal hidden">
+    <div class="modal-box">
+      <h3 id="valor-titulo">Valor</h3>
+      <p class="dica" id="valor-dica"></p>
+      <input id="inp-valor" type="text" inputmode="decimal" placeholder="Ex.: 1400,50">
+      <div class="modal-acoes">
+        <button class="btn" id="btn-valor-cancelar">Cancelar</button>
+        <button class="btn primario" id="btn-valor-ok">OK</button>
+      </div>
+      <p class="erro hidden" id="valor-erro"></p>
+    </div>
+  </div>
 
   <div id="modal-painel" class="modal hidden">
     <div class="modal-box larga">
