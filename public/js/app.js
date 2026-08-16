@@ -27,6 +27,7 @@ let SUP_MES = null;
 
 function init() {
   $('btn-sair').addEventListener('click', sairSistema);
+  $('perfil-badge').addEventListener('click', abrirModalNome);
   api('/api/auth/me')
     .then(function (me) {
       MEU_USUARIO = me;
@@ -39,6 +40,32 @@ function init() {
       }
     })
     .catch(function () { window.location.href = '/login.html'; });
+}
+
+function abrirModalNome() {
+  $('inp-nome').value = MEU_USUARIO.nome;
+  $('nome-erro').classList.add('hidden');
+  $('modal-nome').classList.remove('hidden');
+  $('inp-nome').focus();
+  $('inp-nome').select();
+}
+
+function fecharModalNome() {
+  $('modal-nome').classList.add('hidden');
+}
+
+async function salvarModalNome() {
+  const nome = $('inp-nome').value.trim();
+  if (!nome) {
+    $('nome-erro').textContent = 'Informe seu nome.';
+    $('nome-erro').classList.remove('hidden');
+    return;
+  }
+  try {
+    MEU_USUARIO = await api('/api/me/nome', { method: 'POST', body: { nome } });
+    $('saudacao').textContent = MEU_USUARIO.nome + (MEU_USUARIO.setor ? ' - ' + MEU_USUARIO.setor : '');
+    fecharModalNome();
+  } catch (e) { alert(e.message); }
 }
 
 /* ============================= VENDEDOR ============================= */
@@ -66,7 +93,6 @@ async function carregarPainelVendedor() {
 
 function renderVendedor(d) {
   const c = d.calc;
-  $('vendedor-titulo').textContent = d.nome + (d.setor ? ' - ' + d.setor : '');
   $('nome-mes').textContent = d.nomeMes;
   $('chip-mes').textContent = c.utMes;
   $('chip-trab').textContent = c.trab;
@@ -569,8 +595,13 @@ $('btn-valor-ok').addEventListener('click', salvarModalValor);
 $('inp-valor').addEventListener('keydown', function (e) {
   if (e.key === 'Enter') { e.preventDefault(); salvarModalValor(); }
 });
+$('btn-nome-cancelar').addEventListener('click', fecharModalNome);
+$('btn-nome-ok').addEventListener('click', salvarModalNome);
+$('inp-nome').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') { e.preventDefault(); salvarModalNome(); }
+});
 window.addEventListener('keydown', function (e) {
-  if (e.key === 'Escape') { fecharModalUsuario(); fecharModalSenha(); fecharModalPainel(); fecharModalValor(); }
+  if (e.key === 'Escape') { fecharModalUsuario(); fecharModalSenha(); fecharModalPainel(); fecharModalValor(); fecharModalNome(); }
 });
 
 function abrirModalSenha() {

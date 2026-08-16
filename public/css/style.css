@@ -23,11 +23,16 @@ body {
 .topo-direita { display: flex; align-items: center; gap: 10px; }
 .perfil-badge {
   font-size: 12px;
+  font-family: inherit;
   background: #2563eb;
+  color: #fff;
   padding: 3px 10px;
+  border: 0;
   border-radius: 999px;
   text-transform: uppercase;
+  cursor: pointer;
 }
+.perfil-badge:hover { background: #1d4ed8; }
 
 .container { max-width: 960px; margin: 0 auto; padding: 16px; }
 

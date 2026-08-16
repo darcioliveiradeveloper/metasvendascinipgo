@@ -61,6 +61,24 @@ router.post('/meta', async (req, res) => {
   }
 });
 
+router.post('/nome', async (req, res) => {
+  try {
+    const nome = String(req.body.nome || '').trim();
+    if (!nome) {
+      return res.status(400).json({ erro: 'Informe seu nome' });
+    }
+    if (nome.length > 40) {
+      return res.status(400).json({ erro: 'Nome muito longo (máx. 40 caracteres)' });
+    }
+    req.usuario.nome = nome;
+    await req.usuario.save();
+    res.json(req.usuario.resumo());
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ erro: 'Erro ao atualizar o nome' });
+  }
+});
+
 router.post('/iniciar-mes', async (req, res) => {
   try {
     await dash.definirMesTrabalho(req.usuario, negocio.chaveMesHoje());

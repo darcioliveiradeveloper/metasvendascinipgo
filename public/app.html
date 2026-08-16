@@ -11,7 +11,7 @@
     <div class="topo-inner">
       <strong id="saudacao">Carregando...</strong>
       <div class="topo-direita">
-        <span class="perfil-badge" id="perfil-badge"></span>
+        <button type="button" class="perfil-badge" id="perfil-badge" title="Clique para definir seu nome"></button>
         <button class="btn btn-fino" id="btn-trocar-senha">Trocar senha</button>
         <button class="btn btn-fino" id="btn-sair">Sair</button>
       </div>
@@ -22,10 +22,7 @@
 
     <section id="view-vendedor" class="hidden">
       <div class="mes-titulo">
-        <div>
-          <h2 id="vendedor-titulo"></h2>
-          <span id="nome-mes" class="data"></span>
-        </div>
+        <h2 id="nome-mes"></h2>
         <span id="data-hoje" class="data"></span>
       </div>
       <p class="aviso hidden" id="aviso-fechado"></p>
@@ -116,6 +113,19 @@
     </section>
 
   </main>
+
+  <div id="modal-nome" class="modal hidden">
+    <div class="modal-box">
+      <h3>Seu nome</h3>
+      <p class="dica">Digite seu nome para aparecer no sistema.</p>
+      <input id="inp-nome" type="text" maxlength="40" placeholder="Seu nome">
+      <div class="modal-acoes">
+        <button class="btn" id="btn-nome-cancelar">Cancelar</button>
+        <button class="btn primario" id="btn-nome-ok">OK</button>
+      </div>
+      <p class="erro hidden" id="nome-erro"></p>
+    </div>
+  </div>
 
   <div id="modal-valor" class="modal hidden">
     <div class="modal-box">

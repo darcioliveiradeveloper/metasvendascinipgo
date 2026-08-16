@@ -127,6 +127,13 @@ const negocio = require('../src/services/negocio');
     await req('POST', '/api/auth/trocar-senha', { senhaAtual: 'darci456', novaSenha: 'darci123' });
   });
 
+  await testar('vendedor define o proprio nome', async () => {
+    const r = await req('POST', '/api/me/nome', { nome: 'Darci' });
+    assert(r.ok && r.j.nome === 'Darci', 'nome: ' + JSON.stringify(r.j));
+    const vazio = await req('POST', '/api/me/nome', { nome: '' });
+    assert(!vazio.ok, 'nome vazio deveria falhar');
+  });
+
   await testar('vendedor nao acessa rotas de supervisor', async () => {
     const r = await req('GET', '/api/supervisor/dashboard');
     assert(r.status === 403, 'deveria ser 403, veio ' + r.status);
