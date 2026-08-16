@@ -19,6 +19,10 @@ app.use('/api/me', rotasMe);
 app.use('/api/supervisor', rotasSupervisor);
 app.use('/api/supervisor/relatorios', rotasRelatorios);
 
+app.get('/', (req, res) => {
+  res.redirect('/login.html');
+});
+
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 app.use((req, res) => {
