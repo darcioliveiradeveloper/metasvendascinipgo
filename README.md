@@ -56,7 +56,7 @@ npm test
 1. Suba este projeto para um repositório no GitHub.
 2. No Render, clique em **New > Web Service** e conecte o repositório.
 3. Configure:
-   - **Build Command:** `npm install`
+   - **Build Command:** `npm install --omit=dev`
    - **Start Command:** `npm start`
 4. Em **Environment**, adicione as variáveis:
    - `MONGO_URL` — string de conexão do MongoDB Atlas
