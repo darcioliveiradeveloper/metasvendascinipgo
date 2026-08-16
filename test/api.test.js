@@ -3,6 +3,9 @@ process.env.PORT = '3999';
 process.env.EMAIL_SUPERVISOR_INICIAL = 'supervisor@exemplo.com';
 process.env.NOME_SUPERVISOR_INICIAL = 'Supervisor';
 process.env.SENHA_SUPERVISOR_INICIAL = 'admin123';
+process.env.EMAIL_SUPORTE_INICIAL = 'suporte@exemplo.com';
+process.env.NOME_SUPORTE_INICIAL = 'Suporte';
+process.env.SENHA_SUPORTE_INICIAL = 'suporte123';
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const path = require('path');
 
@@ -155,6 +158,53 @@ const negocio = require('../src/services/negocio');
     const de = negocio.chaveMesHoje();
     const r = await req('GET', '/api/supervisor/relatorios?de=' + de + '&ate=' + mes);
     assert(r.ok && r.j.totalAtingido === 1500.5, 'total atingido: ' + JSON.stringify(r.j));
+  });
+
+  await testar('suporte entra e ve todos os usuarios', async () => {
+    const l = await req('POST', '/api/auth/login', { email: 'suporte@exemplo.com', senha: 'suporte123' });
+    assert(l.ok && l.j.perfil === 'suporte', 'login suporte: ' + JSON.stringify(l.j));
+    const u = await req('GET', '/api/supervisor/usuarios');
+    assert(u.ok && u.j.some((x) => x.perfil === 'supervisor') && u.j.some((x) => x.perfil === 'vendedor'), 'deveria ver todos: ' + JSON.stringify(u.j));
+  });
+
+  await testar('suporte ve o painel do vendedor sem alterar', async () => {
+    const p = await req('GET', '/api/supervisor/usuarios/' + global.idDarci + '/painel');
+    assert(p.ok && p.j.nome === 'Darci', 'painel: ' + JSON.stringify(p.j));
+    assert(p.j.total === 1500.5 && p.j.meta === 4300, 'painel valores: ' + JSON.stringify(p.j));
+  });
+
+  await testar('suporte nao define meta', async () => {
+    const m = await req('PUT', '/api/supervisor/usuarios/' + global.idDarci + '/meta', { anoMes: negocio.chaveMesHoje(), meta: 5000 });
+    assert(m.status === 403, 'suporte nao deveria definir meta, veio ' + m.status);
+  });
+
+  await testar('suporte reseta a senha do vendedor', async () => {
+    const r = await req('POST', '/api/supervisor/usuarios/' + global.idDarci + '/resetar-senha');
+    assert(r.ok && typeof r.j.senha === 'string' && r.j.senha.length >= 4, 'reset: ' + JSON.stringify(r.j));
+    const l = await req('POST', '/api/auth/login', { email: 'darci@exemplo.com', senha: r.j.senha });
+    assert(l.ok, 'login com senha nova deveria funcionar');
+    await req('POST', '/api/auth/login', { email: 'darci@exemplo.com', senha: 'darci123' });
+  });
+
+  await testar('supervisor nao cria supervisor', async () => {
+    await req('POST', '/api/auth/login', { email: 'supervisor@exemplo.com', senha: 'admin123' });
+    const c = await req('POST', '/api/supervisor/usuarios', { nome: 'Outro', setor: '', email: 'outro@exemplo.com', senha: '123456', perfil: 'supervisor' });
+    assert(c.status === 403, 'supervisor nao deveria criar supervisor, veio ' + c.status);
+  });
+
+  await testar('suporte cria supervisor', async () => {
+    await req('POST', '/api/auth/login', { email: 'suporte@exemplo.com', senha: 'suporte123' });
+    const c = await req('POST', '/api/supervisor/usuarios', { nome: 'Super2', setor: 'FilialPG', email: 'super2@exemplo.com', senha: '123456', perfil: 'supervisor' });
+    assert(c.ok && c.j.perfil === 'supervisor', 'criar supervisor: ' + JSON.stringify(c.j));
+  });
+
+  await testar('supervisor reseta senha de vendedor', async () => {
+    await req('POST', '/api/auth/login', { email: 'supervisor@exemplo.com', senha: 'admin123' });
+    const r = await req('POST', '/api/supervisor/usuarios/' + global.idDarci + '/resetar-senha');
+    assert(r.ok && typeof r.j.senha === 'string' && r.j.senha.length >= 4, 'reset sup: ' + JSON.stringify(r.j));
+    const l = await req('POST', '/api/auth/login', { email: 'darci@exemplo.com', senha: r.j.senha });
+    assert(l.ok, 'login com senha nova deveria funcionar');
+    await req('POST', '/api/auth/login', { email: 'darci@exemplo.com', senha: 'darci123' });
   });
 
   await testar('logica: agosto 2026 (14/08, meta 4350, vendas 1400)', async () => {

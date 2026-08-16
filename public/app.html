@@ -83,7 +83,7 @@
     <section id="view-supervisor" class="hidden">
       <nav class="tabs">
         <button class="tab ativa" data-tab="geral">Visão Geral</button>
-        <button class="tab" data-tab="vendedores">Vendedores</button>
+        <button class="tab" data-tab="vendedores"><span id="tab-vendedores-nome">Vendedores</span></button>
         <button class="tab" data-tab="relatorios">Relatórios</button>
       </nav>
 
@@ -129,13 +129,50 @@
 
   </main>
 
+  <div id="modal-painel" class="modal hidden">
+    <div class="modal-box larga">
+      <h3 id="mp-titulo">Painel</h3>
+      <div class="mes-titulo">
+        <h4 id="mp-nome-mes"></h4>
+        <span id="mp-atualizado" class="data"></span>
+      </div>
+      <div class="cards">
+        <div class="card"><span class="card-rot">Meta do mês</span><span class="card-val" id="mp-meta">—</span></div>
+        <div class="card">
+          <span class="card-rot">Vendido (acumulado)</span><span class="card-val" id="mp-total">—</span>
+          <span class="card-bar"><i id="mp-barra-alc"></i></span>
+          <span class="card-info" id="mp-alc-info"></span>
+        </div>
+        <div class="card">
+          <span class="card-rot">Tendência</span><span class="card-val" id="mp-tend">—</span>
+          <span class="card-bar"><i id="mp-barra-tend"></i></span>
+          <span class="card-info" id="mp-tend-info"></span>
+        </div>
+        <div class="card"><span class="card-rot">Meta p/ dia útil</span><span class="card-val" id="mp-metadia">—</span><span class="card-info" id="mp-metadia-info"></span></div>
+      </div>
+      <div class="chips">
+        <span>Dias úteis: <b id="mp-chip-mes">—</b></span>
+        <span>Trabalhados: <b id="mp-chip-trab">—</b></span>
+        <span>Restantes: <b id="mp-chip-rest">—</b></span>
+      </div>
+      <div class="card hist">
+        <h3>Histórico mensal</h3>
+        <canvas id="grafico-painel-hist" height="140"></canvas>
+        <div class="tabela-scroll"><table id="tabela-painel-hist"></table></div>
+      </div>
+      <div class="modal-acoes">
+        <button class="btn primario" id="btn-mp-fechar">Fechar</button>
+      </div>
+    </div>
+  </div>
+
   <div id="modal-usuario" class="modal hidden">
     <div class="modal-box">
       <h3 id="modal-usuario-titulo">Novo vendedor</h3>
       <label>Nome<input id="mu-nome"></label>
       <label>Setor<input id="mu-setor"></label>
       <label>E-mail<input id="mu-email" type="email"></label>
-      <label>Perfil
+      <label id="mu-perfil-linha">Perfil
         <select id="mu-perfil">
           <option value="vendedor">Vendedor</option>
           <option value="supervisor">Supervisor</option>

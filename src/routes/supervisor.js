@@ -5,6 +5,7 @@ const User = require('../models/User');
 const MetaMensal = require('../models/MetaMensal');
 const Lancamento = require('../models/Lancamento');
 const negocio = require('../services/negocio');
+const dash = require('../services/dashboard');
 const { exigirLogin, exigirSupervisor, carregarUsuario } = require('../middleware/auth');
 
 const router = express.Router();
@@ -13,6 +14,20 @@ router.use(exigirLogin, carregarUsuario, exigirSupervisor);
 
 function idValido(id) {
   return mongoose.Types.ObjectId.isValid(id);
+}
+
+function podeGerenciar(requester, alvo) {
+  if (requester.perfil === 'suporte') return true;
+  return requester.perfil === 'supervisor' && alvo.perfil === 'vendedor';
+}
+
+function gerarSenhaTemporaria() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+  let senha = '';
+  for (let i = 0; i < 6; i++) {
+    senha += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return senha;
 }
 
 async function totaisPorMes(ids, meses) {
@@ -72,7 +87,8 @@ router.get('/dashboard', async (req, res) => {
 
 router.get('/usuarios', async (req, res) => {
   try {
-    const usuarios = await User.find({}).sort({ perfil: -1, nome: 1 });
+    const filtro = req.usuario.perfil === 'suporte' ? {} : { perfil: 'vendedor' };
+    const usuarios = await User.find(filtro).sort({ perfil: -1, nome: 1 });
     res.json(usuarios.map((u) => u.resumo()));
   } catch (e) {
     console.error(e);
@@ -80,12 +96,37 @@ router.get('/usuarios', async (req, res) => {
   }
 });
 
+// GET /api/supervisor/usuarios/:id/painel  (visualizar o painel de outro usuário)
+router.get('/usuarios/:id/painel', async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!idValido(id)) return res.status(400).json({ erro: 'Id inválido' });
+    const user = await User.findById(id);
+    if (!user) return res.status(404).json({ erro: 'Usuário não encontrado' });
+    if (!podeGerenciar(req.usuario, user)) {
+      return res.status(403).json({ erro: 'Sem permissão para ver este painel' });
+    }
+    res.json(await dash.montarDashboard(user));
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ erro: 'Erro ao montar o painel' });
+  }
+});
+
 router.post('/usuarios', async (req, res) => {
   try {
-    const { nome, setor, email, perfil } = req.body;
+    const { nome, setor, email } = req.body;
     const senha = String(req.body.senha || '');
+    const perfilSolicitado = String(req.body.perfil || 'vendedor');
     if (!nome || !email || !senha || senha.length < 4) {
       return res.status(400).json({ erro: 'Nome, e-mail e senha (mín. 4 caracteres) são obrigatórios' });
+    }
+    let perfilFinal = 'vendedor';
+    if (perfilSolicitado === 'supervisor') {
+      if (req.usuario.perfil !== 'suporte') {
+        return res.status(403).json({ erro: 'Somente o suporte pode criar supervisores' });
+      }
+      perfilFinal = 'supervisor';
     }
     const emailOk = String(email).toLowerCase().trim();
     const existe = await User.findOne({ email: emailOk });
@@ -98,7 +139,7 @@ router.post('/usuarios', async (req, res) => {
       setor: String(setor || '').trim(),
       email: emailOk,
       senha: hash,
-      perfil: perfil === 'supervisor' ? 'supervisor' : 'vendedor'
+      perfil: perfilFinal
     });
     res.status(201).json(user.resumo());
   } catch (e) {
@@ -113,6 +154,9 @@ router.put('/usuarios/:id', async (req, res) => {
     if (!idValido(id)) return res.status(400).json({ erro: 'Id inválido' });
     const user = await User.findById(id);
     if (!user) return res.status(404).json({ erro: 'Usuário não encontrado' });
+    if (!podeGerenciar(req.usuario, user)) {
+      return res.status(403).json({ erro: 'Sem permissão para editar este usuário' });
+    }
 
     if (req.body.nome !== undefined) user.nome = String(req.body.nome).trim();
     if (req.body.setor !== undefined) user.setor = String(req.body.setor || '').trim();
@@ -123,13 +167,28 @@ router.put('/usuarios/:id', async (req, res) => {
       user.email = emailOk;
     }
     if (req.body.perfil !== undefined) {
-      if (user.perfil === 'supervisor' && req.body.perfil !== 'supervisor') {
+      if (user.perfil === 'suporte' || req.usuario.perfil !== 'suporte') {
+        return res.status(403).json({ erro: 'Perfil não pode ser alterado' });
+      }
+      const novo = String(req.body.perfil);
+      if (novo !== 'vendedor' && novo !== 'supervisor') {
+        return res.status(400).json({ erro: 'Perfil inválido' });
+      }
+      if (user.perfil === 'supervisor' && novo !== 'supervisor') {
         const quantosSuper = await User.countDocuments({ perfil: 'supervisor' });
         if (quantosSuper <= 1) return res.status(400).json({ erro: 'Deve existir pelo menos um supervisor' });
       }
-      user.perfil = req.body.perfil === 'supervisor' ? 'supervisor' : 'vendedor';
+      user.perfil = novo;
     }
-    if (req.body.ativo !== undefined) user.ativo = !!req.body.ativo;
+    if (req.body.ativo !== undefined) {
+      if (user.perfil === 'suporte') {
+        const quantosSup = await User.countDocuments({ perfil: 'suporte' });
+        if (!req.body.ativo && quantosSup <= 1) {
+          return res.status(400).json({ erro: 'Deve existir pelo menos um suporte' });
+        }
+      }
+      user.ativo = !!req.body.ativo;
+    }
     if (req.body.senha) {
       if (String(req.body.senha).length < 4) return res.status(400).json({ erro: 'Senha muito curta (mín. 4)' });
       user.senha = await bcrypt.hash(String(req.body.senha), 10);
@@ -142,8 +201,30 @@ router.put('/usuarios/:id', async (req, res) => {
   }
 });
 
+router.post('/usuarios/:id/resetar-senha', async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!idValido(id)) return res.status(400).json({ erro: 'Id inválido' });
+    const user = await User.findById(id);
+    if (!user) return res.status(404).json({ erro: 'Usuário não encontrado' });
+    if (!podeGerenciar(req.usuario, user)) {
+      return res.status(403).json({ erro: 'Sem permissão para resetar a senha' });
+    }
+    const nova = gerarSenhaTemporaria();
+    user.senha = await bcrypt.hash(nova, 10);
+    await user.save();
+    res.json({ ok: true, senha: nova });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ erro: 'Erro ao resetar a senha' });
+  }
+});
+
 router.put('/usuarios/:id/meta', async (req, res) => {
   try {
+    if (req.usuario.perfil !== 'supervisor') {
+      return res.status(403).json({ erro: 'Somente o supervisor pode definir metas' });
+    }
     const { id } = req.params;
     if (!idValido(id)) return res.status(400).json({ erro: 'Id inválido' });
     const meta = negocio.numerico(req.body.meta);
@@ -152,6 +233,9 @@ router.put('/usuarios/:id/meta', async (req, res) => {
     if (!/^\d{4}-\d{2}$/.test(anoMes)) return res.status(400).json({ erro: 'Mês inválido (use YYYY-MM)' });
     const user = await User.findById(id);
     if (!user) return res.status(404).json({ erro: 'Usuário não encontrado' });
+    if (user.perfil !== 'vendedor') {
+      return res.status(403).json({ erro: 'Meta só pode ser definida para vendedores' });
+    }
     await MetaMensal.findOneAndUpdate(
       { usuario: user._id, anoMes },
       { $set: { meta } },

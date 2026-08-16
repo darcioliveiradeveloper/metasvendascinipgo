@@ -31,11 +31,11 @@ function init() {
     .then(function (me) {
       MEU_USUARIO = me;
       $('saudacao').textContent = me.nome + (me.setor ? ' - ' + me.setor : '');
-      $('perfil-badge').textContent = me.perfil === 'supervisor' ? 'Supervisor' : 'Vendedor';
-      if (me.perfil === 'supervisor') {
-        iniciarSupervisor();
-      } else {
+      $('perfil-badge').textContent = me.perfil === 'suporte' ? 'Suporte' : (me.perfil === 'supervisor' ? 'Supervisor' : 'Vendedor');
+      if (me.perfil === 'vendedor') {
         iniciarVendedor();
+      } else {
+        iniciarSupervisor();
       }
     })
     .catch(function () { window.location.href = '/login.html'; });
@@ -180,6 +180,9 @@ async function fecharMes() {
 /* ============================= SUPERVISOR ============================= */
 
 function iniciarSupervisor() {
+  const ehSuporte = MEU_USUARIO.perfil === 'suporte';
+  $('tab-vendedores-nome').textContent = ehSuporte ? 'Usuários' : 'Vendedores';
+  $('btn-novo-vendedor').textContent = ehSuporte ? '+ Novo usuário' : '+ Novo vendedor';
   $('view-supervisor').classList.remove('hidden');
   const tabs = document.querySelectorAll('.tab');
   tabs.forEach(function (t) {
@@ -207,10 +210,15 @@ async function carregarGeral() {
     $('sup-atingido').textContent = fmtQtd(d.totalAtingido) + ' fardos';
     $('sup-pct').textContent = fmtPct(d.pctGeral);
 
-    let linhas = '<tr><th>Vendedor</th><th>Setor</th><th>Meta</th><th>Vendido</th><th>%</th><th></th></tr>';
+    let linhas = '<tr><th>Vendedor</th><th>Setor</th><th>Meta</th><th>Vendido</th><th>%</th>';
+    if (MEU_USUARIO.perfil === 'supervisor') linhas += '<th></th>';
+    linhas += '</tr>';
     d.linhas.forEach(function (l) {
       const tend = l.calc.tendencia > 0 ? ' · tendência ' + fmtPct(l.calc.tendencia) : '';
-      linhas += '<tr><td>' + esc(l.nome) + '</td><td>' + esc(l.setor || '—') + '</td><td>' + fmtQtd(l.meta) + '</td><td>' + fmtQtd(l.atingido) + '</td><td class="tend">' + fmtPct(l.calc.atingidoPct) + tend + '</td><td><button class="btn fino" data-meta-sup="' + l.id + '" data-nome="' + esc(l.nome) + '">Meta</button></td></tr>';
+      let linha = '<tr><td>' + esc(l.nome) + '</td><td>' + esc(l.setor || '—') + '</td><td>' + fmtQtd(l.meta) + '</td><td>' + fmtQtd(l.atingido) + '</td><td class="tend">' + fmtPct(l.calc.atingidoPct) + tend + '</td>';
+      if (MEU_USUARIO.perfil === 'supervisor') linha += '<td><button class="btn fino" data-meta-sup="' + l.id + '" data-nome="' + esc(l.nome) + '">Meta</button></td>';
+      linha += '</tr>';
+      linhas += linha;
     });
     $('tabela-geral').innerHTML = linhas || '<tr><td class="vazio">Nenhum vendedor cadastrado.</td></tr>';
 
@@ -234,17 +242,34 @@ async function carregarGeral() {
 async function carregarVendedores() {
   try {
     const lista = await api('/api/supervisor/usuarios');
-    const vendedores = lista.filter(function (u) { return u.perfil !== 'supervisor'; });
+    const vendedores = lista;
     let linhas = '<tr><th>Nome</th><th>Setor</th><th>E-mail</th><th>Situação</th><th></th></tr>';
     vendedores.forEach(function (u) {
-      linhas += '<tr><td>' + esc(u.nome) + '</td><td>' + esc(u.setor || '—') + '</td><td>' + esc(u.email) + '</td><td>' + (u.ativo ? 'Ativo' : 'Inativo') + '</td><td><button class="btn fino" data-edita="' + u.id + '">Editar</button> <button class="btn fino perigo" data-ativa="' + u.id + '">' + (u.ativo ? 'Desativar' : 'Ativar') + '</button></td></tr>';
+      linhas += '<tr><td>' + esc(u.nome) + '</td><td>' + esc(u.setor || '—') + '</td><td>' + esc(u.email) + '</td><td>' + (u.ativo ? 'Ativo' : 'Inativo') + '</td><td>'
+        + '<button class="btn fino" data-painel="' + u.id + '">Painel</button> '
+        + '<button class="btn fino" data-edita="' + u.id + '">Editar</button> '
+        + '<button class="btn fino" data-reset="' + u.id + '">Resetar senha</button> '
+        + '<button class="btn fino perigo" data-ativa="' + u.id + '">' + (u.ativo ? 'Desativar' : 'Ativar') + '</button>'
+        + '</td></tr>';
     });
-    $('tabela-vendedores').innerHTML = linhas || '<tr><td class="vazio">Nenhum vendedor cadastrado.</td></tr>';
+    $('tabela-vendedores').innerHTML = linhas || '<tr><td class="vazio">Nenhum usuário cadastrado.</td></tr>';
 
+    document.querySelectorAll('[data-painel]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        const u = vendedores.find((x) => x.id === b.dataset.painel);
+        abrirPainelUsuario(u);
+      });
+    });
     document.querySelectorAll('[data-edita]').forEach(function (b) {
       b.addEventListener('click', function () {
         const u = vendedores.find((x) => x.id === b.dataset.edita);
         abrirModalUsuario(u);
+      });
+    });
+    document.querySelectorAll('[data-reset]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        const u = vendedores.find((x) => x.id === b.dataset.reset);
+        resetarSenhaUsuario(u);
       });
     });
     document.querySelectorAll('[data-ativa]').forEach(function (b) {
@@ -259,16 +284,102 @@ async function carregarVendedores() {
   } catch (e) { alert(e.message); }
 }
 
+async function abrirPainelUsuario(u) {
+  try {
+    const d = await api('/api/supervisor/usuarios/' + u.id + '/painel');
+    renderPainel(d);
+    $('modal-painel').classList.remove('hidden');
+  } catch (e) { alert(e.message); }
+}
+
+function fecharModalPainel() {
+  $('modal-painel').classList.add('hidden');
+}
+
+function renderPainel(d) {
+  const c = d.calc;
+  $('mp-titulo').textContent = d.nome + (d.setor ? ' (' + d.setor + ')' : '');
+  $('mp-nome-mes').textContent = d.nomeMes;
+  $('mp-meta').textContent = d.meta ? fmtQtd(d.meta) + ' fardos' : '—';
+  $('mp-total').textContent = fmtQtd(d.total) + ' fardos';
+  $('mp-chip-mes').textContent = c.utMes;
+  $('mp-chip-trab').textContent = c.trab;
+  $('mp-chip-rest').textContent = c.rest;
+  $('mp-atualizado').textContent = d.atualizadoEm
+    ? 'Atualizado: ' + new Date(d.atualizadoEm).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+    : 'Ainda não lançado neste mês';
+
+  const alcPct = Math.min(100, c.atingidoPct);
+  $('mp-barra-alc').style.width = alcPct + '%';
+  const faltante = d.meta - d.total;
+  $('mp-alc-info').textContent = d.meta > 0
+    ? (faltante > 0 ? fmtPct(c.atingidoPct) + ' da meta · faltam ' + fmtQtd(faltante) + ' fardos' : 'Meta batida!')
+    : 'Meta não definida.';
+
+  const temTend = c.trab > 0 && d.meta > 0;
+  $('mp-tend').textContent = temTend ? fmtPct(c.tendencia) : '—';
+  $('mp-barra-tend').style.width = (temTend ? Math.min(100, c.tendencia) : 0) + '%';
+  $('mp-tend-info').textContent = temTend
+    ? 'Média ' + fmtQtd(c.media) + ' fardos/dia × ' + c.utMes + ' dias úteis = ' + fmtQtd(c.projetado) + ' fardos'
+    : (c.trab === 0 ? 'Ainda sem dias úteis trabalhados neste mês.' : 'Defina a meta do mês para calcular.');
+
+  const temMetDia = c.rest > 0 && d.meta > 0;
+  $('mp-metadia').textContent = temMetDia ? fmtQtd(c.metaDiaria) + ' fardos' : '—';
+  $('mp-metadia-info').textContent = temMetDia
+    ? (d.meta - d.total > 0 ? fmtQtd(d.meta - d.total) + ' faltantes ÷ ' + c.rest + ' dias úteis' : 'Meta já atingida no mês.')
+    : (d.meta > 0 ? 'Não há dias úteis restantes no mês.' : 'Defina a meta do mês para calcular.');
+
+  const tabela = $('tabela-painel-hist');
+  if (!d.historico.length) {
+    tabela.innerHTML = '<tr><td class="vazio">Nenhum mês finalizado ainda.</td></tr>';
+    destruirGrafico('grafico-painel-hist');
+    return;
+  }
+  let linhas = '<tr><th>Mês</th><th>Meta</th><th>Atingido</th><th>%</th><th>D.U.</th></tr>';
+  d.historico.forEach(function (h) {
+    linhas += '<tr><td>' + h.nomeMes + '</td><td>' + fmtQtd(h.meta) + '</td><td>' + fmtQtd(h.atingido) + '</td><td class="tend">' + fmtPct(h.pct) + '</td><td>' + h.utMes + '</td></tr>';
+  });
+  tabela.innerHTML = linhas;
+
+  novoGrafico('grafico-painel-hist', {
+    type: 'bar',
+    data: {
+      labels: d.historico.map((h) => h.nomeMes),
+      datasets: [
+        { label: 'Meta', data: d.historico.map((h) => h.meta), backgroundColor: 'rgba(148,163,184,.55)' },
+        { label: 'Vendido', data: d.historico.map((h) => h.atingido), backgroundColor: '#16a34a' }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { beginAtZero: true } },
+      plugins: { legend: { position: 'bottom' } }
+    }
+  });
+}
+
+async function resetarSenhaUsuario(u) {
+  if (!confirm('Gerar uma senha nova provisória para ' + u.nome + '?')) return;
+  try {
+    const r = await api('/api/supervisor/usuarios/' + u.id + '/resetar-senha', { method: 'POST' });
+    alert('Senha provisória de ' + u.nome + ': ' + r.senha + '\nAnote e avise a pessoa — ela pode trocar depois pelo botão "Trocar senha".');
+  } catch (e) { alert(e.message); }
+}
+
 let MODO_USUARIO = 'novo';
 let ID_USUARIO = null;
 
 function abrirModalUsuario(u) {
   MODO_USUARIO = u ? 'editar' : 'novo';
   ID_USUARIO = u ? u.id : null;
-  $('modal-usuario-titulo').textContent = u ? 'Editar vendedor' : 'Novo vendedor';
+  const ehSuporte = MEU_USUARIO.perfil === 'suporte';
+  $('modal-usuario-titulo').textContent = u
+    ? (ehSuporte ? 'Editar usuário' : 'Editar vendedor')
+    : (ehSuporte ? 'Novo usuário' : 'Novo vendedor');
   $('mu-nome').value = u ? u.nome : '';
   $('mu-setor').value = u ? u.setor : '';
   $('mu-email').value = u ? u.email : '';
+  $('mu-perfil-linha').style.display = ehSuporte ? '' : 'none';
   $('mu-perfil').value = u ? u.perfil : 'vendedor';
   $('mu-ativo').checked = u ? u.ativo : true;
   $('mu-senha').value = '';
@@ -281,11 +392,12 @@ function fecharModalUsuario() {
 }
 
 async function salvarModalUsuario() {
+  const ehSuporte = MEU_USUARIO.perfil === 'suporte';
   const corpo = {
     nome: $('mu-nome').value.trim(),
     setor: $('mu-setor').value.trim(),
     email: $('mu-email').value.trim(),
-    perfil: $('mu-perfil').value
+    perfil: ehSuporte ? $('mu-perfil').value : 'vendedor'
   };
   const senha = $('mu-senha').value;
   if (senha) corpo.senha = senha;
@@ -423,7 +535,7 @@ function renderRelatorio(d, n) {
 function preencherFiltroVendedor() {
   api('/api/supervisor/usuarios')
     .then(function (lista) {
-      const opcoes = lista.filter((u) => u.perfil !== 'supervisor')
+      const opcoes = lista.filter((u) => u.perfil === 'vendedor')
         .map((u) => '<option value="' + u.id + '">' + u.nome + '</option>')
         .join('');
       $('filtro-vendedor').innerHTML = '<option value="">Todos os vendedores</option>' + opcoes;
@@ -433,8 +545,9 @@ function preencherFiltroVendedor() {
 
 $('btn-mu-cancelar').addEventListener('click', fecharModalUsuario);
 $('btn-mu-salvar').addEventListener('click', salvarModalUsuario);
+$('btn-mp-fechar').addEventListener('click', fecharModalPainel);
 window.addEventListener('keydown', function (e) {
-  if (e.key === 'Escape') { fecharModalUsuario(); fecharModalSenha(); }
+  if (e.key === 'Escape') { fecharModalUsuario(); fecharModalSenha(); fecharModalPainel(); }
 });
 
 function abrirModalSenha() {

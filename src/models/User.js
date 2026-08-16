@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema(
     setor: { type: String, trim: true, default: '' },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     senha: { type: String, required: true },
-    perfil: { type: String, enum: ['supervisor', 'vendedor'], default: 'vendedor' },
+    perfil: { type: String, enum: ['suporte', 'supervisor', 'vendedor'], default: 'vendedor' },
     ativo: { type: Boolean, default: true },
     mesTrabalho: { type: String, default: '' }
   },

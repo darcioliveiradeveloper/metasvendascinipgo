@@ -25,8 +25,15 @@ function exigirLogin(req, res, next) {
 }
 
 function exigirSupervisor(req, res, next) {
-  if (req.usuarioToken.perfil !== 'supervisor') {
-    return res.status(403).json({ erro: 'Acesso restrito ao supervisor' });
+  if (req.usuarioToken.perfil !== 'supervisor' && req.usuarioToken.perfil !== 'suporte') {
+    return res.status(403).json({ erro: 'Acesso restrito' });
+  }
+  next();
+}
+
+function exigirSuporte(req, res, next) {
+  if (req.usuarioToken.perfil !== 'suporte') {
+    return res.status(403).json({ erro: 'Acesso restrito ao suporte' });
   }
   next();
 }
@@ -44,4 +51,4 @@ async function carregarUsuario(req, res, next) {
   }
 }
 
-module.exports = { gerarToken, exigirLogin, exigirSupervisor, carregarUsuario };
+module.exports = { gerarToken, exigirLogin, exigirSupervisor, exigirSuporte, carregarUsuario };

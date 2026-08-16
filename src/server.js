@@ -38,6 +38,11 @@ async function criarSupervisorInicial() {
   const existe = await User.findOne({ perfil: 'supervisor' });
   if (existe) return;
   const email = (process.env.EMAIL_SUPERVISOR_INICIAL || 'supervisor@exemplo.com').toLowerCase().trim();
+  const emUso = await User.findOne({ email });
+  if (emUso) {
+    console.log('Supervisor inicial não criado: e-mail já em uso por outra conta (' + email + ')');
+    return;
+  }
   const senha = process.env.SENHA_SUPERVISOR_INICIAL || 'admin123';
   const nome = process.env.NOME_SUPERVISOR_INICIAL || 'Supervisor';
   const hash = await bcrypt.hash(senha, 10);
@@ -45,9 +50,26 @@ async function criarSupervisorInicial() {
   console.log('Supervisor inicial criado: ' + email + ' / senha: ' + senha);
 }
 
+async function criarSuporteInicial() {
+  const existe = await User.findOne({ perfil: 'suporte' });
+  if (existe) return;
+  const email = (process.env.EMAIL_SUPORTE_INICIAL || 'suporte@exemplo.com').toLowerCase().trim();
+  const emUso = await User.findOne({ email });
+  if (emUso) {
+    console.log('Suporte inicial não criado: e-mail já em uso por outra conta (' + email + ')');
+    return;
+  }
+  const senha = process.env.SENHA_SUPORTE_INICIAL || 'suporte123';
+  const nome = process.env.NOME_SUPORTE_INICIAL || 'Suporte';
+  const hash = await bcrypt.hash(senha, 10);
+  await User.create({ nome, setor: '', email, senha: hash, perfil: 'suporte' });
+  console.log('Suporte inicial criado: ' + email);
+}
+
 async function iniciar() {
   await conectar();
   await criarSupervisorInicial();
+  await criarSuporteInicial();
   const porta = process.env.PORT || 3000;
   app.listen(porta, () => {
     console.log('Servidor rodando em http://localhost:' + porta);
