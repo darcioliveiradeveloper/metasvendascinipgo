@@ -23,7 +23,7 @@ function novoGrafico(id, config) {
 }
 
 let MEU_USUARIO = null;
-let SUP_MES = null;
+
 
 function init() {
   $('btn-sair').addEventListener('click', sairSistema);
@@ -469,32 +469,14 @@ function renderSupervisorEquipe(d) {
   $('sup-atingido').textContent = fmtQtd(d.totalAtingido) + ' fardos';
   $('sup-pct').textContent = d.pctGeral ? fmtPct(d.pctGeral) : '—';
 
-  let linhas = '<tr><th>Vendedor</th><th>Setor</th><th>Meta</th><th>Vendido</th><th>%</th>';
-  if (MEU_USUARIO.perfil === 'supervisor') linhas += '<th></th>';
-  linhas += '</tr>';
+  let linhas = '<tr><th>Vendedor</th><th>Setor</th><th>Meta</th><th>Vendido</th><th>%</th></tr>';
   d.linhas.forEach(function (l) {
     const tend = l.calc.tendencia > 0 ? ' · tendência ' + fmtPct(l.calc.tendencia) : '';
-    let linha = '<tr><td>' + esc(l.nome) + '</td><td>' + esc(l.setor || '—') + '</td><td>' + fmtQtd(l.meta) + '</td><td>' + fmtQtd(l.atingido) + '</td><td class="tend">' + fmtPct(l.calc.atingidoPct) + tend + '</td>';
-    if (MEU_USUARIO.perfil === 'supervisor') linha += '<td><button class="btn fino" data-meta-sup="' + l.id + '" data-nome="' + esc(l.nome) + '">Meta</button></td>';
-    linha += '</tr>';
+    const linha = '<tr><td>' + esc(l.nome) + '</td><td>' + esc(l.setor || '—') + '</td><td>' + fmtQtd(l.meta) + '</td><td>' + fmtQtd(l.atingido) + '</td><td class="tend">' + fmtPct(l.calc.atingidoPct) + tend + '</td></tr>';
     linhas += linha;
   });
   $('tabela-geral').innerHTML = linhas || '<tr><td class="vazio">Nenhum vendedor cadastrado.</td></tr>';
 
-  document.querySelectorAll('[data-meta-sup]').forEach(function (b) {
-    b.addEventListener('click', function () {
-      const id = b.dataset.metaSup;
-      const nome = b.dataset.nome;
-      const valor = prompt('Meta em fardos para ' + nome + ' — ' + SUP_MES + ':', '');
-      if (valor === null) return;
-      const meta = numFromInput(valor);
-      if (meta === null || meta < 0) { alert('Valor inválido.'); return; }
-      api('/api/supervisor/usuarios/' + id + '/meta', {
-        method: 'PUT',
-        body: { anoMes: SUP_MES, meta: meta }
-      }).then(carregarGeral).catch(function (e) { alert(e.message); });
-    });
-  });
 }
 
 async function carregarVendedores() {
