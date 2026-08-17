@@ -85,31 +85,58 @@
       </nav>
 
       <div id="aba-geral" class="aba">
-        <h2>Visão geral — <span id="sup-nome-mes"></span></h2>
+        <h2>Minhas vendas — <span id="sup-nome-mes"></span></h2>
+        <p class="aviso hidden" id="sup-aviso-fechado"></p>
         <div class="cards">
           <div class="card">
-            <span class="card-rot">Meta total</span>
-            <span class="card-val" id="sup-meta">—</span>
+            <span class="card-rot">Meta do mês</span>
+            <div class="card-valor-linha">
+              <span class="card-val" id="sp-meta-valor">—</span>
+              <button class="btn-icon" id="sp-btn-meta" title="Definir meta">✎</button>
+            </div>
           </div>
           <div class="card">
             <span class="card-rot">Vendido (acumulado)</span>
-            <span class="card-val" id="sup-atingido">—</span>
-            <span class="card-bar"><i id="sup-barra-alc"></i></span>
-            <span class="card-info" id="sup-alc-info"></span>
+            <div class="card-valor-linha">
+              <span class="card-val" id="sp-total-valor">—</span>
+              <button class="btn-icon" id="sp-btn-lancar" title="Lançar vendas">✎</button>
+            </div>
+            <span class="card-bar"><i id="sp-barra-alc"></i></span>
+            <span class="card-info" id="sp-alc-info"></span>
           </div>
           <div class="card">
-            <span class="card-rot">Tendência geral</span><span class="card-val" id="sup-tend">—</span>
-            <span class="card-bar"><i id="sup-barra-tend"></i></span>
-            <span class="card-info" id="sup-tend-info"></span>
-            <span class="card-formula" id="sup-tend-formula"></span>
+            <span class="card-rot">Tendência</span><span class="card-val" id="sp-tend-valor">—</span>
+            <span class="card-bar"><i id="sp-barra-tend"></i></span>
+            <span class="card-info" id="sp-tend-info"></span>
+            <span class="card-formula" id="sp-tend-formula"></span>
           </div>
           <div class="card">
-            <span class="card-rot">Meta p/ dia útil</span><span class="card-val" id="sup-metadia">—</span>
-            <span class="card-info" id="sup-metadia-info"></span>
-            <span class="card-formula" id="sup-metadia-formula"></span>
+            <span class="card-rot">Meta p/ dia útil</span><span class="card-val" id="sp-metadia-valor">—</span>
+            <span class="card-info" id="sp-metadia-info"></span>
+            <span class="card-formula" id="sp-metadia-formula"></span>
           </div>
         </div>
-        <h3>Vendedores</h3>
+        <div class="chips">
+          <span class="chip">Dias úteis no mês: <strong id="sp-chip-mes">0</strong></span>
+          <span class="chip">Já trabalhados: <strong id="sp-chip-trab">0</strong></span>
+          <span class="chip">Restantes: <strong id="sp-chip-rest">0</strong></span>
+        </div>
+        <div class="acoes-botoes">
+          <button class="btn hidden" id="sp-btn-iniciar-mes">Iniciar mês atual</button>
+          <button class="btn" id="sp-btn-incluir-mes">Incluir mês passado</button>
+          <button class="btn perigo" id="sp-btn-fechar-mes">Fechar mês</button>
+        </div>
+        <div class="card hist">
+          <h3>Histórico de meses</h3>
+          <div class="tabela-scroll"><table id="sp-tabela-historico"></table></div>
+        </div>
+
+        <h2>Equipe — <span id="sup-nome-mes2"></span></h2>
+        <div class="cards">
+          <div class="card"><span class="card-rot">Meta total</span><span class="card-val" id="sup-meta">—</span></div>
+          <div class="card"><span class="card-rot">Vendido total</span><span class="card-val" id="sup-atingido">—</span></div>
+          <div class="card"><span class="card-rot">Atingido geral</span><span class="card-val" id="sup-pct">—</span></div>
+        </div>
         <div class="tabela-scroll"><table id="tabela-geral"></table></div>
       </div>
 
