@@ -29,21 +29,32 @@
 
       <div class="cards">
         <div class="card">
-          <span class="card-rot">Meta do mês</span><span class="card-val" id="meta-valor">—</span>
-          <button class="btn bloco primario" id="btn-meta-card">Definir / alterar</button>
+          <span class="card-rot">Meta do mês</span>
+          <div class="card-valor-linha">
+            <span class="card-val" id="meta-valor">—</span>
+            <button class="btn-icon" id="btn-meta-card" title="Definir meta">✎</button>
+          </div>
         </div>
         <div class="card">
-          <span class="card-rot">Vendido (acumulado)</span><span class="card-val" id="total-valor">—</span>
+          <span class="card-rot">Vendido (acumulado)</span>
+          <div class="card-valor-linha">
+            <span class="card-val" id="total-valor">—</span>
+            <button class="btn-icon" id="btn-lancar-card" title="Lançar vendas">✎</button>
+          </div>
           <span class="card-bar"><i id="barra-alc"></i></span>
           <span class="card-info" id="alc-info"></span>
-          <button class="btn bloco primario" id="btn-lancar-card">Lançar vendas</button>
         </div>
         <div class="card">
           <span class="card-rot">Tendência</span><span class="card-val" id="tend-valor">—</span>
           <span class="card-bar"><i id="tend-barra"></i></span>
           <span class="card-info" id="tend-info"></span>
+          <span class="card-formula" id="tend-formula"></span>
         </div>
-        <div class="card"><span class="card-rot">Meta p/ dia útil</span><span class="card-val" id="metadia-valor">—</span><span class="card-info" id="metadia-info"></span></div>
+        <div class="card">
+          <span class="card-rot">Meta p/ dia útil</span><span class="card-val" id="metadia-valor">—</span>
+          <span class="card-info" id="metadia-info"></span>
+          <span class="card-formula" id="metadia-formula"></span>
+        </div>
       </div>
 
       <div class="chips">
@@ -55,6 +66,7 @@
 
       <div class="acoes-botoes">
         <button class="btn hidden" id="btn-iniciar-mes">Iniciar mês atual</button>
+        <button class="btn" id="btn-incluir-mes">Incluir mês passado</button>
         <button class="btn perigo" id="btn-fechar-mes">Fechar mês</button>
       </div>
 
@@ -113,6 +125,27 @@
     </section>
 
   </main>
+
+  <div id="modal-mes" class="modal hidden">
+    <div class="modal-box">
+      <h3>Incluir mês passado</h3>
+      <p class="dica">Para montar seu histórico de vendas.</p>
+      <label>Mês (AAAA-MM)
+        <input id="mm-anoMes" type="month">
+      </label>
+      <label>Meta (fardos)
+        <input id="mm-meta" type="text" inputmode="decimal" placeholder="Ex.: 4350">
+      </label>
+      <label>Total vendido (fardos)
+        <input id="mm-total" type="text" inputmode="decimal" placeholder="Ex.: 4200">
+      </label>
+      <div class="modal-acoes">
+        <button class="btn" id="btn-mm-cancelar">Cancelar</button>
+        <button class="btn primario" id="btn-mm-ok">Salvar</button>
+      </div>
+      <p class="erro hidden" id="mm-erro"></p>
+    </div>
+  </div>
 
   <div id="modal-nome" class="modal hidden">
     <div class="modal-box">

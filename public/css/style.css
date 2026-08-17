@@ -54,7 +54,21 @@ body {
 }
 .card-rot { display: block; font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: .3px; }
 .card-val { display: block; font-size: 26px; font-weight: 700; margin: 4px 0 8px; }
+.card-valor-linha { display: flex; align-items: center; gap: 8px; }
+.card-valor-linha .card-val { margin: 4px 0 8px; }
 .card-info { font-size: 13px; color: #475569; }
+.card-formula { display: block; font-size: 12px; color: #64748b; margin-top: 6px; font-style: italic; }
+.btn-icon {
+  background: none;
+  border: 0;
+  padding: 4px 6px;
+  font-size: 18px;
+  cursor: pointer;
+  color: #2563eb;
+  line-height: 1;
+  border-radius: 6px;
+}
+.btn-icon:hover { color: #1d4ed8; background: #eff6ff; }
 .card-bar {
   display: block;
   height: 8px;

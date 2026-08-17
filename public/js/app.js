@@ -68,6 +68,44 @@ async function salvarModalNome() {
   } catch (e) { alert(e.message); }
 }
 
+function abrirModalMes() {
+  $('mm-anoMes').value = '';
+  $('mm-meta').value = '';
+  $('mm-total').value = '';
+  $('mm-erro').classList.add('hidden');
+  $('modal-mes').classList.remove('hidden');
+  $('mm-anoMes').focus();
+}
+
+function fecharModalMes() {
+  $('modal-mes').classList.add('hidden');
+}
+
+async function salvarModalMes() {
+  const anoMes = $('mm-anoMes').value;
+  const meta = numFromInput($('mm-meta').value);
+  const total = numFromInput($('mm-total').value);
+  if (!anoMes || !/^\d{4}-\d{2}$/.test(anoMes)) {
+    $('mm-erro').textContent = 'Informe o mês no formato AAAA-MM.';
+    $('mm-erro').classList.remove('hidden');
+    return;
+  }
+  if (meta === null || meta < 0) {
+    $('mm-erro').textContent = 'Informe uma meta válida.';
+    $('mm-erro').classList.remove('hidden');
+    return;
+  }
+  if (total === null || total < 0) {
+    $('mm-erro').textContent = 'Informe um total válido.';
+    $('mm-erro').classList.remove('hidden');
+    return;
+  }
+  try {
+    renderVendedor(await api('/api/me/incluir-mes', { method: 'POST', body: { anoMes, meta, total } }));
+    fecharModalMes();
+  } catch (e) { alert(e.message); }
+}
+
 /* ============================= VENDEDOR ============================= */
 
 function iniciarVendedor() {
@@ -79,6 +117,7 @@ function iniciarVendedor() {
   $('btn-meta-card').addEventListener('click', function () { abrirModalValor('meta'); });
   $('btn-iniciar-mes').addEventListener('click', iniciarMesAtual);
   $('btn-fechar-mes').addEventListener('click', fecharMes);
+  $('btn-incluir-mes').addEventListener('click', abrirModalMes);
   carregarPainelVendedor();
 }
 
@@ -113,12 +152,18 @@ function renderVendedor(d) {
   $('tend-info').textContent = temTend
     ? 'Média ' + fmtQtd(c.media) + ' fardos/dia × ' + c.utMes + ' dias úteis = ' + fmtQtd(c.projetado) + ' fardos'
     : (c.trab === 0 ? 'Ainda sem dias úteis trabalhados neste mês.' : 'Defina a meta do mês para calcular.');
+  $('tend-formula').textContent = temTend
+    ? 'Tendência = (' + fmtQtd(d.total) + ' ÷ ' + c.trab + ') × ' + c.utMes + ' ÷ ' + fmtQtd(d.meta) + ' × 100 = ' + fmtPct(c.tendencia)
+    : '';
 
   const temMetDia = c.rest > 0 && d.meta > 0;
   $('metadia-valor').textContent = temMetDia ? fmtQtd(c.metaDiaria) + ' fardos' : '—';
   $('metadia-info').textContent = temMetDia
     ? (d.meta - d.total > 0 ? fmtQtd(d.meta - d.total) + ' faltantes ÷ ' + c.rest + ' dias úteis' : 'Meta já atingida no mês.')
     : (d.meta > 0 ? 'Não há dias úteis restantes no mês.' : 'Defina a meta do mês para calcular.');
+  $('metadia-formula').textContent = temMetDia
+    ? 'Meta diária = (' + fmtQtd(d.meta) + ' − ' + fmtQtd(d.total) + ') ÷ ' + c.rest + ' = ' + fmtQtd(c.metaDiaria) + ' fardos'
+    : '';
 
   $('atualizado').textContent = d.atualizadoEm
     ? new Date(d.atualizadoEm).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
@@ -600,8 +645,10 @@ $('btn-nome-ok').addEventListener('click', salvarModalNome);
 $('inp-nome').addEventListener('keydown', function (e) {
   if (e.key === 'Enter') { e.preventDefault(); salvarModalNome(); }
 });
+$('btn-mm-cancelar').addEventListener('click', fecharModalMes);
+$('btn-mm-ok').addEventListener('click', salvarModalMes);
 window.addEventListener('keydown', function (e) {
-  if (e.key === 'Escape') { fecharModalUsuario(); fecharModalSenha(); fecharModalPainel(); fecharModalValor(); fecharModalNome(); }
+  if (e.key === 'Escape') { fecharModalUsuario(); fecharModalSenha(); fecharModalPainel(); fecharModalValor(); fecharModalNome(); fecharModalMes(); }
 });
 
 function abrirModalSenha() {

@@ -79,6 +79,46 @@ router.post('/nome', async (req, res) => {
   }
 });
 
+router.post('/incluir-mes', async (req, res) => {
+  try {
+    const { anoMes } = req.body;
+    if (!/^\d{4}-\d{2}$/.test(String(anoMes || ''))) {
+      return res.status(400).json({ erro: 'Informe o mês no formato AAAA-MM' });
+    }
+    if (String(anoMes) >= negocio.chaveMesHoje()) {
+      return res.status(400).json({ erro: 'Só é possível incluir meses passados' });
+    }
+    const meta = negocio.numerico(req.body.meta);
+    const total = negocio.numerico(req.body.total);
+    if (meta === null || meta < 0) return res.status(400).json({ erro: 'Meta inválida' });
+    if (total === null || total < 0) return res.status(400).json({ erro: 'Total inválido' });
+
+    await MetaMensal.findOneAndUpdate(
+      { usuario: req.usuario._id, anoMes },
+      { $set: { meta } },
+      { upsert: true }
+    );
+
+    const existente = await Lancamento.findOne({ usuario: req.usuario._id, anoMes });
+    if (existente) {
+      existente.total = total;
+      await existente.save();
+    } else {
+      await Lancamento.create({
+        usuario: req.usuario._id,
+        anoMes,
+        data: new Date(),
+        total
+      });
+    }
+
+    res.json(await dash.montarDashboard(req.usuario));
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ erro: 'Erro ao incluir mês' });
+  }
+});
+
 router.post('/iniciar-mes', async (req, res) => {
   try {
     await dash.definirMesTrabalho(req.usuario, negocio.chaveMesHoje());

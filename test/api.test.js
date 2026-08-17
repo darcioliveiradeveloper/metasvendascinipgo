@@ -127,6 +127,13 @@ const negocio = require('../src/services/negocio');
     await req('POST', '/api/auth/trocar-senha', { senhaAtual: 'darci456', novaSenha: 'darci123' });
   });
 
+  await testar('vendedor inclui mes passado para historico', async () => {
+    const r = await req('POST', '/api/me/incluir-mes', { anoMes: '2026-05', meta: 3800, total: 3650 });
+    assert(r.ok && r.j.historico.some((h) => h.anoMes === '2026-05' && h.atingido === 3650), 'incluir mes: ' + JSON.stringify(r.j.historico));
+    const err = await req('POST', '/api/me/incluir-mes', { anoMes: '2026-12', meta: 4000, total: 1000 });
+    assert(!err.ok, 'mes futuro deveria dar erro');
+  });
+
   await testar('vendedor define o proprio nome', async () => {
     const r = await req('POST', '/api/me/nome', { nome: 'Darci' });
     assert(r.ok && r.j.nome === 'Darci', 'nome: ' + JSON.stringify(r.j));
