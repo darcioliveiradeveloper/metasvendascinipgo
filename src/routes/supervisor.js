@@ -76,6 +76,7 @@ router.get('/dashboard', async (req, res) => {
       nomeMes: negocio.nomeDoMes(chave),
       totalMeta,
       totalAtingido,
+      calc: negocio.calcular(totalMeta, totalAtingido, chave),
       pctGeral: totalMeta > 0 ? (totalAtingido / totalMeta) * 100 : 0,
       linhas
     });

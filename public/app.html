@@ -87,10 +87,29 @@
       <div id="aba-geral" class="aba">
         <h2>Visão geral — <span id="sup-nome-mes"></span></h2>
         <div class="cards">
-          <div class="card"><span class="card-rot">Meta total</span><span class="card-val" id="sup-meta">—</span></div>
-          <div class="card"><span class="card-rot">Vendido</span><span class="card-val" id="sup-atingido">—</span></div>
-          <div class="card"><span class="card-rot">Atingido geral</span><span class="card-val" id="sup-pct">—</span></div>
+          <div class="card">
+            <span class="card-rot">Meta total</span>
+            <span class="card-val" id="sup-meta">—</span>
+          </div>
+          <div class="card">
+            <span class="card-rot">Vendido (acumulado)</span>
+            <span class="card-val" id="sup-atingido">—</span>
+            <span class="card-bar"><i id="sup-barra-alc"></i></span>
+            <span class="card-info" id="sup-alc-info"></span>
+          </div>
+          <div class="card">
+            <span class="card-rot">Tendência geral</span><span class="card-val" id="sup-tend">—</span>
+            <span class="card-bar"><i id="sup-barra-tend"></i></span>
+            <span class="card-info" id="sup-tend-info"></span>
+            <span class="card-formula" id="sup-tend-formula"></span>
+          </div>
+          <div class="card">
+            <span class="card-rot">Meta p/ dia útil</span><span class="card-val" id="sup-metadia">—</span>
+            <span class="card-info" id="sup-metadia-info"></span>
+            <span class="card-formula" id="sup-metadia-formula"></span>
+          </div>
         </div>
+        <h3>Vendedores</h3>
         <div class="tabela-scroll"><table id="tabela-geral"></table></div>
       </div>
 

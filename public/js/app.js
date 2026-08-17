@@ -339,11 +339,38 @@ function iniciarSupervisor() {
 async function carregarGeral() {
   try {
     const d = await api('/api/supervisor/dashboard');
+    const c = d.calc;
     SUP_MES = d.mes;
+
     $('sup-nome-mes').textContent = d.nomeMes;
-    $('sup-meta').textContent = fmtQtd(d.totalMeta) + ' fardos';
+    $('sup-meta').textContent = d.totalMeta ? fmtQtd(d.totalMeta) + ' fardos' : '—';
     $('sup-atingido').textContent = fmtQtd(d.totalAtingido) + ' fardos';
-    $('sup-pct').textContent = fmtPct(d.pctGeral);
+
+    const alcPct = Math.min(100, c.atingidoPct);
+    $('sup-barra-alc').style.width = alcPct + '%';
+    const faltante = d.totalMeta - d.totalAtingido;
+    $('sup-alc-info').textContent = d.totalMeta > 0
+      ? (faltante > 0 ? fmtPct(c.atingidoPct) + ' da meta · faltam ' + fmtQtd(faltante) + ' fardos' : 'Meta batida!')
+      : 'Defina as metas dos vendedores.';
+
+    const temTend = c.trab > 0 && d.totalMeta > 0;
+    $('sup-tend').textContent = temTend ? fmtPct(c.tendencia) : '—';
+    $('sup-barra-tend').style.width = (temTend ? Math.min(100, c.tendencia) : 0) + '%';
+    $('sup-tend-info').textContent = temTend
+      ? 'Média ' + fmtQtd(c.media) + ' fardos/dia × ' + c.utMes + ' dias úteis = ' + fmtQtd(c.projetado) + ' fardos'
+      : (c.trab === 0 ? 'Ainda sem dias úteis trabalhados neste mês.' : 'Defina as metas para calcular.');
+    $('sup-tend-formula').textContent = temTend
+      ? 'Tendência = (' + fmtQtd(d.totalAtingido) + ' ÷ ' + c.trab + ') × ' + c.utMes + ' ÷ ' + fmtQtd(d.totalMeta) + ' × 100 = ' + fmtPct(c.tendencia)
+      : '';
+
+    const temMetDia = c.rest > 0 && d.totalMeta > 0;
+    $('sup-metadia').textContent = temMetDia ? fmtQtd(c.metaDiaria) + ' fardos' : '—';
+    $('sup-metadia-info').textContent = temMetDia
+      ? (faltante > 0 ? fmtQtd(faltante) + ' faltantes ÷ ' + c.rest + ' dias úteis' : 'Meta já atingida no mês.')
+      : (d.totalMeta > 0 ? 'Não há dias úteis restantes no mês.' : 'Defina as metas para calcular.');
+    $('sup-metadia-formula').textContent = temMetDia
+      ? 'Meta diária = (' + fmtQtd(d.totalMeta) + ' − ' + fmtQtd(d.totalAtingido) + ') ÷ ' + c.rest + ' = ' + fmtQtd(c.metaDiaria) + ' fardos'
+      : '';
 
     let linhas = '<tr><th>Vendedor</th><th>Setor</th><th>Meta</th><th>Vendido</th><th>%</th>';
     if (MEU_USUARIO.perfil === 'supervisor') linhas += '<th></th>';
