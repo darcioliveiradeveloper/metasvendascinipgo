@@ -134,6 +134,17 @@ const negocio = require('../src/services/negocio');
     assert(!err.ok, 'mes futuro deveria dar erro');
   });
 
+  await testar('vendedor edita mes passado do historico', async () => {
+    const r = await req('PUT', '/api/me/historico/2026-05', { meta: 3900, total: 3700 });
+    const h = r.j.historico.find((x) => x.anoMes === '2026-05');
+    assert(r.ok && h && h.meta === 3900 && h.atingido === 3700, 'editar mes: ' + JSON.stringify(h));
+  });
+
+  await testar('vendedor exclui mes passado do historico', async () => {
+    const r = await req('DELETE', '/api/me/historico/2026-05');
+    assert(r.ok && !r.j.historico.some((h) => h.anoMes === '2026-05'), 'excluir mes: ' + JSON.stringify(r.j.historico));
+  });
+
   await testar('vendedor define o proprio nome', async () => {
     const r = await req('POST', '/api/me/nome', { nome: 'Darci' });
     assert(r.ok && r.j.nome === 'Darci', 'nome: ' + JSON.stringify(r.j));

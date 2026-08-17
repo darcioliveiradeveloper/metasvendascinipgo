@@ -68,8 +68,15 @@ async function salvarModalNome() {
   } catch (e) { alert(e.message); }
 }
 
+let MODO_MES = 'incluir';
+let ANO_MES_EDITANDO = null;
+
 function abrirModalMes() {
+  MODO_MES = 'incluir';
+  ANO_MES_EDITANDO = null;
+  $('mm-titulo').textContent = 'Incluir mês passado';
   $('mm-anoMes').value = '';
+  $('mm-anoMes').readOnly = false;
   $('mm-meta').value = '';
   $('mm-total').value = '';
   $('mm-erro').classList.add('hidden');
@@ -77,15 +84,28 @@ function abrirModalMes() {
   $('mm-anoMes').focus();
 }
 
+function abrirModalMesEditar(h) {
+  MODO_MES = 'editar';
+  ANO_MES_EDITANDO = h.anoMes;
+  $('mm-titulo').textContent = 'Editar ' + h.nomeMes;
+  $('mm-anoMes').value = h.anoMes;
+  $('mm-anoMes').readOnly = true;
+  $('mm-meta').value = h.meta || '';
+  $('mm-total').value = h.atingido || '';
+  $('mm-erro').classList.add('hidden');
+  $('modal-mes').classList.remove('hidden');
+  $('mm-meta').focus();
+}
+
 function fecharModalMes() {
   $('modal-mes').classList.add('hidden');
 }
 
 async function salvarModalMes() {
-  const anoMes = $('mm-anoMes').value;
+  const anoMes = MODO_MES === 'editar' ? ANO_MES_EDITANDO : $('mm-anoMes').value;
   const meta = numFromInput($('mm-meta').value);
   const total = numFromInput($('mm-total').value);
-  if (!anoMes || !/^\d{4}-\d{2}$/.test(anoMes)) {
+  if (MODO_MES !== 'editar' && (!anoMes || !/^\d{4}-\d{2}$/.test(anoMes))) {
     $('mm-erro').textContent = 'Informe o mês no formato AAAA-MM.';
     $('mm-erro').classList.remove('hidden');
     return;
@@ -101,8 +121,19 @@ async function salvarModalMes() {
     return;
   }
   try {
-    renderVendedor(await api('/api/me/incluir-mes', { method: 'POST', body: { anoMes, meta, total } }));
+    if (MODO_MES === 'editar') {
+      renderVendedor(await api('/api/me/historico/' + ANO_MES_EDITANDO, { method: 'PUT', body: { meta, total } }));
+    } else {
+      renderVendedor(await api('/api/me/incluir-mes', { method: 'POST', body: { anoMes, meta, total } }));
+    }
     fecharModalMes();
+  } catch (e) { alert(e.message); }
+}
+
+async function excluirMesHistorico(h) {
+  if (!confirm('Excluir os dados de ' + h.nomeMes + '? Essa ação não pode ser desfeita.')) return;
+  try {
+    renderVendedor(await api('/api/me/historico/' + h.anoMes, { method: 'DELETE' }));
   } catch (e) { alert(e.message); }
 }
 
@@ -191,11 +222,26 @@ function renderHistorico(hist) {
     destruirGrafico('grafico-historico');
     return;
   }
-  let linhas = '<tr><th>Mês</th><th>Meta</th><th>Atingido</th><th>%</th><th>D.U.</th></tr>';
+  let linhas = '<tr><th>Mês</th><th>Meta</th><th>Atingido</th><th>%</th><th>D.U.</th><th></th></tr>';
   hist.forEach(function (h) {
-    linhas += '<tr><td>' + h.nomeMes + '</td><td>' + fmtQtd(h.meta) + '</td><td>' + fmtQtd(h.atingido) + '</td><td class="tend">' + fmtPct(h.pct) + '</td><td>' + h.utMes + '</td></tr>';
+    linhas += '<tr><td>' + h.nomeMes + '</td><td>' + fmtQtd(h.meta) + '</td><td>' + fmtQtd(h.atingido) + '</td><td class="tend">' + fmtPct(h.pct) + '</td><td>' + h.utMes + '</td>'
+      + '<td class="hist-acoes"><button class="btn-icon" data-edita-mes="' + h.anoMes + '" title="Editar mês">✎</button>'
+      + ' <button class="btn-icon perigo" data-deleta-mes="' + h.anoMes + '" title="Excluir mês">✕</button></td></tr>';
   });
   tabela.innerHTML = linhas;
+
+  tabela.querySelectorAll('[data-edita-mes]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      const h = hist.find((x) => x.anoMes === b.dataset.editaMes);
+      if (h) abrirModalMesEditar(h);
+    });
+  });
+  tabela.querySelectorAll('[data-deleta-mes]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      const h = hist.find((x) => x.anoMes === b.dataset.deletaMes);
+      if (h) excluirMesHistorico(h);
+    });
+  });
 
   const labels = hist.map((h) => h.nomeMes);
   novoGrafico('grafico-historico', {
