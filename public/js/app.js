@@ -569,7 +569,10 @@ function renderSupervisorEquipe(d) {
   $('sup-pct').textContent = d.pctGeral ? fmtPct(d.pctGeral) : '—';
 
   let linhas = '<tr><th>Vendedor</th><th>Setor</th><th>Meta</th><th>Vendido</th><th>%</th></tr>';
-  d.linhas.forEach(function (l) {
+  d.linhas.sort(function (a, b) {
+    const sa = (a.setor || '').localeCompare(b.setor || '', undefined, { numeric: true });
+    return sa !== 0 ? sa : (a.nome || '').localeCompare(b.nome || '');
+  }).forEach(function (l) {
     const tend = l.calc.tendencia > 0 ? ' · tendência ' + fmtPct(l.calc.tendencia) : '';
     const linha = '<tr><td>' + esc(l.nome) + '</td><td>' + esc(l.setor || '—') + '</td><td>' + fmtQtd(l.meta) + '</td><td>' + fmtQtd(l.atingido) + '</td><td class="tend">' + fmtPct(l.calc.atingidoPct) + tend + '</td></tr>';
     linhas += linha;
@@ -581,7 +584,10 @@ function renderSupervisorEquipe(d) {
 async function carregarVendedores() {
   try {
     const lista = await api('/api/supervisor/usuarios');
-    const vendedores = lista;
+    const vendedores = lista.sort(function (a, b) {
+      const sa = (a.setor || '').localeCompare(b.setor || '', undefined, { numeric: true });
+      return sa !== 0 ? sa : (a.nome || '').localeCompare(b.nome || '');
+    });
     let linhas = '<tr><th>Nome</th><th>Setor</th><th>Situação</th><th></th></tr>';
     vendedores.forEach(function (u) {
       linhas += '<tr><td>' + esc(u.nome) + '</td><td>' + esc(u.setor || '—') + '</td><td>' + (u.ativo ? 'Ativo' : 'Inativo') + '</td><td>'
@@ -684,7 +690,7 @@ async function resetarSenhaUsuario(u) {
   if (!confirm('Gerar uma senha nova provisória para ' + u.nome + '?')) return;
   try {
     const r = await api('/api/supervisor/usuarios/' + u.id + '/resetar-senha', { method: 'POST' });
-    alert('Senha provisória de ' + u.nome + ': ' + r.senha + '\nAnote e avise a pessoa — ela pode trocar depois pelo botão "Trocar senha".');
+    alert('Senha de ' + u.nome + ' resetada para: ' + r.senha + '\nAnote e avise — ela pode trocar depois pelo botão "Trocar senha".');
   } catch (e) { alert(e.message); }
 }
 
@@ -865,7 +871,11 @@ function preencherFiltroVendedor() {
   api('/api/supervisor/usuarios')
     .then(function (lista) {
       const opcoes = lista.filter((u) => u.perfil === 'vendedor')
-        .map((u) => '<option value="' + u.id + '">' + u.nome + '</option>')
+        .sort(function (a, b) {
+          const sa = (a.setor || '').localeCompare(b.setor || '', undefined, { numeric: true });
+          return sa !== 0 ? sa : (a.nome || '').localeCompare(b.nome || '');
+        })
+        .map((u) => '<option value="' + u.id + '">' + (u.setor ? u.setor + ' - ' : '') + u.nome + '</option>')
         .join('');
       $('filtro-vendedor').innerHTML = '<option value="">Todos os vendedores</option>' + opcoes;
     })

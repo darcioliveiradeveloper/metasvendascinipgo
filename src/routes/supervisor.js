@@ -211,7 +211,7 @@ router.post('/usuarios/:id/resetar-senha', async (req, res) => {
     if (!podeGerenciar(req.usuario, user)) {
       return res.status(403).json({ erro: 'Sem permissão para resetar a senha' });
     }
-    const nova = gerarSenhaTemporaria();
+    const nova = user.setor || user.email.split('@')[0];
     user.senha = await bcrypt.hash(nova, 10);
     await user.save();
     res.json({ ok: true, senha: nova });

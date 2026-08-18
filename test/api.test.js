@@ -205,10 +205,10 @@ const negocio = require('../src/services/negocio');
 
   await testar('suporte reseta a senha do vendedor', async () => {
     const r = await req('POST', '/api/supervisor/usuarios/' + global.idDarci + '/resetar-senha');
-    assert(r.ok && typeof r.j.senha === 'string' && r.j.senha.length >= 4, 'reset: ' + JSON.stringify(r.j));
+    assert(r.ok && typeof r.j.senha === 'string' && r.j.senha.length >= 2, 'reset: ' + JSON.stringify(r.j));
     const l = await req('POST', '/api/auth/login', { email: 'darci@exemplo.com', senha: r.j.senha });
     assert(l.ok, 'login com senha nova deveria funcionar');
-    await req('POST', '/api/auth/login', { email: 'darci@exemplo.com', senha: 'darci123' });
+    await req('POST', '/api/auth/trocar-senha', { senhaAtual: r.j.senha, novaSenha: 'darci123' });
   });
 
   await testar('supervisor nao cria supervisor', async () => {
@@ -226,10 +226,10 @@ const negocio = require('../src/services/negocio');
   await testar('supervisor reseta senha de vendedor', async () => {
     await req('POST', '/api/auth/login', { email: 'supervisor@exemplo.com', senha: 'admin123' });
     const r = await req('POST', '/api/supervisor/usuarios/' + global.idDarci + '/resetar-senha');
-    assert(r.ok && typeof r.j.senha === 'string' && r.j.senha.length >= 4, 'reset sup: ' + JSON.stringify(r.j));
+    assert(r.ok && typeof r.j.senha === 'string' && r.j.senha.length >= 2, 'reset sup: ' + JSON.stringify(r.j));
     const l = await req('POST', '/api/auth/login', { email: 'darci@exemplo.com', senha: r.j.senha });
     assert(l.ok, 'login com senha nova deveria funcionar');
-    await req('POST', '/api/auth/login', { email: 'darci@exemplo.com', senha: 'darci123' });
+    await req('POST', '/api/auth/trocar-senha', { senhaAtual: r.j.senha, novaSenha: 'darci123' });
   });
 
   await testar('logica: agosto 2026 (14/08, meta 4350, vendas 1400)', async () => {
