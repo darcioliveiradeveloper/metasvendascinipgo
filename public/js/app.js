@@ -156,6 +156,8 @@ function iniciarVendedor() {
   $('btn-incluir-mes').addEventListener('click', abrirModalMes);
   $('btn-print').addEventListener('click', ativarModoPrint);
   $('btn-print-fechar').addEventListener('click', desativarModoPrint);
+  $('btn-print-limpo').addEventListener('click', ativarPrintLimpo);
+  $('btn-print-limpo-fechar').addEventListener('click', desativarPrintLimpo);
   carregarPainelVendedor();
 }
 
@@ -167,6 +169,26 @@ function ativarModoPrint() {
 function desativarModoPrint() {
   document.body.classList.remove('print-ativo');
   $('print-overlay').classList.add('hidden');
+}
+
+let plDados = null;
+function ativarPrintLimpo() {
+  api('/api/me/dashboard').then(function (d) {
+    plDados = d;
+    $('pl-saudacao').textContent = $('saudacao').textContent;
+    $('pl-data').textContent = $('data-hoje').textContent;
+    const c = d.calc;
+    const temTend = c.trab > 0 && d.meta > 0;
+    $('pl-tend-valor').textContent = temTend ? fmtPct(c.tendencia) : '—';
+    $('pl-tend-barra').style.width = (temTend ? Math.min(100, c.tendencia) : 0) + '%';
+    const temMetDia = c.rest > 0 && d.meta > 0;
+    $('pl-metadia-valor').textContent = temMetDia ? fmtQtd(c.metaDiaria) + ' fardos' : '—';
+    $('print-limpo-view').classList.remove('hidden');
+    window.scrollTo({ top: 0 });
+  });
+}
+function desativarPrintLimpo() {
+  $('print-limpo-view').classList.add('hidden');
 }
 
 async function carregarPainelVendedor() {

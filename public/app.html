@@ -62,7 +62,10 @@
         <div class="card">
           <div class="card-cab">
             <h2>Meta Diária</h2>
-            <button class="btn-icon" id="btn-print" title="Modo print (oculta meta do mês)">📷</button>
+            <span class="card-print-btns">
+              <button class="btn-icon" id="btn-print" title="Modo print (oculta meta do mês)">📷</button>
+              <button class="btn-icon" id="btn-print-limpo" title="Print limpo (tendência + meta diária)">🖼️</button>
+            </span>
           </div>
           <div class="valor" id="metadia-valor">—</div>
           <p class="card-info" id="metadia-info"></p>
@@ -73,6 +76,35 @@
       <div id="print-overlay" class="print-overlay hidden">
         <div class="print-msg">📷 Tire o print agora</div>
         <button class="btn-print-fechar" id="btn-print-fechar">Fechar</button>
+      </div>
+
+      <div id="print-limpo-view" class="print-limpo hidden">
+        <header class="print-limpo-header">
+          <div class="topo-inner">
+            <div class="topo-linha1">Metas de Venda - Cini Pgo</div>
+            <div class="topo-linha2">
+              <span id="pl-saudacao"></span>
+            </div>
+          </div>
+        </header>
+        <div class="container">
+          <span id="pl-data" class="data"></span>
+          <div class="cards">
+            <div class="card">
+              <div class="card-cab"><h2>Tendência</h2></div>
+              <div class="valor" id="pl-tend-valor">—</div>
+              <span class="card-bar"><i id="pl-tend-barra" class="tend"></i></span>
+            </div>
+            <div class="card">
+              <div class="card-cab"><h2>Meta Diária</h2></div>
+              <div class="valor" id="pl-metadia-valor">—</div>
+            </div>
+          </div>
+        </div>
+        <div class="print-overlay">
+          <div class="print-msg">📷 Tire o print agora</div>
+          <button class="btn-print-fechar" id="btn-print-limpo-fechar">Fechar</button>
+        </div>
       </div>
 
       <div class="acoes-botoes">

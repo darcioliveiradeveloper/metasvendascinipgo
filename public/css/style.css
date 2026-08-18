@@ -286,6 +286,22 @@ input:focus, select:focus { border-color: #4338ca; background: #fff; }
 }
 .btn-print-fechar:active { opacity: 0.7; }
 
+.card-print-btns { display: inline-flex; gap: 2px; }
+
+.print-limpo {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: #f1f5f9;
+  overflow-y: auto;
+}
+.print-limpo.hidden { display: none; }
+.print-limpo-header {
+  background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 55%, #06b6d4 100%);
+  color: #fff;
+  padding: 14px 18px 48px;
+}
+
 /* ========================= MODAIS ========================= */
 .modal {
   position: fixed;
