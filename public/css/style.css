@@ -13,7 +13,7 @@ body {
 header {
   background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 55%, #06b6d4 100%);
   color: #fff;
-  padding: 22px 18px 46px;
+  padding: 14px 18px 36px;
 }
 .topo-inner {
   max-width: 480px;
@@ -54,7 +54,7 @@ header {
 .topo-botoes .btn-header:active { opacity: 0.7; }
 
 /* ========================= MAIN ========================= */
-main { max-width: 480px; margin: -30px auto 0; padding: 0 14px 40px; }
+main { max-width: 480px; margin: -22px auto 0; padding: 0 14px 40px; }
 
 .data {
   text-align: center;
@@ -74,15 +74,15 @@ main { max-width: 480px; margin: -30px auto 0; padding: 0 14px 40px; }
 .mes-titulo h2 { margin: 0 0 4px; }
 
 /* ========================= CARDS ========================= */
-.cards { display: flex; flex-direction: column; gap: 12px; }
+.cards { display: flex; flex-direction: column; gap: 10px; }
 .card {
   background: #fff;
   border-radius: 16px;
-  padding: 16px;
+  padding: 14px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 4px 14px rgba(15, 23, 42, 0.06);
 }
 .card-rot { display: block; font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: .3px; font-weight: 700; }
-.card-cab { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.card-cab { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
 .card-cab h2, .card h2 { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #334155; margin: 0; }
 .btn-link { border: none; background: none; color: #4338ca; font-weight: 600; font-size: 0.82rem; padding: 6px 4px; cursor: pointer; }
 .btn-link:active { opacity: 0.6; }
@@ -91,7 +91,7 @@ main { max-width: 480px; margin: -30px auto 0; padding: 0 14px 40px; }
 .card-val { display: block; font-size: 1.6rem; font-weight: 800; line-height: 1.15; margin: 4px 0 8px; }
 .card-valor-linha { display: flex; align-items: center; gap: 8px; }
 .card-valor-linha .card-val { margin: 4px 0 8px; }
-.card-info { font-size: 0.85rem; color: #475569; margin-top: 8px; }
+.card-info { font-size: 0.85rem; color: #475569; margin-top: 4px; }
 .card-info b { color: #0f172a; }
 .card-formula { display: block; font-size: 0.78rem; color: #94a3b8; margin-top: 4px; }
 .btn-icon {
@@ -120,15 +120,15 @@ main { max-width: 480px; margin: -30px auto 0; padding: 0 14px 40px; }
   background: #e2e8f0;
   border-radius: 999px;
   overflow: hidden;
-  margin-bottom: 6px;
-  margin-top: 10px;
+  margin-bottom: 4px;
+  margin-top: 6px;
 }
 .card-bar i { display: block; height: 100%; width: 0; border-radius: 999px; transition: width .4s; }
 .card-bar i.alc { background: linear-gradient(90deg, #06b6d4, #4338ca); }
 .card-bar i.tend { background: linear-gradient(90deg, #f59e0b, #ef4444); }
 
 /* ========================= CHIPS ========================= */
-.linha { display: flex; flex-wrap: nowrap; gap: 6px; margin-top: 12px; overflow-x: auto; }
+.linha { display: flex; flex-wrap: nowrap; gap: 6px; margin-top: 8px; overflow-x: auto; }
 .chip {
   background: #eef2ff;
   color: #4338ca;
@@ -240,8 +240,7 @@ input, select {
 input:focus, select:focus { border-color: #4338ca; background: #fff; }
 
 /* ========================= MODO PRINT ========================= */
-.print-ativo .card-meta-mes .valor,
-.print-ativo .card-meta-mes .linha {
+.print-ativo .card-meta-mes .valor {
   filter: blur(8px);
   user-select: none;
   pointer-events: none;
@@ -254,24 +253,24 @@ input:focus, select:focus { border-color: #4338ca; background: #fff; }
 }
 .print-ativo #view-vendedor .acoes-botoes,
 .print-ativo #view-vendedor .hist,
-.print-ativo #view-vendedor .atualizado,
-.print-ativo #view-vendedor > .card + .card + .card + .card ~ .card {
+.print-ativo #view-vendedor .atualizado {
   opacity: 0.15;
 }
 .print-overlay {
   position: fixed;
-  bottom: 0;
+  top: 0;
   left: 0;
   right: 0;
   z-index: 40;
   background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 55%, #06b6d4 100%);
   color: #fff;
   text-align: center;
-  padding: 16px;
+  padding: 14px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 16px;
 }
 .print-overlay.hidden { display: none; }
 .print-msg { font-size: 1rem; font-weight: 700; letter-spacing: 0.3px; }
