@@ -31,8 +31,7 @@ function init() {
   api('/api/auth/me')
     .then(function (me) {
       MEU_USUARIO = me;
-      $('saudacao').textContent = me.nome + (me.setor ? ' - ' + me.setor : '');
-      $('perfil-badge').textContent = me.perfil === 'suporte' ? 'Suporte' : (me.perfil === 'supervisor' ? 'Supervisor' : 'Vendedor');
+      $('saudacao').innerHTML = '<b>' + me.nome + '</b>' + (me.setor ? ' - ' + me.setor : '');
       if (me.perfil === 'vendedor') {
         iniciarVendedor();
       } else {
@@ -63,7 +62,7 @@ async function salvarModalNome() {
   }
   try {
     MEU_USUARIO = await api('/api/me/nome', { method: 'POST', body: { nome } });
-    $('saudacao').textContent = MEU_USUARIO.nome + (MEU_USUARIO.setor ? ' - ' + MEU_USUARIO.setor : '');
+    $('saudacao').innerHTML = '<b>' + MEU_USUARIO.nome + '</b>' + (MEU_USUARIO.setor ? ' - ' + MEU_USUARIO.setor : '');
     fecharModalNome();
   } catch (e) { alert(e.message); }
 }
