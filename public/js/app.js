@@ -168,7 +168,7 @@ async function carregarPainelVendedor() {
 
 function renderVendedor(d) {
   const c = d.calc;
-  $('nome-mes').textContent = d.nomeMes;
+  if ($('nome-mes')) $('nome-mes').textContent = d.nomeMes;
   $('chip-mes').textContent = c.utMes;
   $('chip-trab').textContent = c.trab;
   $('chip-rest').textContent = c.rest;

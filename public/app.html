@@ -10,11 +10,13 @@
   <header>
     <div class="topo-inner">
       <div class="topo-linha1">Metas de Venda - Cini Pgo</div>
-      <div class="topo-linha2" id="saudacao">Carregando...</div>
-      <div class="topo-botoes">
-        <button class="btn-header" id="perfil-badge" title="Clique para definir seu nome">Vendedor</button>
-        <button class="btn-header" id="btn-trocar-senha">Senha</button>
-        <button class="btn-header" id="btn-sair">Sair</button>
+      <div class="topo-linha2">
+        <span id="saudacao">Carregando...</span>
+        <span class="topo-botoes">
+          <button class="btn-header" id="perfil-badge" title="Clique para definir seu nome">Vendedor</button>
+          <button class="btn-header" id="btn-trocar-senha">Senha</button>
+          <button class="btn-header" id="btn-sair">Sair</button>
+        </span>
       </div>
     </div>
   </header>
@@ -22,10 +24,7 @@
   <main class="container">
 
     <section id="view-vendedor" class="hidden">
-      <div class="mes-titulo">
-        <h2 id="nome-mes"></h2>
-        <span id="data-hoje" class="data"></span>
-      </div>
+      <span id="data-hoje" class="data"></span>
       <p class="aviso hidden" id="aviso-fechado"></p>
 
       <div class="cards">

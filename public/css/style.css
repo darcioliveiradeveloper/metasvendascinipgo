@@ -18,6 +18,7 @@ header {
 .topo-inner {
   max-width: 480px;
   margin: 0 auto;
+  text-align: center;
 }
 .topo-linha1 {
   font-size: 1.35rem;
@@ -27,23 +28,26 @@ header {
 .topo-linha2 {
   font-size: 0.92rem;
   opacity: 0.95;
-  margin-top: 4px;
+  margin-top: 6px;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 .topo-linha2 b { font-weight: 800; }
 .topo-botoes {
-  display: flex;
-  gap: 8px;
-  margin-top: 14px;
-  flex-wrap: wrap;
+  display: inline-flex;
+  gap: 6px;
 }
 .topo-botoes .btn-header {
   background: rgba(255,255,255,0.18);
   color: #fff;
   border: none;
   border-radius: 999px;
-  padding: 7px 16px;
-  font-size: 0.82rem;
+  padding: 5px 14px;
+  font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
 }
@@ -82,9 +86,9 @@ main { max-width: 480px; margin: -30px auto 0; padding: 0 14px 40px; }
 .card-cab h2, .card h2 { font-size: 0.82rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #64748b; margin: 0; }
 .btn-link { border: none; background: none; color: #4338ca; font-weight: 600; font-size: 0.82rem; padding: 6px 4px; cursor: pointer; }
 .btn-link:active { opacity: 0.6; }
-.valor { font-size: 1.9rem; font-weight: 800; line-height: 1.15; }
-.valor.grande { font-size: 2.4rem; }
-.card-val { display: block; font-size: 1.9rem; font-weight: 800; line-height: 1.15; margin: 4px 0 8px; }
+.valor { font-size: 1.6rem; font-weight: 800; line-height: 1.15; }
+.valor.grande { font-size: 2rem; }
+.card-val { display: block; font-size: 1.6rem; font-weight: 800; line-height: 1.15; margin: 4px 0 8px; }
 .card-valor-linha { display: flex; align-items: center; gap: 8px; }
 .card-valor-linha .card-val { margin: 4px 0 8px; }
 .card-info { font-size: 0.85rem; color: #475569; margin-top: 8px; }
@@ -124,14 +128,15 @@ main { max-width: 480px; margin: -30px auto 0; padding: 0 14px 40px; }
 .card-bar i.tend { background: linear-gradient(90deg, #f59e0b, #ef4444); }
 
 /* ========================= CHIPS ========================= */
-.linha { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.linha { display: flex; flex-wrap: nowrap; gap: 6px; margin-top: 12px; overflow-x: auto; }
 .chip {
   background: #eef2ff;
   color: #4338ca;
   border-radius: 999px;
   padding: 5px 11px;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 500;
+  white-space: nowrap;
 }
 .chip b { font-weight: 800; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
