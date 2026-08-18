@@ -28,25 +28,30 @@
       <p class="aviso hidden" id="aviso-fechado"></p>
 
       <div class="cards">
-        <div class="card">
-          <span class="card-rot">Meta do mês</span>
-          <div class="card-valor-linha">
-            <span class="card-val" id="meta-valor">—</span>
-            <button class="btn-icon" id="btn-meta-card" title="Definir meta">✎</button>
+        <article class="card">
+          <div class="card-cab">
+            <h2>Meta do mês</h2>
+            <button class="btn-link" id="btn-meta-card" type="button">editar</button>
           </div>
-        </div>
+          <div class="valor grande" id="meta-valor">—</div>
+          <div class="linha">
+            <span class="chip">Dias úteis do mês: <b id="chip-mes">—</b></span>
+            <span class="chip">Trabalhados: <b id="chip-trab">—</b></span>
+            <span class="chip">Restantes: <b id="chip-rest">—</b></span>
+          </div>
+        </article>
         <div class="card">
           <span class="card-rot">Vendido (acumulado)</span>
           <div class="card-valor-linha">
             <span class="card-val" id="total-valor">—</span>
             <button class="btn-icon" id="btn-lancar-card" title="Lançar vendas">✎</button>
           </div>
-          <span class="card-bar"><i id="barra-alc"></i></span>
+          <span class="card-bar"><i id="barra-alc" class="alc"></i></span>
           <span class="card-info" id="alc-info"></span>
         </div>
         <div class="card">
           <span class="card-rot">Tendência</span><span class="card-val" id="tend-valor">—</span>
-          <span class="card-bar"><i id="tend-barra"></i></span>
+          <span class="card-bar"><i id="tend-barra" class="tend"></i></span>
           <span class="card-info" id="tend-info"></span>
           <span class="card-formula" id="tend-formula"></span>
         </div>
@@ -55,13 +60,6 @@
           <span class="card-info" id="metadia-info"></span>
           <span class="card-formula" id="metadia-formula"></span>
         </div>
-      </div>
-
-      <div class="chips">
-        <span>Dias úteis: <b id="chip-mes">—</b></span>
-        <span>Trabalhados: <b id="chip-trab">—</b></span>
-        <span>Restantes: <b id="chip-rest">—</b></span>
-        <span>Atualizado: <b id="atualizado">—</b></span>
       </div>
 
       <div class="acoes-botoes">
@@ -101,12 +99,12 @@
               <span class="card-val" id="sp-total-valor">—</span>
               <button class="btn-icon" id="sp-btn-lancar" title="Lançar vendas">✎</button>
             </div>
-            <span class="card-bar"><i id="sp-barra-alc"></i></span>
+            <span class="card-bar"><i id="sp-barra-alc" class="alc"></i></span>
             <span class="card-info" id="sp-alc-info"></span>
           </div>
           <div class="card">
             <span class="card-rot">Tendência</span><span class="card-val" id="sp-tend-valor">—</span>
-            <span class="card-bar"><i id="sp-barra-tend"></i></span>
+            <span class="card-bar"><i id="sp-barra-tend" class="tend"></i></span>
             <span class="card-info" id="sp-tend-info"></span>
             <span class="card-formula" id="sp-tend-formula"></span>
           </div>
@@ -230,12 +228,12 @@
         <div class="card"><span class="card-rot">Meta do mês</span><span class="card-val" id="mp-meta">—</span></div>
         <div class="card">
           <span class="card-rot">Vendido (acumulado)</span><span class="card-val" id="mp-total">—</span>
-          <span class="card-bar"><i id="mp-barra-alc"></i></span>
+          <span class="card-bar"><i id="mp-barra-alc" class="alc"></i></span>
           <span class="card-info" id="mp-alc-info"></span>
         </div>
         <div class="card">
           <span class="card-rot">Tendência</span><span class="card-val" id="mp-tend">—</span>
-          <span class="card-bar"><i id="mp-barra-tend"></i></span>
+          <span class="card-bar"><i id="mp-barra-tend" class="tend"></i></span>
           <span class="card-info" id="mp-tend-info"></span>
         </div>
         <div class="card"><span class="card-rot">Meta p/ dia útil</span><span class="card-val" id="mp-metadia">—</span><span class="card-info" id="mp-metadia-info"></span></div>

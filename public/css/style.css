@@ -48,14 +48,31 @@ body {
 }
 .card {
   background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 14px;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 4px 14px rgba(15, 23, 42, 0.06);
+  border: none;
 }
 .card-rot { display: block; font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: .3px; }
+.card-cab { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.card-cab h2 { font-size: 0.82rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #64748b; margin: 0; }
+.btn-link { border: none; background: none; color: #4338ca; font-weight: 600; font-size: 0.82rem; padding: 6px 4px; cursor: pointer; }
+.btn-link:active { opacity: 0.6; }
+.valor { font-size: 1.9rem; font-weight: 800; line-height: 1.15; margin: 4px 0 8px; }
+.valor.grande { font-size: 2.4rem; }
 .card-val { display: block; font-size: 26px; font-weight: 700; margin: 4px 0 8px; }
 .card-valor-linha { display: flex; align-items: center; gap: 8px; }
 .card-valor-linha .card-val { margin: 4px 0 8px; }
+.linha { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.chip {
+  background: #eef2ff;
+  color: #4338ca;
+  border-radius: 999px;
+  padding: 5px 11px;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+.chip b { font-weight: 800; }
 .card-info { font-size: 13px; color: #475569; }
 .card-formula { display: block; font-size: 12px; color: #64748b; margin-top: 6px; font-style: italic; }
 .btn-icon {
@@ -79,16 +96,20 @@ body {
   border-radius: 999px;
   overflow: hidden;
   margin-bottom: 6px;
+  margin-top: 10px;
 }
-.card-bar i { display: block; height: 100%; width: 0; background: #16a34a; border-radius: 999px; transition: width .4s; }
+.card-bar i { display: block; height: 100%; width: 0; border-radius: 999px; transition: width .4s; }
+.card-bar i.alc { background: linear-gradient(90deg, #06b6d4, #4338ca); }
+.card-bar i.tend { background: linear-gradient(90deg, #f59e0b, #ef4444); }
 
-.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-.chips span {
-  background: #e2e8f0;
-  padding: 6px 12px;
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.chips span, .chips .chip {
+  background: #eef2ff;
+  color: #4338ca;
+  padding: 5px 11px;
   border-radius: 999px;
   font-size: 13px;
-  color: #334155;
+  font-weight: 500;
 }
 
 .acoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-bottom: 14px; }

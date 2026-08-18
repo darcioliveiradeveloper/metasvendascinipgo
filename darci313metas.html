@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1e1b4b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Metas de Venda</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { height: 100%; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: #f1f5f9;
+    color: #0f172a;
+    min-height: 100%;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  header {
+    background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 55%, #06b6d4 100%);
+    color: #fff;
+    padding: 22px 18px 46px;
+  }
+  .barra-topo { max-width: 480px; margin: 0 auto; display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  h1 { font-size: 1.35rem; letter-spacing: 0.3px; }
+  .saudacao { font-size: 0.92rem; opacity: 0.95; margin-top: 4px; font-weight: 500; }
+  .saudacao b { font-weight: 800; }
+  .mes { font-weight: 600; font-size: 1rem; opacity: 0.95; white-space: nowrap; background: rgba(255,255,255,0.16); padding: 5px 12px; border-radius: 999px; }
+  main { max-width: 480px; margin: -30px auto 0; padding: 0 14px 40px; }
+  .data {
+    text-align: center;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin: 0 auto 14px;
+    text-transform: capitalize;
+    background: rgba(255,255,255,0.14);
+    padding: 6px 14px;
+    border-radius: 999px;
+    width: fit-content;
+    display: block;
+  }
+  .cards { display: flex; flex-direction: column; gap: 12px; }
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 4px 14px rgba(15, 23, 42, 0.06);
+  }
+  .card-cab { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .card h2 { font-size: 0.82rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.6px; color: #64748b; }
+  .btn-link { border: none; background: none; color: #4338ca; font-weight: 600; font-size: 0.82rem; padding: 6px 4px; cursor: pointer; }
+  .btn-link:active { opacity: 0.6; }
+  .valor { font-size: 1.9rem; font-weight: 800; line-height: 1.15; }
+  .valor.grande { font-size: 2.4rem; }
+  .linha { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .chip {
+    background: #eef2ff;
+    color: #4338ca;
+    border-radius: 999px;
+    padding: 5px 11px;
+    font-size: 0.78rem;
+    font-weight: 500;
+  }
+  .chip b { font-weight: 800; }
+  .barra { height: 8px; background: #e2e8f0; border-radius: 999px; overflow: hidden; margin-top: 10px; }
+  .barra-fill { height: 100%; border-radius: 999px; transition: width 0.4s ease; }
+  .barra-fill.alc { background: linear-gradient(90deg, #06b6d4, #4338ca); }
+  .barra-fill.tend { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+  .meta-info { font-size: 0.85rem; color: #475569; margin-top: 8px; }
+  .meta-info b { color: #0f172a; }
+  .detalhe { font-size: 0.78rem; color: #94a3b8; margin-top: 4px; }
+  .atualizado { text-align: center; font-size: 0.75rem; color: #94a3b8; margin-top: 20px; }
+  .dica {
+    margin-top: 14px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 0.8rem;
+    color: #92400e;
+    line-height: 1.5;
+  }
+  .card-historico { margin-top: 12px; }
+  .hist-resumo { font-size: 0.8rem; color: #475569; background: #f8fafc; border-radius: 10px; padding: 10px 12px; line-height: 1.6; }
+  .hist-resumo b { color: #0f172a; }
+  .tabela { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 8px; }
+  .tabela th { text-align: left; color: #94a3b8; font-weight: 700; text-transform: uppercase; font-size: 0.66rem; letter-spacing: 0.4px; padding: 6px 4px; border-bottom: 1px solid #e2e8f0; }
+  .tabela td { padding: 8px 4px; border-bottom: 1px solid #f1f5f9; font-weight: 600; }
+  .tabela td.tend { color: #4338ca; }
+  .tabela tr:last-child td { border-bottom: none; }
+  .linha-hist { cursor: pointer; }
+  .linha-hist:active { background: #f8fafc; }
+  .tabela td.acao { text-align: right; width: 34px; }
+  .btn-del { background: #fee2e2; color: #b91c1c; border: none; border-radius: 8px; width: 28px; height: 28px; font-weight: 800; cursor: pointer; font-size: 0.8rem; }
+  .btn-del:active { opacity: 0.7; }
+  .input-select {
+    width: 100%;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 13px 12px;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    outline: none;
+    margin: 6px 0 16px;
+    color: #0f172a;
+    background: #f8fafc;
+  }
+  .input-select:focus { border-color: #4338ca; background: #fff; }
+  .acoes { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+  .acoes .btn { font-size: 0.85rem; padding: 12px; flex: 1 1 45%; }
+  .modal {
+    position: fixed; inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    z-index: 50;
+    overflow-y: auto;
+  }
+  .modal-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 22px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.3);
+  }
+  .modal-card h3 { font-size: 1.05rem; margin-bottom: 6px; }
+  .modal-card p { font-size: 0.85rem; color: #64748b; line-height: 1.5; margin-bottom: 14px; }
+  .modal input {
+    width: 100%;
+    font-size: 1.15rem;
+    font-weight: 700;
+    padding: 13px 12px;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    outline: none;
+    margin-bottom: 16px;
+    color: #0f172a;
+    background: #f8fafc;
+  }
+  .modal input:focus { border-color: #4338ca; background: #fff; }
+  .modal-acoes { display: flex; gap: 10px; }
+  .campo { display: block; font-size: 0.8rem; font-weight: 700; color: #64748b; margin-bottom: 4px; }
+  .campo input { margin-top: 6px; }
+  .btn {
+    flex: 1;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-ghost { background: #f1f5f9; color: #475569; }
+  .btn-primario { background: #4338ca; color: #fff; }
+  .btn-primario:active, .btn-ghost:active { opacity: 0.75; }
+  .btn.largura { width: 100%; margin-top: 6px; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="barra-topo">
+      <div>
+        <h1>Metas de Venda</h1>
+        <div class="saudacao" id="saudacao"><b>Darci</b> - 313</div>
+      </div>
+      <span class="mes" id="nome-mes">Agosto 2026</span>
+    </div>
+  </header>
+
+  <main>
+    <span class="data" id="data-hoje">sexta-feira, 14 de agosto de 2026</span>
+
+    <div class="cards">
+      <article class="card">
+        <div class="card-cab">
+          <h2>Meta do mês</h2>
+          <button class="btn-link" id="btn-editar-meta" type="button">editar</button>
+        </div>
+        <div class="valor" id="meta-valor">4.351 fardos</div>
+        <div class="linha">
+          <span class="chip">Dias úteis do mês: <b id="chip-dias-mes">21</b></span>
+          <span class="chip">Trabalhados: <b id="chip-trabalhados">9</b></span>
+          <span class="chip">Restantes: <b id="chip-restantes">12</b></span>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-cab">
+          <h2>Vendas acumuladas</h2>
+          <button class="btn-link" id="btn-lancar" type="button">lançar hoje</button>
+        </div>
+        <div class="valor" id="total-valor">1.451 fardos</div>
+        <div class="barra"><div class="barra-fill alc" id="barra-alc" style="width: 33.3487%;"></div></div>
+        <p class="meta-info" id="alc-info">33,3% da meta · faltam <b>2.900 fardos</b></p>
+      </article>
+
+      <article class="card">
+        <div class="card-cab"><h2>Tendência</h2></div>
+        <div class="valor grande" id="tend-valor">77,8%</div>
+        <div class="barra"><div class="barra-fill tend" id="tend-barra" style="width: 77.8135%;"></div></div>
+        <p class="meta-info">Projeção de fechamento: <b id="tend-proj">3.385,67 fardos</b></p>
+        <p class="detalhe" id="tend-detalhe">Média diária 161,22 fardos × 21 dias úteis = 3.385,67 fardos</p>
+      </article>
+
+      <article class="card">
+        <div class="card-cab"><h2>Meta diária</h2></div>
+        <div class="valor grande" id="metadia-valor">241,67 fardos</div>
+        <p class="meta-info" id="metadia-info">Preciso vender por dia útil para bater 100%</p>
+        <p class="detalhe" id="metadia-detalhe">2.900 fardos faltantes ÷ 12 dias úteis restantes</p>
+      </article>
+    </div>
+
+    <article class="card card-historico" id="card-historico">
+      <div class="card-cab"><h2>Histórico de meses</h2></div>
+      <div class="hist-resumo" id="hist-resumo">Total: <b>4.417</b> fardos · Média/mês: <b>4.417</b> fardos · Melhor: <b>Julho 2026</b> (90,8%)</div>
+      <table class="tabela" id="hist-tabela"><tbody><tr><th>Mês</th><th>Meta</th><th>Atingido</th><th>Tendência</th><th>D.U.</th><th></th></tr><tr class="linha-hist" data-chave="2026-7"><td>Julho 2026</td><td>4.865</td><td>4.417</td><td class="tend">90,8%</td><td>23</td><td class="acao"><button class="btn-del" data-del="2026-7" type="button">✕</button></td></tr></tbody></table>
+    </article>
+
+    <div class="acoes">
+      <button class="btn btn-ghost" id="btn-fechar-mes" type="button">📅 Fechar mês</button>
+      <button class="btn btn-ghost" id="btn-add-mes" type="button">➕ Adicionar mês</button>
+      <button class="btn btn-ghost" id="btn-exportar" type="button">📁 Salvar cópia</button>
+      <button class="btn btn-ghost" id="btn-perfil" type="button">Trocar nome/setor</button>
+    </div>
+
+    <div class="dica">
+      ⚠️ <b>Sempre abra o arquivo que acabou de baixar</b> (ex.: darci313metas.html), nunca o arquivo original do WhatsApp. Assim seus dados nunca se perdem.
+    </div>
+
+    <p class="atualizado" id="atualizado">Última atualização: 14/08, 14:30</p>
+  </main>
+
+  <div id="onboarding" class="modal hidden">
+    <div class="modal-card">
+      <h3>Bem-vindo! 🎉</h3>
+      <p>Antes de começar, identifique-se. Ao entrar, o app já baixa seu arquivo com o nome <b>darci313metas.html</b> (nome+setor).</p>
+      <label class="campo">Seu nome
+        <input id="onb-nome" type="text" placeholder="Ex.: Darci" autocomplete="off">
+      </label>
+      <label class="campo">Setor (carteira)
+        <input id="onb-setor" type="text" inputmode="numeric" placeholder="Ex.: 313" autocomplete="off">
+      </label>
+      <button class="btn btn-primario largura" id="onb-salvar" type="button">Entrar</button>
+    </div>
+  </div>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-card">
+      <h3 id="modal-titulo">Meta do mês (fardos vendidos)</h3>
+      <input id="modal-valor" type="text" inputmode="decimal" placeholder="0" autocomplete="off">
+      <div class="modal-acoes">
+        <button class="btn btn-ghost" id="modal-cancelar" type="button">Cancelar</button>
+        <button class="btn btn-primario" id="modal-salvar" type="button">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="novomes" class="modal hidden">
+    <div class="modal-card">
+      <h3 id="titulo-novo-mes">Novo mês: Agosto 2026</h3>
+      <p id="texto-novo-mes">Os dias úteis (segunda a sexta) serão calculados automaticamente. Depois é só definir a meta do mês e lançar as vendas todo dia.</p>
+      <button class="btn btn-primario largura" id="btn-novo-mes" type="button">Iniciar Agosto</button>
+    </div>
+  </div>
+
+  <div id="modalFechar" class="modal hidden">
+    <div class="modal-card">
+      <h3 id="fechar-titulo">Fechar Agosto 2026?</h3>
+      <p id="fechar-texto">Será salvo no histórico: meta <b>4.350</b> fardos · atingido <b>1.450</b> fardos · tendência <b>33,3%</b>. Depois começa o próximo mês.</p>
+      <div class="modal-acoes">
+        <button class="btn btn-ghost" id="fechar-cancelar" type="button">Cancelar</button>
+        <button class="btn btn-primario" id="fechar-salvar" type="button">Fechar e salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalAddMes" class="modal hidden">
+    <div class="modal-card">
+      <h3 id="addmes-titulo">Adicionar mês ao histórico</h3>
+      <label class="campo">Mês
+        <select id="addmes-mes" class="input-select">
+          <option>Janeiro</option><option>Fevereiro</option><option>Março</option><option>Abril</option><option>Maio</option><option>Junho</option><option>Julho</option><option>Agosto</option><option>Setembro</option><option>Outubro</option><option>Novembro</option><option>Dezembro</option>
+        </select>
+      </label>
+      <label class="campo">Ano
+        <input id="addmes-ano" type="number" min="2020" max="2035" inputmode="numeric" autocomplete="off">
+      </label>
+      <label class="campo">Meta (fardos)
+        <input id="addmes-meta" type="text" inputmode="decimal" placeholder="0" autocomplete="off">
+      </label>
+      <label class="campo">Meta alcançada (fardos)
+        <input id="addmes-atingido" type="text" inputmode="decimal" placeholder="0" autocomplete="off">
+      </label>
+      <div class="modal-acoes">
+        <button class="btn btn-ghost" id="addmes-cancelar" type="button">Cancelar</button>
+        <button class="btn btn-primario" id="addmes-salvar" type="button">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+<script>window.__DADOS__ = {"anoMes":"2026-8","meta":4351,"total":1451,"atualizado":"2026-08-14T17:30:58.575Z","perfil":{"nome":"Darci","setor":"313"},"historico":[{"anoMes":"2026-7","mes":"Julho 2026","meta":4865,"atingido":4417,"tendencia":90.79136690647482,"diasUteis":23,"atualizado":"2026-08-14T17:13:32.453Z"}],"avisoNovoMes":false}<\/script>
+<script>
+  const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const STORE = 'metaVendas';
+
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mes = hoje.getMonth();
+  const chaveMes = ano + '-' + (mes + 1);
+
+  function obterArmazenamento() {
+    try {
+      const s = window.localStorage;
+      const t = '__teste__';
+      s.setItem(t, '1');
+      s.removeItem(t);
+      return s;
+    } catch (e) { return null; }
+  }
+  const armazenamento = obterArmazenamento();
+
+  let dados;
+  try {
+    dados = window.__DADOS__ || JSON.parse((armazenamento ? armazenamento.getItem(STORE) : null) || '{}');
+  } catch (e) {
+    dados = {};
+  }
+  dados.anoMes = dados.anoMes || '';
+  dados.meta = dados.meta == null ? null : dados.meta;
+  dados.total = dados.total || 0;
+  dados.atualizado = dados.atualizado || null;
+  dados.perfil = dados.perfil || null;
+  dados.historico = dados.historico || [];
+  dados.avisoNovoMes = dados.avisoNovoMes || false;
+
+  function ehDiaUtil(d) { const dia = d.getDay(); return dia >= 1 && dia <= 5; }
+  function ultimoDiaMes(a, m) { return new Date(a, m + 1, 0).getDate(); }
+  function diasUteisMes(a, m) { let c = 0; const n = ultimoDiaMes(a, m); for (let d = 1; d <= n; d++) if (ehDiaUtil(new Date(a, m, d))) c++; return c; }
+  function diasTrabalhados(a, m, hojeDia) { let c = 0; for (let d = 1; d < hojeDia; d++) if (ehDiaUtil(new Date(a, m, d))) c++; return c; }
+  function diasRestantes(a, m, hojeDia) { let c = 0; const n = ultimoDiaMes(a, m); for (let d = hojeDia; d <= n; d++) if (ehDiaUtil(new Date(a, m, d))) c++; return c; }
+
+  function fmtQtd(v) { return Number(v || 0).toLocaleString('pt-BR', { maximumFractionDigits: 2 }); }
+  function fmtPct(v) { return Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '%'; }
+
+  function salvar() {
+    if (!armazenamento) return;
+    try { armazenamento.setItem(STORE, JSON.stringify(dados)); } catch (e) {}
+  }
+
+  let ultimoMesFechado = null;
+
+  function arquivarMes(anoMesAntigo) {
+    const meta = Number(dados.meta) || 0;
+    const total = Number(dados.total) || 0;
+    if (!anoMesAntigo || (meta <= 0 && total <= 0)) return null;
+    const partes = String(anoMesAntigo).split('-');
+    const a = Number(partes[0]);
+    const m = Number(partes[1]) - 1;
+    const registro = {
+      anoMes: anoMesAntigo,
+      mes: MESES[m] + ' ' + a,
+      meta: meta,
+      atingido: total,
+      tendencia: meta > 0 ? (total / meta) * 100 : 0,
+      diasUteis: diasUteisMes(a, m),
+      atualizado: dados.atualizado
+    };
+    dados.historico.push(registro);
+    return registro;
+  }
+
+  function nomeDoMes(anoMesValor) {
+    if (anoMesValor) {
+      const p = String(anoMesValor).split('-');
+      return MESES[Number(p[1]) - 1] + ' ' + p[0];
+    }
+    return MESES[mes] + ' ' + ano;
+  }
+
+  function mesDeTrabalho() {
+    if (dados.anoMes) {
+      const p = String(dados.anoMes).split('-');
+      return { ano: Number(p[0]), mes: Number(p[1]) - 1 };
+    }
+    return { ano: ano, mes: mes };
+  }
+
+  function diaNoMesDeTrabalho(w) {
+    const ultDia = ultimoDiaMes(w.ano, w.mes);
+    if (w.ano === ano && w.mes === mes) return hoje.getDate();
+    if (w.ano > ano || (w.ano === ano && w.mes > mes)) return Math.min(hoje.getDate(), ultDia);
+    return ultDia + 1;
+  }
+
+  function lerNumero(campo) {
+    const txt = (campo.value || '').trim();
+    if (!txt) return null;
+    const num = parseFloat(txt.replace(/\./g, '').replace(',', '.'));
+    return isNaN(num) ? null : num;
+  }
+
+  function renderizar() {
+
+    document.getElementById('saudacao').innerHTML = dados.perfil
+      ? '<b>' + dados.perfil.nome + '</b> - ' + dados.perfil.setor
+      : 'Olá 👋';
+    document.getElementById('nome-mes').textContent = nomeDoMes(dados.anoMes);
+    document.getElementById('data-hoje').textContent = hoje.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    document.getElementById('onboarding').classList.toggle('hidden', !!dados.perfil);
+
+    if (ultimoMesFechado) {
+      document.getElementById('titulo-novo-mes').textContent = ultimoMesFechado.mes + ' encerrado!';
+      document.getElementById('texto-novo-mes').innerHTML = 'Salvo no histórico: meta <b>' + fmtQtd(ultimoMesFechado.meta) + '</b> fardos · atingido <b>' + fmtQtd(ultimoMesFechado.atingido) + '</b> fardos · tendência <b>' + fmtPct(ultimoMesFechado.tendencia) + '</b>. Vamos começar o novo mês?';
+    } else {
+      document.getElementById('titulo-novo-mes').textContent = 'Novo mês: ' + MESES[mes] + ' ' + ano;
+      document.getElementById('texto-novo-mes').textContent = 'Os dias úteis (segunda a sexta) serão calculados automaticamente. Depois é só definir a meta do mês e lançar as vendas todo dia.';
+    }
+    document.getElementById('btn-novo-mes').textContent = 'Iniciar ' + MESES[mes];
+    document.getElementById('novomes').classList.toggle('hidden', !(dados.avisoNovoMes && dados.perfil));
+
+    const meta = Number(dados.meta) || 0;
+    const total = Number(dados.total) || 0;
+    const w = mesDeTrabalho();
+    const diaCalc = diaNoMesDeTrabalho(w);
+    const trab = diasTrabalhados(w.ano, w.mes, diaCalc);
+    const rest = diasRestantes(w.ano, w.mes, diaCalc);
+    const utMes = diasUteisMes(w.ano, w.mes);
+
+    document.getElementById('chip-dias-mes').textContent = utMes;
+    document.getElementById('chip-trabalhados').textContent = trab;
+    document.getElementById('chip-restantes').textContent = rest;
+
+    document.getElementById('meta-valor').textContent = meta ? fmtQtd(meta) + ' fardos' : '—';
+    document.getElementById('total-valor').textContent = fmtQtd(total) + ' fardos';
+
+    const alcPct = meta > 0 ? Math.min(100, (total / meta) * 100) : 0;
+    document.getElementById('barra-alc').style.width = alcPct + '%';
+    const faltante = meta - total;
+    document.getElementById('alc-info').innerHTML = meta > 0
+      ? (faltante > 0 ? fmtPct((total / meta) * 100) + ' da meta · faltam <b>' + fmtQtd(faltante) + ' fardos</b>' : 'Meta batida! <b>' + fmtQtd(total) + '</b> de ' + fmtQtd(meta) + ' fardos')
+      : 'Defina a meta do mês para acompanhar.';
+
+    let media = 0, proj = 0, tend = 0;
+    const temTendencia = trab > 0 && meta > 0;
+    if (temTendencia) { media = total / trab; proj = media * utMes; tend = (proj / meta) * 100; }
+
+    document.getElementById('tend-valor').textContent = temTendencia ? fmtPct(tend) : '—';
+    document.getElementById('tend-barra').style.width = (temTendencia ? Math.min(100, tend) : 0) + '%';
+    document.getElementById('tend-proj').textContent = temTendencia ? fmtQtd(proj) + ' fardos' : '—';
+    document.getElementById('tend-detalhe').textContent = temTendencia
+      ? 'Média diária ' + fmtQtd(media) + ' fardos × ' + utMes + ' dias úteis = ' + fmtQtd(proj) + ' fardos'
+      : (trab === 0 ? 'Ainda sem dias úteis trabalhados neste mês.' : 'Defina a meta do mês para calcular.');
+
+    let metaDia = 0;
+    const temMetaDia = rest > 0 && meta > 0;
+    if (temMetaDia) { const faltanteDia = Math.max(0, meta - total); metaDia = faltanteDia / rest; }
+    document.getElementById('metadia-valor').textContent = temMetaDia ? fmtQtd(metaDia) + ' fardos' : '—';
+    document.getElementById('metadia-info').textContent = temMetaDia
+      ? (meta - total > 0 ? 'Preciso vender por dia útil para bater 100%' : 'Meta já atingida no mês.')
+      : (meta > 0 ? 'Não há dias úteis restantes no mês.' : 'Defina a meta do mês para calcular.');
+    document.getElementById('metadia-detalhe').textContent = temMetaDia
+      ? fmtQtd(Math.max(0, meta - total)) + ' fardos faltantes ÷ ' + rest + ' dias úteis restantes'
+      : '';
+
+    const upd = document.getElementById('atualizado');
+    if (dados.atualizado) {
+      upd.textContent = 'Última atualização: ' + new Date(dados.atualizado).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    } else {
+      upd.textContent = 'Ainda não lançado neste mês';
+    }
+
+    renderizarHistorico();
+  }
+
+  function renderizarHistorico() {
+    const hist = (dados.historico || []).slice().reverse();
+    const card = document.getElementById('card-historico');
+    card.classList.toggle('hidden', hist.length === 0);
+    if (!hist.length) return;
+
+    let totalAtingido = 0, melhor = null;
+    hist.forEach(function (h) {
+      totalAtingido += Number(h.atingido) || 0;
+      if (!melhor || h.tendencia > melhor.tendencia) melhor = h;
+    });
+
+    document.getElementById('hist-resumo').innerHTML =
+      'Total: <b>' + fmtQtd(totalAtingido) + '</b> fardos · Média/mês: <b>' + fmtQtd(totalAtingido / hist.length) + '</b> fardos · Melhor: <b>' + melhor.mes + '</b> (' + fmtPct(melhor.tendencia) + ')';
+
+    let linhas = '<tr><th>Mês</th><th>Meta</th><th>Atingido</th><th>Tendência</th><th>D.U.</th><th></th></tr>';
+    hist.forEach(function (h) {
+      linhas += '<tr class="linha-hist" data-chave="' + h.anoMes + '"><td>' + h.mes + '</td><td>' + fmtQtd(h.meta) + '</td><td>' + fmtQtd(h.atingido) + '</td><td class="tend">' + fmtPct(h.tendencia) + '</td><td>' + h.diasUteis + '</td><td class="acao"><button class="btn-del" data-del="' + h.anoMes + '" type="button">✕</button></td></tr>';
+    });
+    document.getElementById('hist-tabela').innerHTML = linhas;
+  }
+
+  let modalTipo = 'meta';
+  function abrirModal(tipo) {
+    modalTipo = tipo;
+    const metaEdit = tipo === 'meta';
+    document.getElementById('modal-titulo').textContent = metaEdit ? 'Meta do mês (fardos vendidos)' : 'Vendas acumuladas (fardos)';
+    document.getElementById('modal-valor').value = metaEdit ? (dados.meta || '') : (dados.total || '');
+    document.getElementById('modal').classList.remove('hidden');
+    document.getElementById('modal-valor').focus();
+  }
+  function fecharModal() { document.getElementById('modal').classList.add('hidden'); }
+
+  function valorDigitado() {
+    const txt = (document.getElementById('modal-valor').value || '').trim();
+    if (!txt) return null;
+    const num = parseFloat(txt.replace(/\./g, '').replace(',', '.'));
+    return isNaN(num) ? null : num;
+  }
+
+  function abrirOnboarding() {
+    document.getElementById('onb-nome').value = dados.perfil ? dados.perfil.nome : '';
+    document.getElementById('onb-setor').value = dados.perfil ? dados.perfil.setor : '';
+    document.getElementById('onboarding').classList.remove('hidden');
+    document.getElementById('onb-nome').focus();
+  }
+
+  function nomeArquivo() {
+    const n = (dados.perfil && dados.perfil.nome || 'vendedor').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
+    const s = (dados.perfil && dados.perfil.setor || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    return n + s + 'metas.html';
+  }
+
+  function exportarBackup() {
+    const inj = '<script>window.__DADOS__ = ' + JSON.stringify(dados).replace(/<\//g, '<\\/') + '<\\/script>';
+    const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML.replace('<script>', inj + '\n<script>');
+    const blob = new Blob([html], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = nomeArquivo();
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+  }
+
+  function backupAutomatico() {
+    if (!armazenamento) exportarBackup();
+  }
+
+  document.getElementById('btn-editar-meta').onclick = () => abrirModal('meta');
+  document.getElementById('btn-lancar').onclick = () => abrirModal('total');
+  document.getElementById('modal-cancelar').onclick = fecharModal;
+  document.getElementById('modal-salvar').onclick = () => {
+    const v = valorDigitado();
+    if (v === null || v < 0) return;
+    if (modalTipo === 'meta') dados.meta = v;
+    else { dados.total = v; dados.atualizado = new Date().toISOString(); }
+    if (!dados.anoMes) dados.anoMes = chaveMes;
+    salvar();
+    backupAutomatico();
+    fecharModal();
+    renderizar();
+  };
+
+  document.getElementById('onb-salvar').onclick = () => {
+    const nome = document.getElementById('onb-nome').value.trim();
+    const setor = document.getElementById('onb-setor').value.trim();
+    if (!nome || !setor) return;
+    dados.perfil = { nome: nome, setor: setor };
+    salvar();
+    document.getElementById('onboarding').classList.add('hidden');
+    backupAutomatico();
+    renderizar();
+  };
+
+  document.getElementById('btn-perfil').onclick = abrirOnboarding;
+  document.getElementById('btn-exportar').onclick = exportarBackup;
+
+  function abrirFecharMes() {
+    const metaAtual = Number(dados.meta) || 0;
+    const totalAtual = Number(dados.total) || 0;
+    document.getElementById('fechar-titulo').textContent = 'Fechar ' + nomeDoMes(dados.anoMes || chaveMes) + '?';
+    if (metaAtual > 0 || totalAtual > 0) {
+      const tend = metaAtual > 0 ? (totalAtual / metaAtual) * 100 : 0;
+      document.getElementById('fechar-texto').innerHTML = 'Será salvo no histórico: meta <b>' + fmtQtd(metaAtual) + '</b> fardos · atingido <b>' + fmtQtd(totalAtual) + '</b> fardos · tendência <b>' + fmtPct(tend) + '</b>. Depois começa o próximo mês.';
+    } else {
+      document.getElementById('fechar-texto').innerHTML = 'Este mês ainda não tem lançamentos. Vai apenas começar o próximo mês.';
+    }
+    document.getElementById('modalFechar').classList.remove('hidden');
+  }
+  function fecharModalFechar() { document.getElementById('modalFechar').classList.add('hidden'); }
+
+  document.getElementById('btn-fechar-mes').onclick = abrirFecharMes;
+  document.getElementById('fechar-cancelar').onclick = fecharModalFechar;
+  document.getElementById('fechar-salvar').onclick = () => {
+    ultimoMesFechado = arquivarMes(dados.anoMes || chaveMes);
+    dados.anoMes = chaveMes;
+    dados.meta = null;
+    dados.total = 0;
+    dados.atualizado = null;
+    dados.avisoNovoMes = true;
+    salvar();
+    fecharModalFechar();
+    renderizar();
+  };
+
+  function abrirAddMes() {
+    document.getElementById('addmes-titulo').textContent = 'Adicionar mês ao histórico';
+    document.getElementById('addmes-mes').value = MESES[mes];
+    document.getElementById('addmes-ano').value = ano;
+    document.getElementById('addmes-meta').value = '';
+    document.getElementById('addmes-atingido').value = '';
+    document.getElementById('modalAddMes').classList.remove('hidden');
+  }
+  function abrirEdicaoMes(reg) {
+    document.getElementById('addmes-titulo').textContent = 'Editar ' + reg.mes;
+    const p = String(reg.anoMes).split('-');
+    document.getElementById('addmes-mes').value = MESES[Number(p[1]) - 1];
+    document.getElementById('addmes-ano').value = Number(p[0]);
+    document.getElementById('addmes-meta').value = reg.meta;
+    document.getElementById('addmes-atingido').value = reg.atingido;
+    document.getElementById('modalAddMes').classList.remove('hidden');
+  }
+  function fecharAddMes() { document.getElementById('modalAddMes').classList.add('hidden'); }
+
+  document.getElementById('btn-add-mes').onclick = abrirAddMes;
+  document.getElementById('addmes-cancelar').onclick = fecharAddMes;
+  document.getElementById('addmes-salvar').onclick = () => {
+    const nomeMesSel = document.getElementById('addmes-mes').value;
+    const anoSel = Number(document.getElementById('addmes-ano').value);
+    const metaSel = lerNumero(document.getElementById('addmes-meta'));
+    const atingSel = lerNumero(document.getElementById('addmes-atingido'));
+    if (!anoSel || metaSel === null || metaSel < 0 || atingSel === null || atingSel < 0) return;
+    const mIdx = MESES.indexOf(nomeMesSel);
+    const chave = anoSel + '-' + (mIdx + 1);
+    const reg = {
+      anoMes: chave,
+      mes: nomeMesSel + ' ' + anoSel,
+      meta: metaSel,
+      atingido: atingSel,
+      tendencia: metaSel > 0 ? (atingSel / metaSel) * 100 : 0,
+      diasUteis: diasUteisMes(anoSel, mIdx),
+      atualizado: new Date().toISOString()
+    };
+    dados.historico = (dados.historico || []).filter((h) => h.anoMes !== chave);
+    dados.historico.push(reg);
+    salvar();
+    fecharAddMes();
+    renderizar();
+  };
+
+  document.getElementById('hist-tabela').addEventListener('click', function (e) {
+    const del = e.target.closest('.btn-del');
+    if (del) {
+      const chave = del.getAttribute('data-del');
+      dados.historico = (dados.historico || []).filter(function (h) { return h.anoMes !== chave; });
+      salvar();
+      renderizar();
+      return;
+    }
+    const linha = e.target.closest('.linha-hist');
+    if (linha) {
+      const chave = linha.getAttribute('data-chave');
+      const reg = (dados.historico || []).find(function (h) { return h.anoMes === chave; });
+      if (reg) abrirEdicaoMes(reg);
+    }
+  });
+
+  document.getElementById('btn-novo-mes').onclick = () => {
+    ultimoMesFechado = arquivarMes(dados.anoMes);
+    dados.anoMes = chaveMes;
+    dados.meta = null;
+    dados.total = 0;
+    dados.atualizado = null;
+    dados.avisoNovoMes = false;
+    salvar();
+    renderizar();
+    abrirModal('meta');
+  };
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    navigator.serviceWorker.register('./sw.js').catch(function () {});
+  }
+
+  renderizar();
+</script>
+
+
+</body></html>
