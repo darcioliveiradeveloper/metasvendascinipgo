@@ -167,7 +167,7 @@ main { max-width: 480px; margin: -36px auto 0; padding: 0 14px 40px; }
 .btn.primario:hover { background: #3730a3; }
 .btn.perigo { background: #fee2e2; color: #b91c1c; }
 .btn.perigo:hover { background: #fecaca; }
-.btn.fino { background: #f1f5f9; color: #475569; padding: 7px 16px; font-size: 13px; border-radius: 999px; border: none; font-weight: 600; cursor: pointer; }
+.btn.fino { background: #f1f5f9; color: #475569; padding: 7px 16px; font-size: 13px; border-radius: 999px; border: none; font-weight: 600; cursor: pointer; white-space: nowrap; flex: none; }
 .btn.fino:active { opacity: 0.7; }
 .btn.fino.perigo { background: #fee2e2; color: #b91c1c; }
 
