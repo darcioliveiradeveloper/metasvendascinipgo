@@ -31,7 +31,7 @@
         <article class="card">
           <div class="card-cab">
             <h2>Meta do mês</h2>
-            <button class="btn-link" id="btn-meta-card" type="button">editar</button>
+            <button class="btn-icon" id="btn-meta-card" title="Definir meta">✎</button>
           </div>
           <div class="valor grande" id="meta-valor">—</div>
           <div class="linha">
@@ -41,24 +41,31 @@
           </div>
         </article>
         <div class="card">
-          <span class="card-rot">Vendido (acumulado)</span>
-          <div class="card-valor-linha">
-            <span class="card-val" id="total-valor">—</span>
+          <div class="card-cab">
+            <h2>Total Vendido (Acumulado)</h2>
             <button class="btn-icon" id="btn-lancar-card" title="Lançar vendas">✎</button>
           </div>
+          <div class="valor" id="total-valor">—</div>
           <span class="card-bar"><i id="barra-alc" class="alc"></i></span>
           <span class="card-info" id="alc-info"></span>
         </div>
         <div class="card">
-          <span class="card-rot">Tendência</span><span class="card-val" id="tend-valor">—</span>
+          <div class="card-cab">
+            <h2>Tendência</h2>
+            <span class="card-val" id="tend-valor">—</span>
+          </div>
           <span class="card-bar"><i id="tend-barra" class="tend"></i></span>
-          <span class="card-info" id="tend-info"></span>
-          <span class="card-formula" id="tend-formula"></span>
+          <p class="card-info" id="tend-proj"></p>
+          <p class="card-info" id="tend-media"></p>
+          <p class="card-formula" id="tend-formula"></p>
         </div>
         <div class="card">
-          <span class="card-rot">Meta p/ dia útil</span><span class="card-val" id="metadia-valor">—</span>
-          <span class="card-info" id="metadia-info"></span>
-          <span class="card-formula" id="metadia-formula"></span>
+          <div class="card-cab">
+            <h2>Meta p/ dia útil</h2>
+            <span class="card-val" id="metadia-valor">—</span>
+          </div>
+          <p class="card-info" id="metadia-info"></p>
+          <p class="card-formula" id="metadia-formula"></p>
         </div>
       </div>
 

@@ -185,9 +185,12 @@ function renderVendedor(d) {
   const temTend = c.trab > 0 && d.meta > 0;
   $('tend-valor').textContent = temTend ? fmtPct(c.tendencia) : '—';
   $('tend-barra').style.width = (temTend ? Math.min(100, c.tendencia) : 0) + '%';
-  $('tend-info').textContent = temTend
-    ? 'Média ' + fmtQtd(c.media) + ' fardos/dia × ' + c.utMes + ' dias úteis = ' + fmtQtd(c.projetado) + ' fardos'
+  $('tend-proj').textContent = temTend
+    ? 'Projeção de fechamento: ' + fmtQtd(c.projetado) + ' fardos'
     : (c.trab === 0 ? 'Ainda sem dias úteis trabalhados neste mês.' : 'Defina a meta do mês para calcular.');
+  $('tend-media').textContent = temTend
+    ? 'Média diária ' + fmtQtd(c.media) + ' fardos × ' + c.utMes + ' dias úteis = ' + fmtQtd(c.projetado) + ' fardos'
+    : '';
   $('tend-formula').textContent = temTend
     ? 'Tendência = (' + fmtQtd(d.total) + ' ÷ ' + c.trab + ') × ' + c.utMes + ' ÷ ' + fmtQtd(d.meta) + ' × 100 = ' + fmtPct(c.tendencia)
     : '';
