@@ -154,7 +154,19 @@ function iniciarVendedor() {
   $('btn-iniciar-mes').addEventListener('click', iniciarMesAtual);
   $('btn-fechar-mes').addEventListener('click', fecharMes);
   $('btn-incluir-mes').addEventListener('click', abrirModalMes);
+  $('btn-print').addEventListener('click', ativarModoPrint);
+  $('btn-print-fechar').addEventListener('click', desativarModoPrint);
   carregarPainelVendedor();
+}
+
+function ativarModoPrint() {
+  document.body.classList.add('print-ativo');
+  $('print-overlay').classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function desativarModoPrint() {
+  document.body.classList.remove('print-ativo');
+  $('print-overlay').classList.add('hidden');
 }
 
 async function carregarPainelVendedor() {

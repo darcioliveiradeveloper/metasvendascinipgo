@@ -28,7 +28,7 @@
       <p class="aviso hidden" id="aviso-fechado"></p>
 
       <div class="cards">
-        <article class="card">
+        <article class="card card-meta-mes">
           <div class="card-cab">
             <h2>Meta do mês</h2>
             <button class="btn-icon" id="btn-meta-card" title="Definir meta">✎</button>
@@ -62,11 +62,17 @@
         <div class="card">
           <div class="card-cab">
             <h2>Meta Diária</h2>
+            <button class="btn-icon" id="btn-print" title="Modo print (oculta meta do mês)">📷</button>
           </div>
           <div class="valor" id="metadia-valor">—</div>
           <p class="card-info" id="metadia-info"></p>
           <p class="card-formula" id="metadia-formula"></p>
         </div>
+      </div>
+
+      <div id="print-overlay" class="print-overlay hidden">
+        <div class="print-msg">📷 Tire o print agora</div>
+        <button class="btn-print-fechar" id="btn-print-fechar">Fechar</button>
       </div>
 
       <div class="acoes-botoes">
