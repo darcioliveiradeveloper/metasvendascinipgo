@@ -582,13 +582,11 @@ async function carregarVendedores() {
   try {
     const lista = await api('/api/supervisor/usuarios');
     const vendedores = lista;
-    let linhas = '<tr><th>Nome</th><th>Setor</th><th>E-mail</th><th>Situação</th><th></th></tr>';
+    let linhas = '<tr><th>Nome</th><th>Setor</th><th>Situação</th><th></th></tr>';
     vendedores.forEach(function (u) {
-      linhas += '<tr><td>' + esc(u.nome) + '</td><td>' + esc(u.setor || '—') + '</td><td>' + esc(u.email) + '</td><td>' + (u.ativo ? 'Ativo' : 'Inativo') + '</td><td>'
+      linhas += '<tr><td>' + esc(u.nome) + '</td><td>' + esc(u.setor || '—') + '</td><td>' + (u.ativo ? 'Ativo' : 'Inativo') + '</td><td>'
         + '<button class="btn fino" data-painel="' + u.id + '">Painel</button> '
-        + '<button class="btn fino" data-edita="' + u.id + '">Editar</button> '
-        + '<button class="btn fino" data-reset="' + u.id + '">Resetar senha</button> '
-        + '<button class="btn fino perigo" data-ativa="' + u.id + '">' + (u.ativo ? 'Desativar' : 'Ativar') + '</button>'
+        + '<button class="btn fino" data-edita="' + u.id + '">Editar</button>'
         + '</td></tr>';
     });
     $('tabela-vendedores').innerHTML = linhas || '<tr><td class="vazio">Nenhum usuário cadastrado.</td></tr>';
@@ -603,21 +601,6 @@ async function carregarVendedores() {
       b.addEventListener('click', function () {
         const u = vendedores.find((x) => x.id === b.dataset.edita);
         abrirModalUsuario(u);
-      });
-    });
-    document.querySelectorAll('[data-reset]').forEach(function (b) {
-      b.addEventListener('click', function () {
-        const u = vendedores.find((x) => x.id === b.dataset.reset);
-        resetarSenhaUsuario(u);
-      });
-    });
-    document.querySelectorAll('[data-ativa]').forEach(function (b) {
-      b.addEventListener('click', function () {
-        const u = vendedores.find((x) => x.id === b.dataset.ativa);
-        api('/api/supervisor/usuarios/' + u.id, {
-          method: 'PUT',
-          body: { ativo: !u.ativo }
-        }).then(carregarVendedores).catch(function (e) { alert(e.message); });
       });
     });
   } catch (e) { alert(e.message); }
@@ -708,6 +691,11 @@ async function resetarSenhaUsuario(u) {
 let MODO_USUARIO = 'novo';
 let ID_USUARIO = null;
 
+function resetarSenhaModal() {
+  if (!ID_USUARIO) return;
+  resetarSenhaUsuario({ id: ID_USUARIO, nome: $('mu-nome').value });
+}
+
 function abrirModalUsuario(u) {
   MODO_USUARIO = u ? 'editar' : 'novo';
   ID_USUARIO = u ? u.id : null;
@@ -723,6 +711,8 @@ function abrirModalUsuario(u) {
   $('mu-ativo').checked = u ? u.ativo : true;
   $('mu-senha').value = '';
   $('mu-erro').classList.add('hidden');
+  $('mu-advanced').classList.toggle('hidden', !u);
+  $('mu-senha-linha').style.display = u ? 'none' : '';
   $('modal-usuario').classList.remove('hidden');
 }
 
@@ -882,8 +872,9 @@ function preencherFiltroVendedor() {
     .catch(function () {});
 }
 
-$('btn-mu-cancelar').addEventListener('click', fecharModalUsuario);
-$('btn-mu-salvar').addEventListener('click', salvarModalUsuario);
+  $('btn-mu-cancelar').addEventListener('click', fecharModalUsuario);
+  $('btn-mu-salvar').addEventListener('click', salvarModalUsuario);
+  $('btn-mu-resetar').addEventListener('click', resetarSenhaModal);
 $('btn-mp-fechar').addEventListener('click', fecharModalPainel);
 $('btn-valor-cancelar').addEventListener('click', fecharModalValor);
 $('btn-valor-ok').addEventListener('click', salvarModalValor);
