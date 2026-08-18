@@ -395,6 +395,10 @@ function iniciarSupervisor() {
   $('sp-btn-lancar').addEventListener('click', function () { abrirModalValor('lancar'); });
   $('sp-btn-iniciar-mes').addEventListener('click', iniciarMesAtual);
   $('sp-btn-fechar-mes').addEventListener('click', fecharMes);
+  $('sp-btn-print').addEventListener('click', ativarModoPrintSupervisor);
+  $('sp-btn-print-fechar').addEventListener('click', desativarModoPrintSupervisor);
+  $('sp-btn-print-limpo').addEventListener('click', ativarPrintLimpoSupervisor);
+  $('sp-btn-print-limpo-fechar').addEventListener('click', desativarPrintLimpoSupervisor);
   $('sp-btn-incluir-mes').addEventListener('click', function () {
     MODO_MES = 'incluir';
     ANO_MES_EDITANDO = null;
@@ -422,9 +426,37 @@ async function carregarGeral() {
   } catch (e) { alert(e.message); }
 }
 
+let spPlDados = null;
+function ativarModoPrintSupervisor() {
+  document.body.classList.add('sp-print-ativo');
+  $('sp-print-overlay').classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function desativarModoPrintSupervisor() {
+  document.body.classList.remove('sp-print-ativo');
+  $('sp-print-overlay').classList.add('hidden');
+}
+function ativarPrintLimpoSupervisor() {
+  api('/api/me/dashboard').then(function (d) {
+    spPlDados = d;
+    $('sp-pl-saudacao').textContent = $('saudacao').textContent;
+    $('sp-pl-data').textContent = $('data-hoje').textContent;
+    const c = d.calc;
+    const temTend = c.trab > 0 && d.meta > 0;
+    $('sp-pl-tend-valor').textContent = temTend ? fmtPct(c.tendencia) : '—';
+    $('sp-pl-tend-barra').style.width = (temTend ? Math.min(100, c.tendencia) : 0) + '%';
+    const temMetDia = c.rest > 0 && d.meta > 0;
+    $('sp-pl-metadia-valor').textContent = temMetDia ? fmtQtd(c.metaDiaria) + ' fardos' : '—';
+    $('sp-print-limpo-view').classList.remove('hidden');
+    window.scrollTo({ top: 0 });
+  });
+}
+function desativarPrintLimpoSupervisor() {
+  $('sp-print-limpo-view').classList.add('hidden');
+}
+
 function renderSupervisorPessoal(d) {
   const c = d.calc;
-  $('sup-nome-mes').textContent = d.nomeMes;
   $('sp-chip-mes').textContent = c.utMes;
   $('sp-chip-trab').textContent = c.trab;
   $('sp-chip-rest').textContent = c.rest;
@@ -441,9 +473,13 @@ function renderSupervisorPessoal(d) {
   const temTend = c.trab > 0 && d.meta > 0;
   $('sp-tend-valor').textContent = temTend ? fmtPct(c.tendencia) : '—';
   $('sp-barra-tend').style.width = (temTend ? Math.min(100, c.tendencia) : 0) + '%';
-  $('sp-tend-info').textContent = temTend
-    ? 'Média ' + fmtQtd(c.media) + ' fardos/dia × ' + c.utMes + ' dias úteis = ' + fmtQtd(c.projetado) + ' fardos'
+  const faltanteTend = d.meta - c.projetado;
+  $('sp-tend-proj').textContent = temTend
+    ? 'Projeção de fechamento: ' + fmtQtd(c.projetado) + (faltanteTend > 0 ? ' (-' + fmtQtd(faltanteTend) + ')' : '')
     : (c.trab === 0 ? 'Ainda sem dias úteis trabalhados neste mês.' : 'Defina a meta do mês para calcular.');
+  $('sp-tend-media').textContent = temTend
+    ? 'Média Diária ' + fmtQtd(c.media) + ' × ' + c.utMes + ' dias = ' + fmtQtd(c.projetado)
+    : '';
   $('sp-tend-formula').textContent = temTend
     ? 'Tendência = (' + fmtQtd(d.total) + ' ÷ ' + c.trab + ') × ' + c.utMes + ' ÷ ' + fmtQtd(d.meta) + ' × 100 = ' + fmtPct(c.tendencia)
     : '';
@@ -451,11 +487,15 @@ function renderSupervisorPessoal(d) {
   const temMetDia = c.rest > 0 && d.meta > 0;
   $('sp-metadia-valor').textContent = temMetDia ? fmtQtd(c.metaDiaria) + ' fardos' : '—';
   $('sp-metadia-info').textContent = temMetDia
-    ? (faltante > 0 ? fmtQtd(faltante) + ' faltantes ÷ ' + c.rest + ' dias úteis' : 'Meta já atingida no mês.')
+    ? (d.meta - d.total > 0 ? fmtQtd(d.meta - d.total) + ' faltantes ÷ ' + c.rest + ' dias úteis' : 'Meta já atingida no mês.')
     : (d.meta > 0 ? 'Não há dias úteis restantes no mês.' : 'Defina a meta do mês para calcular.');
   $('sp-metadia-formula').textContent = temMetDia
     ? 'Meta diária = (' + fmtQtd(d.meta) + ' − ' + fmtQtd(d.total) + ') ÷ ' + c.rest + ' = ' + fmtQtd(c.metaDiaria) + ' fardos'
     : '';
+
+  $('sp-atualizado').textContent = d.atualizadoEm
+    ? new Date(d.atualizadoEm).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+    : 'Ainda não lançado neste mês';
 
   const aviso = $('sup-aviso-fechado');
   if (d.fechado) {
@@ -476,6 +516,7 @@ function renderSupervisorHistorico(hist) {
   const tabela = $('sp-tabela-historico');
   if (!hist.length) {
     tabela.innerHTML = '<tr><td class="vazio">Nenhum mês finalizado ainda.</td></tr>';
+    destruirGrafico('sp-grafico-historico');
     return;
   }
   let linhas = '<tr><th>Mês</th><th>Meta</th><th>Atingido</th><th>%</th><th>D.U.</th><th></th></tr>';
@@ -497,6 +538,23 @@ function renderSupervisorHistorico(hist) {
       const h = hist.find((x) => x.anoMes === b.dataset.spDeletaMes);
       if (h) excluirMesHistorico(h);
     });
+  });
+
+  const labels = hist.map((h) => h.nomeMes);
+  novoGrafico('sp-grafico-historico', {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: 'Meta', data: hist.map((h) => h.meta), backgroundColor: 'rgba(148,163,184,.55)' },
+        { label: 'Vendido', data: hist.map((h) => h.atingido), backgroundColor: '#16a34a' }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { beginAtZero: true } },
+      plugins: { legend: { position: 'bottom' } }
+    }
   });
 }
 

@@ -266,6 +266,33 @@ input:focus, select:focus { border-color: #4338ca; background: #fff; }
 .print-ativo #view-vendedor .atualizado {
   opacity: 0.15;
 }
+
+.sp-print-ativo .card-meta-mes .valor {
+  filter: blur(8px);
+  user-select: none;
+  pointer-events: none;
+}
+.sp-print-ativo .card-meta-mes .card-cab h2::after {
+  content: ' (oculto no print)';
+  font-weight: 400;
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+.sp-print-ativo #aba-geral .card:nth-child(2) .card-bar,
+.sp-print-ativo #aba-geral .card:nth-child(2) .card-info,
+.sp-print-ativo #aba-geral .card:nth-child(3) .card-bar,
+.sp-print-ativo #aba-geral .card:nth-child(3) .card-info,
+.sp-print-ativo #aba-geral .card:nth-child(3) .card-formula,
+.sp-print-ativo #aba-geral .card:nth-child(4) .card-info,
+.sp-print-ativo #aba-geral .card:nth-child(4) .card-formula {
+  filter: blur(6px);
+  user-select: none;
+}
+.sp-print-ativo #aba-geral .acoes-botoes,
+.sp-print-ativo #aba-geral .hist,
+.sp-print-ativo #aba-geral .atualizado {
+  opacity: 0.15;
+}
 .print-overlay {
   position: fixed;
   bottom: 0;

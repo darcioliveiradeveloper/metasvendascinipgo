@@ -130,53 +130,103 @@
       </nav>
 
       <div id="aba-geral" class="aba">
-        <h2>Minhas vendas — <span id="sup-nome-mes"></span></h2>
         <p class="aviso hidden" id="sup-aviso-fechado"></p>
+
         <div class="cards">
-          <div class="card">
-            <span class="card-rot">Meta do mês</span>
-            <div class="card-valor-linha">
-              <span class="card-val" id="sp-meta-valor">—</span>
+          <article class="card card-meta-mes">
+            <div class="card-cab">
+              <h2>Meta do mês</h2>
               <button class="btn-icon" id="sp-btn-meta" title="Definir meta">✎</button>
             </div>
-          </div>
+            <div class="valor grande" id="sp-meta-valor">—</div>
+            <div class="linha">
+              <span class="chip">Dias úteis: <b id="sp-chip-mes">—</b></span>
+              <span class="chip">Trabalhados: <b id="sp-chip-trab">—</b></span>
+              <span class="chip">Restam: <b id="sp-chip-rest">—</b></span>
+            </div>
+          </article>
           <div class="card">
-            <span class="card-rot">Vendido (acumulado)</span>
-            <div class="card-valor-linha">
-              <span class="card-val" id="sp-total-valor">—</span>
+            <div class="card-cab">
+              <h2>Total Vendido (Acumulado)</h2>
               <button class="btn-icon" id="sp-btn-lancar" title="Lançar vendas">✎</button>
             </div>
+            <div class="valor" id="sp-total-valor">—</div>
             <span class="card-bar"><i id="sp-barra-alc" class="alc"></i></span>
             <span class="card-info" id="sp-alc-info"></span>
           </div>
           <div class="card">
-            <span class="card-rot">Tendência</span><span class="card-val" id="sp-tend-valor">—</span>
+            <div class="card-cab">
+              <h2>Tendência</h2>
+            </div>
+            <div class="valor" id="sp-tend-valor">—</div>
             <span class="card-bar"><i id="sp-barra-tend" class="tend"></i></span>
-            <span class="card-info" id="sp-tend-info"></span>
-            <span class="card-formula" id="sp-tend-formula"></span>
+            <p class="card-info" id="sp-tend-proj"></p>
+            <p class="card-info" id="sp-tend-media"></p>
+            <p class="card-formula" id="sp-tend-formula"></p>
           </div>
           <div class="card">
-            <span class="card-rot">Meta p/ dia útil</span><span class="card-val" id="sp-metadia-valor">—</span>
-            <span class="card-info" id="sp-metadia-info"></span>
-            <span class="card-formula" id="sp-metadia-formula"></span>
+            <div class="card-cab">
+              <h2>Meta Diária</h2>
+              <span class="card-print-btns">
+                <button class="btn-icon" id="sp-btn-print" title="Modo print (oculta meta do mês)">📷</button>
+                <button class="btn-icon" id="sp-btn-print-limpo" title="Print limpo (tendência + meta diária)">🖼️</button>
+              </span>
+            </div>
+            <div class="valor" id="sp-metadia-valor">—</div>
+            <p class="card-info" id="sp-metadia-info"></p>
+            <p class="card-formula" id="sp-metadia-formula"></p>
           </div>
         </div>
-        <div class="chips">
-          <span class="chip">Dias úteis no mês: <strong id="sp-chip-mes">0</strong></span>
-          <span class="chip">Já trabalhados: <strong id="sp-chip-trab">0</strong></span>
-          <span class="chip">Restantes: <strong id="sp-chip-rest">0</strong></span>
+
+        <div id="sp-print-overlay" class="print-overlay hidden">
+          <div class="print-msg">📷 Tire o print agora</div>
+          <button class="btn-print-fechar" id="sp-btn-print-fechar">Fechar</button>
         </div>
+
+        <div id="sp-print-limpo-view" class="print-limpo hidden">
+          <header>
+            <div class="topo-inner">
+              <div class="topo-linha1">Metas de Venda - Cini Pgo</div>
+              <div class="topo-linha2">
+                <span id="sp-pl-saudacao"></span>
+              </div>
+            </div>
+          </header>
+          <div class="container">
+            <span id="sp-pl-data" class="data"></span>
+            <div class="cards">
+              <div class="card">
+                <div class="card-cab"><h2>Tendência</h2></div>
+                <div class="valor" id="sp-pl-tend-valor">—</div>
+                <span class="card-bar"><i id="sp-pl-tend-barra" class="tend"></i></span>
+              </div>
+              <div class="card">
+                <div class="card-cab"><h2>Meta Diária</h2></div>
+                <div class="valor" id="sp-pl-metadia-valor">—</div>
+              </div>
+            </div>
+          </div>
+          <div class="print-overlay">
+            <div class="print-msg">📷 Tire o print agora</div>
+            <button class="btn-print-fechar" id="sp-btn-print-limpo-fechar">Fechar</button>
+          </div>
+        </div>
+
         <div class="acoes-botoes">
           <button class="btn hidden" id="sp-btn-iniciar-mes">Iniciar mês atual</button>
           <button class="btn" id="sp-btn-incluir-mes">Incluir mês passado</button>
           <button class="btn perigo" id="sp-btn-fechar-mes">Fechar mês</button>
         </div>
+
+        <p class="atualizado" id="sp-atualizado"></p>
+
         <div class="card hist">
-          <h3>Histórico de meses</h3>
+          <h3>Histórico mensal</h3>
+          <canvas id="sp-grafico-historico" height="140"></canvas>
           <div class="tabela-scroll"><table id="sp-tabela-historico"></table></div>
         </div>
 
-        <h2>Equipe — <span id="sup-nome-mes2"></span></h2>
+        <h2 style="margin-top: 24px;">Equipe — <span id="sup-nome-mes2"></span></h2>
         <div class="cards">
           <div class="card"><span class="card-rot">Meta total</span><span class="card-val" id="sup-meta">—</span></div>
           <div class="card"><span class="card-rot">Vendido total</span><span class="card-val" id="sup-atingido">—</span></div>
