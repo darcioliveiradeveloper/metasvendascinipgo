@@ -299,7 +299,28 @@ input:focus, select:focus { border-color: #4338ca; background: #fff; }
 .print-limpo-header {
   background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 55%, #06b6d4 100%);
   color: #fff;
-  padding: 14px 18px 48px;
+  padding: 10px 18px 38px;
+}
+.print-limpo .container {
+  max-width: 480px;
+  margin: -24px auto 0;
+  padding: 0 14px 40px;
+}
+.print-limpo .cards {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+.print-limpo .card {
+  flex: 1 1 calc(50% - 10px);
+  min-width: 160px;
+  text-align: center;
+}
+.print-limpo .data {
+  color: #fff;
+  margin: 0 auto 14px;
 }
 
 /* ========================= MODAIS ========================= */
