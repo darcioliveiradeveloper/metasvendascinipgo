@@ -251,6 +251,16 @@ input:focus, select:focus { border-color: #4338ca; background: #fff; }
   font-size: 0.7rem;
   color: #94a3b8;
 }
+.print-ativo #view-vendedor .card:nth-child(2) .card-bar,
+.print-ativo #view-vendedor .card:nth-child(2) .card-info,
+.print-ativo #view-vendedor .card:nth-child(3) .card-bar,
+.print-ativo #view-vendedor .card:nth-child(3) .card-info,
+.print-ativo #view-vendedor .card:nth-child(3) .card-formula,
+.print-ativo #view-vendedor .card:nth-child(4) .card-info,
+.print-ativo #view-vendedor .card:nth-child(4) .card-formula {
+  filter: blur(6px);
+  user-select: none;
+}
 .print-ativo #view-vendedor .acoes-botoes,
 .print-ativo #view-vendedor .hist,
 .print-ativo #view-vendedor .atualizado {
