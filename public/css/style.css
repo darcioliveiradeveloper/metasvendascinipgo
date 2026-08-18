@@ -13,7 +13,7 @@ body {
 header {
   background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 55%, #06b6d4 100%);
   color: #fff;
-  padding: 14px 18px 36px;
+  padding: 14px 18px 42px;
 }
 .topo-inner {
   max-width: 480px;
@@ -258,14 +258,14 @@ input:focus, select:focus { border-color: #4338ca; background: #fff; }
 }
 .print-overlay {
   position: fixed;
-  top: 0;
+  bottom: 0;
   left: 0;
   right: 0;
   z-index: 40;
   background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 55%, #06b6d4 100%);
   color: #fff;
   text-align: center;
-  padding: 14px;
+  padding: 16px;
   display: flex;
   flex-direction: row;
   align-items: center;
