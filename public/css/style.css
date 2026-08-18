@@ -296,17 +296,9 @@ input:focus, select:focus { border-color: #4338ca; background: #fff; }
   overflow-y: auto;
 }
 .print-limpo.hidden { display: none; }
-.print-limpo-header {
-  background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 55%, #06b6d4 100%);
-  color: #fff;
-  padding: 10px 18px 46px;
-}
-.print-limpo-header .topo-inner { text-align: center; }
-.print-limpo-header .topo-linha1 { font-size: 1.3rem; }
-.print-limpo-header .topo-linha2 { margin-top: 2px; font-size: 0.95rem; }
 .print-limpo .container {
   max-width: 480px;
-  margin: -28px auto 0;
+  margin: -30px auto 0;
   padding: 0 14px 40px;
 }
 .print-limpo .cards {
@@ -320,13 +312,6 @@ input:focus, select:focus { border-color: #4338ca; background: #fff; }
   flex: 1 1 calc(50% - 10px);
   min-width: 160px;
   text-align: center;
-}
-.print-limpo .data {
-  color: #fff;
-  margin: 0 auto 6px;
-  display: block;
-  text-align: center;
-  font-size: 0.9rem;
 }
 
 /* ========================= MODAIS ========================= */
