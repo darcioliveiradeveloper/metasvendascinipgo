@@ -26,7 +26,7 @@ header {
   font-weight: 700;
 }
 .topo-linha2 {
-  font-size: 0.92rem;
+  font-size: 1.05rem;
   opacity: 0.95;
   margin-top: 6px;
   font-weight: 500;
@@ -59,7 +59,7 @@ main { max-width: 480px; margin: -30px auto 0; padding: 0 14px 40px; }
 .data {
   text-align: center;
   color: #fff;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 500;
   margin: 0 auto 14px;
   text-transform: capitalize;
@@ -83,7 +83,7 @@ main { max-width: 480px; margin: -30px auto 0; padding: 0 14px 40px; }
 }
 .card-rot { display: block; font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: .3px; font-weight: 700; }
 .card-cab { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-.card-cab h2, .card h2 { font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #64748b; margin: 0; }
+.card-cab h2, .card h2 { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: #334155; margin: 0; }
 .btn-link { border: none; background: none; color: #4338ca; font-weight: 600; font-size: 0.82rem; padding: 6px 4px; cursor: pointer; }
 .btn-link:active { opacity: 0.6; }
 .valor { font-size: 1.6rem; font-weight: 800; line-height: 1.15; }
@@ -133,8 +133,8 @@ main { max-width: 480px; margin: -30px auto 0; padding: 0 14px 40px; }
   background: #eef2ff;
   color: #4338ca;
   border-radius: 999px;
-  padding: 5px 11px;
-  font-size: 0.72rem;
+  padding: 6px 14px;
+  font-size: 0.82rem;
   font-weight: 500;
   white-space: nowrap;
 }
