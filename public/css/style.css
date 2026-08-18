@@ -13,7 +13,7 @@ body {
 header {
   background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 55%, #06b6d4 100%);
   color: #fff;
-  padding: 14px 18px 42px;
+  padding: 14px 18px 36px;
 }
 .topo-inner {
   max-width: 480px;
@@ -61,7 +61,7 @@ main { max-width: 480px; margin: -22px auto 0; padding: 0 14px 40px; }
   color: #fff;
   font-size: 1rem;
   font-weight: 500;
-  margin: 0 auto 14px;
+  margin: 0 auto 20px;
   text-transform: capitalize;
   background: rgba(255,255,255,0.14);
   padding: 6px 14px;
