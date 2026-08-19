@@ -404,17 +404,31 @@ input:focus, select:focus { border-color: #4338ca; background: #fff; }
 .modal-acoes { display: flex; gap: 10px; }
 
 /* ========================= LOGIN ========================= */
-.tela-login { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.tela-login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 55%, #06b6d4 100%);
+}
 .login-box {
   background: #fff;
   border-radius: 18px;
-  padding: 28px;
   width: 100%;
   max-width: 380px;
   box-shadow: 0 20px 50px rgba(15, 23, 42, 0.3);
+  overflow: hidden;
 }
-.login-box h1 { margin: 0; font-size: 24px; }
-.login-box .sub { color: #64748b; margin: 4px 0 18px; font-size: 14px; }
+.login-cabecalho {
+  background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 55%, #06b6d4 100%);
+  color: #fff;
+  text-align: center;
+  padding: 28px 20px 22px;
+}
+.login-titulo { font-size: 1.5rem; font-weight: 700; }
+.login-sub { font-size: 0.9rem; opacity: 0.85; margin-top: 4px; font-weight: 500; }
+.login-box form { padding: 24px 22px 28px; }
 .login-box label { display: block; font-size: 13px; color: #475569; margin-bottom: 12px; }
 
 /* ========================= UTILITARIOS ========================= */
