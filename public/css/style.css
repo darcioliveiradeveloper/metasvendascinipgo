@@ -67,6 +67,8 @@ header {
   line-height: 1;
 }
 .topo-botoes .btn-header-icon:active { opacity: 0.7; }
+.topo-botoes .btn-header-icon.btn-sair { background: rgba(220,38,38,0.3); }
+.topo-botoes .btn-header-icon.btn-sair:active { background: rgba(220,38,38,0.6); }
 
 /* ========================= MAIN ========================= */
 main { max-width: 480px; margin: -36px auto 0; padding: 0 14px 40px; }
