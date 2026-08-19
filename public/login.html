@@ -22,7 +22,26 @@
       <button class="btn primario bloco" type="submit">Entrar</button>
       <p class="erro hidden" id="erro-login"></p>
     </form>
+    <div style="text-align:center; padding: 0 0 4px;">
+      <button id="btn-login-info" style="background:none; border:none; font-size:1.4rem; cursor:pointer; opacity:0.5;" title="Informações do sistema">ℹ️</button>
+    </div>
   </main>
+
+  <div id="modal-info" class="modal hidden">
+    <div class="modal-box">
+      <h3>Metas de Venda — Cini Pgo</h3>
+      <p style="font-size:0.85rem; color:#475569; line-height:1.6; margin-bottom:14px;">
+        Sistema de acompanhamento de vendas com metas diárias e mensais, painéis individual e de equipe, relatórios e gráficos.
+      </p>
+      <p style="font-size:0.82rem; color:#64748b; line-height:1.6;">
+        <b style="color:#334155;">Desenvolvido por</b><br>
+        Darci Oliveira — <a href="https://github.com/darcioliveiradeveloper" target="_blank" style="color:#4338ca;">GitHub</a>
+      </p>
+      <div class="modal-acoes">
+        <button class="btn primario" id="btn-info-fechar">Fechar</button>
+      </div>
+    </div>
+  </div>
   <script src="/js/api.js"></script>
   <script src="/js/login.js"></script>
 </body>

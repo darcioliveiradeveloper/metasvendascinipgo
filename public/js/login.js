@@ -23,4 +23,11 @@ document.addEventListener('DOMContentLoaded', function () {
       erro.classList.remove('hidden');
     }
   });
+
+  document.getElementById('btn-login-info').addEventListener('click', function () {
+    document.getElementById('modal-info').classList.remove('hidden');
+  });
+  document.getElementById('btn-info-fechar').addEventListener('click', function () {
+    document.getElementById('modal-info').classList.add('hidden');
+  });
 });
