@@ -379,6 +379,13 @@ function iniciarSupervisor() {
   $('btn-novo-vendedor').textContent = ehSuporte ? '+ Novo usuário' : '+ Novo vendedor';
   $('tab-vendedores').classList.toggle('hidden', !ehSuporte);
   $('view-supervisor').classList.remove('hidden');
+  if (ehSuporte) {
+    $('tab-vendedores').classList.add('ativa');
+    document.querySelector('[data-tab="geral"]').classList.remove('ativa');
+    $('aba-vendedores').classList.remove('hidden');
+    $('aba-geral').classList.add('hidden');
+    carregarVendedores();
+  }
   $('data-hoje').textContent = new Date().toLocaleDateString('pt-BR', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
   });
