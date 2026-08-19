@@ -228,7 +228,7 @@ tr:last-child td { border-bottom: none; }
 .tabela-scroll { overflow-x: auto; }
 
 /* ========================= TABS ========================= */
-.tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; justify-content: center; }
 .tab {
   border: 1px solid #cbd5e1;
   background: #fff;

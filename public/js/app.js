@@ -377,6 +377,7 @@ function iniciarSupervisor() {
   const ehSuporte = MEU_USUARIO.perfil === 'suporte';
   $('tab-vendedores-nome').textContent = ehSuporte ? 'Usuários' : 'Vendedores';
   $('btn-novo-vendedor').textContent = ehSuporte ? '+ Novo usuário' : '+ Novo vendedor';
+  $('tab-vendedores').classList.toggle('hidden', !ehSuporte);
   $('view-supervisor').classList.remove('hidden');
   $('data-hoje').textContent = new Date().toLocaleDateString('pt-BR', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
