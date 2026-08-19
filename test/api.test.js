@@ -116,15 +116,13 @@ const negocio = require('../src/services/negocio');
   });
 
   await testar('trocar a propria senha', async () => {
-    const t = await req('POST', '/api/auth/trocar-senha', { senhaAtual: 'darci123', novaSenha: 'darci456' });
+    const t = await req('POST', '/api/auth/trocar-senha', { novaSenha: 'darci456' });
     assert(t.ok, 'trocar senha: ' + JSON.stringify(t.j));
     const l1 = await req('POST', '/api/auth/login', { email: 'darci@exemplo.com', senha: 'darci123' });
     assert(!l1.ok, 'senha antiga nao deveria funcionar');
     const l2 = await req('POST', '/api/auth/login', { email: 'darci@exemplo.com', senha: 'darci456' });
     assert(l2.ok, 'login com senha nova: ' + JSON.stringify(l2.j));
-    const errada = await req('POST', '/api/auth/trocar-senha', { senhaAtual: 'errada', novaSenha: 'x123' });
-    assert(!errada.ok, 'senha atual errada deveria falhar');
-    await req('POST', '/api/auth/trocar-senha', { senhaAtual: 'darci456', novaSenha: 'darci123' });
+    await req('POST', '/api/auth/trocar-senha', { novaSenha: 'darci123' });
   });
 
   await testar('vendedor inclui mes passado para historico', async () => {

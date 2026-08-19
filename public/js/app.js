@@ -910,11 +910,10 @@ window.addEventListener('keydown', function (e) {
 });
 
 function abrirModalSenha() {
-  $('ms-atual').value = '';
   $('ms-nova').value = '';
   $('ms-erro').classList.add('hidden');
   $('modal-senha').classList.remove('hidden');
-  $('ms-atual').focus();
+  $('ms-nova').focus();
 }
 function fecharModalSenha() {
   $('modal-senha').classList.add('hidden');
@@ -924,7 +923,6 @@ async function salvarModalSenha() {
     await api('/api/auth/trocar-senha', {
       method: 'POST',
       body: {
-        senhaAtual: $('ms-atual').value,
         novaSenha: $('ms-nova').value
       }
     });
