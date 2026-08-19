@@ -52,6 +52,21 @@ header {
   cursor: pointer;
 }
 .topo-botoes .btn-header:active { opacity: 0.7; }
+.topo-botoes .btn-header-icon {
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.topo-botoes .btn-header-icon:active { opacity: 0.7; }
 
 /* ========================= MAIN ========================= */
 main { max-width: 480px; margin: -36px auto 0; padding: 0 14px 40px; }

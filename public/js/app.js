@@ -32,7 +32,6 @@ function init() {
     .then(function (me) {
       MEU_USUARIO = me;
       $('saudacao').innerHTML = '<b>' + me.nome + '</b>' + (me.setor ? ' - ' + me.setor : '');
-      $('perfil-badge').textContent = me.perfil === 'supervisor' ? 'Supervisor' : me.perfil === 'suporte' ? 'Suporte' : 'Vendedor';
       if (me.perfil === 'vendedor') {
         iniciarVendedor();
       } else {
