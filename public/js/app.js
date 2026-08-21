@@ -575,13 +575,13 @@ function renderSupervisorEquipe(d) {
   $('sup-atingido').textContent = fmtQtd(d.totalAtingido) + ' fardos';
   $('sup-pct').textContent = d.pctGeral ? fmtPct(d.pctGeral) : '—';
 
-  let linhas = '<tr><th>Vendedor</th><th>Setor</th><th>Meta</th><th>Vendido</th><th>%</th></tr>';
+  let linhas = '<tr><th>Setor</th><th>Vendedor</th><th>Meta</th><th>Vendido</th><th>%</th></tr>';
   d.linhas.sort(function (a, b) {
     const sa = (a.setor || '').localeCompare(b.setor || '', undefined, { numeric: true });
     return sa !== 0 ? sa : (a.nome || '').localeCompare(b.nome || '');
   }).forEach(function (l) {
     const tend = l.calc.tendencia > 0 ? ' · tendência ' + fmtPct(l.calc.tendencia) : '';
-    const linha = '<tr><td>' + esc(l.nome) + '</td><td>' + esc(l.setor || '—') + '</td><td>' + fmtQtd(l.meta) + '</td><td>' + fmtQtd(l.atingido) + '</td><td class="tend">' + fmtPct(l.calc.atingidoPct) + tend + '</td></tr>';
+    const linha = '<tr><td>' + esc(l.setor || '—') + '</td><td>' + esc(l.nome) + '</td><td>' + fmtQtd(l.meta) + '</td><td>' + fmtQtd(l.atingido) + '</td><td class="tend">' + fmtPct(l.calc.atingidoPct) + tend + '</td></tr>';
     linhas += linha;
   });
   $('tabela-geral').innerHTML = linhas || '<tr><td class="vazio">Nenhum vendedor cadastrado.</td></tr>';
@@ -595,9 +595,9 @@ async function carregarVendedores() {
       const sa = (a.setor || '').localeCompare(b.setor || '', undefined, { numeric: true });
       return sa !== 0 ? sa : (a.nome || '').localeCompare(b.nome || '');
     });
-    let linhas = '<tr><th>Nome</th><th>Setor</th><th>Situação</th><th></th></tr>';
+    let linhas = '<tr><th>Setor</th><th>Nome</th><th>Situação</th><th></th></tr>';
     vendedores.forEach(function (u) {
-      linhas += '<tr><td>' + esc(u.nome) + '</td><td>' + esc(u.setor || '—') + '</td><td>' + (u.ativo ? 'Ativo' : 'Inativo') + '</td><td>'
+      linhas += '<tr><td>' + esc(u.setor || '—') + '</td><td>' + esc(u.nome) + '</td><td>' + (u.ativo ? 'Ativo' : 'Inativo') + '</td><td>'
         + '<button class="btn fino" data-painel="' + u.id + '">Painel</button> '
         + '<button class="btn fino" data-edita="' + u.id + '">Editar</button>'
         + '</td></tr>';
