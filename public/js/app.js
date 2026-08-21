@@ -860,10 +860,10 @@ function renderRelatorio(d, n) {
 
   let linhas;
   if (mensal) {
-    linhas = '<tr><th>Vendedor</th><th>Meta</th><th>Vendido</th><th>%</th></tr>';
+    linhas = '<tr><th>Setor</th><th>Vendedor</th><th>Meta</th><th>Vendido</th><th>%</th></tr>';
     d.porVendedor.forEach(function (v) {
       const x = v.valores[0] || { meta: 0, atingido: 0 };
-      linhas += '<tr><td>' + v.nome + '</td><td>' + fmtQtd(x.meta) + '</td><td>' + fmtQtd(x.atingido) + '</td><td class="tend">' + fmtPct(x.meta > 0 ? (x.atingido / x.meta) * 100 : 0) + '</td></tr>';
+      linhas += '<tr><td>' + v.setor + '</td><td>' + v.nome + '</td><td>' + fmtQtd(x.meta) + '</td><td>' + fmtQtd(x.atingido) + '</td><td class="tend">' + fmtPct(x.meta > 0 ? (x.atingido / x.meta) * 100 : 0) + '</td></tr>';
     });
   } else {
     linhas = '<tr><th>Mês</th><th>Meta</th><th>Vendido</th><th>%</th><th>D.U.</th></tr>';

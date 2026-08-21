@@ -74,6 +74,7 @@ router.get('/', async (req, res) => {
     const porVendedor = usuarios.map((u) => ({
       id: u._id,
       nome: u.nome,
+      setor: u.setor,
       valores: meses.map((anoMes) => ({
         anoMes,
         meta: mapaMeta[anoMes + '|' + u._id.toString()] || 0,
