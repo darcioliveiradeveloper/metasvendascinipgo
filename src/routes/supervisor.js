@@ -47,7 +47,7 @@ async function totaisPorMes(ids, meses) {
 router.get('/dashboard', async (req, res) => {
   try {
     const chave = req.query.mes || negocio.chaveMesHoje();
-    const vendedores = await User.find({ perfil: 'vendedor', ativo: true }).sort({ nome: 1 });
+    const vendedores = await User.find({ perfil: 'vendedor', ativo: true }).sort({ setor: 1, nome: 1 });
     const ids = vendedores.map((u) => u._id);
     const metas = await MetaMensal.find({ usuario: { $in: ids }, anoMes: chave });
     const mapaMeta = {};
@@ -89,7 +89,7 @@ router.get('/dashboard', async (req, res) => {
 router.get('/usuarios', async (req, res) => {
   try {
     const filtro = req.usuario.perfil === 'suporte' ? {} : { perfil: 'vendedor' };
-    const usuarios = await User.find(filtro).sort({ perfil: -1, nome: 1 });
+    const usuarios = await User.find(filtro).sort({ perfil: -1, setor: 1, nome: 1 });
     res.json(usuarios.map((u) => u.resumo()));
   } catch (e) {
     console.error(e);
