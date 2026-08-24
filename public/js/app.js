@@ -944,9 +944,15 @@ async function gerarRelatorioVendedor() {
 /* ============================= RELATÓRIOS SUPERVISOR ============================= */
 
 function popularAnosRelatorioSupervisor() {
-  return api('/api/supervisor/relatorios?de=2000-01&ate=2099-12').then(function (d) {
-    const todos = (d.meses || []).map(function (m) { return m.anoMes; });
-    const anos = [...new Set(todos.map(function (x) { return x.substring(0, 4); }))].sort().reverse();
+  return api('/api/supervisor/usuarios').then(function (lista) {
+    const ids = lista.filter(function (u) { return u.perfil === 'vendedor'; }).map(function (u) { return u.id; });
+    if (!ids.length) return;
+    const q = ids.map(function (id) { return 'usuario=' + id; }).join('&');
+    return api('/api/supervisor/relatorios?' + q + '&de=2000-01&ate=2099-12');
+  }).then(function (d) {
+    if (!d || !d.meses) return;
+    const comDados = d.meses.filter(function (m) { return m.atingido > 0 || m.meta > 0; });
+    const anos = [...new Set(comDados.map(function (m) { return m.anoMes.substring(0, 4); }))].sort().reverse();
     $('sup-rel-ano').innerHTML = '<option value="">Todos</option>' + anos.map(function (a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
   }).catch(function () {});
 }
