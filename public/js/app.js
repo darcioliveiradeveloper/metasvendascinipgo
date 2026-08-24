@@ -270,13 +270,12 @@ function renderVendedor(d) {
 }
 
 function montarTabelaHistorico(hist, prefixo, comAcoes) {
-  const reverso = hist.slice().reverse();
-  const total = reverso.length;
+  const total = hist.length;
   const visiveis = 3;
   let linhas = '<tr><th>Mês</th><th>Meta</th><th>Atingido</th><th>%</th><th>D.U.</th>';
   if (comAcoes) linhas += '<th></th>';
   linhas += '</tr>';
-  reverso.forEach(function (h, i) {
+  hist.forEach(function (h, i) {
     const escondido = total > visiveis && i >= visiveis;
     const trAcao = comAcoes
       ? '<td class="hist-acoes"><button class="btn-icon" data-' + prefixo + 'edita-mes="' + h.anoMes + '" title="Editar mês">✎</button> <button class="btn-icon perigo" data-' + prefixo + 'deleta-mes="' + h.anoMes + '" title="Excluir mês">✕</button></td>'
