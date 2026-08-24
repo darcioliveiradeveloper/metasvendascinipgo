@@ -25,6 +25,16 @@ body {
   --c2-hover: #15803d; --bar-alc-a: #a3e635; --bar-alc-b: #16a34a;
   --card-bg: #d4edda;
 }
+[data-tema="roxo"] {
+  --c1: #3b0764; --c2: #9333ea; --c3: #e879f9;
+  --c2-hover: #7e22ce; --bar-alc-a: #e879f9; --bar-alc-b: #9333ea;
+  --card-bg: #e9d5ff;
+}
+[data-tema="amarelo"] {
+  --c1: #713f12; --c2: #ca8a04; --c3: #fde047;
+  --c2-hover: #a16207; --bar-alc-a: #fde047; --bar-alc-b: #ca8a04;
+  --card-bg: #fef9c3;
+}
 
 /* ========================= HEADER ========================= */
 header {

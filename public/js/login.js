@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-  const temas = ['azul', 'vermelho', 'verde'];
+  const temas = ['azul', 'vermelho', 'verde', 'roxo', 'amarelo'];
   const temaSalvo = localStorage.getItem('tema') || 'azul';
   document.documentElement.setAttribute('data-tema', temaSalvo);
 

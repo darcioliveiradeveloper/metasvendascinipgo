@@ -26,7 +26,7 @@ let MEU_USUARIO = null;
 
 
 function init() {
-  const temas = ['azul', 'vermelho', 'verde'];
+  const temas = ['azul', 'vermelho', 'verde', 'roxo', 'amarelo'];
   const temaSalvo = localStorage.getItem('tema') || 'azul';
   document.documentElement.setAttribute('data-tema', temaSalvo);
   $('btn-tema').addEventListener('click', function () {
@@ -270,13 +270,14 @@ function renderVendedor(d) {
 }
 
 function montarTabelaHistorico(hist, prefixo, comAcoes) {
-  const total = hist.length;
+  const reverso = hist.slice().reverse();
+  const total = reverso.length;
   const visiveis = 3;
   let linhas = '<tr><th>Mês</th><th>Meta</th><th>Atingido</th><th>%</th><th>D.U.</th>';
   if (comAcoes) linhas += '<th></th>';
   linhas += '</tr>';
-  hist.forEach(function (h, i) {
-    const escondido = total > visiveis && i < total - visiveis;
+  reverso.forEach(function (h, i) {
+    const escondido = total > visiveis && i >= visiveis;
     const trAcao = comAcoes
       ? '<td class="hist-acoes"><button class="btn-icon" data-' + prefixo + 'edita-mes="' + h.anoMes + '" title="Editar mês">✎</button> <button class="btn-icon perigo" data-' + prefixo + 'deleta-mes="' + h.anoMes + '" title="Excluir mês">✕</button></td>'
       : '';
@@ -284,7 +285,7 @@ function montarTabelaHistorico(hist, prefixo, comAcoes) {
   });
   if (total > visiveis) {
     const colspan = comAcoes ? 6 : 5;
-    linhas += '<tr id="hist-expandir-' + prefixo + '" class="hist-expandir"><td colspan="' + colspan + '" style="text-align:center"><button class="btn-link" id="btn-hist-expandir-' + prefixo + '">Mais</button></td></tr>';
+    linhas += '<tr id="hist-expandir-' + prefixo + '" class="hist-expandir"><td colspan="' + colspan + '" style="text-align:center"><button class="btn-link" id="btn-hist-expandir-' + prefixo + '">▼ Mais</button></td></tr>';
   }
   return linhas;
 }
@@ -296,11 +297,11 @@ function bindExpandirHistorico(tabela, prefixo) {
     const ocultos = tabela.querySelectorAll('.hist-oculto');
     if (ocultos.length) {
       ocultos.forEach(function (r) { r.classList.remove('hist-oculto'); });
-      btnExp.textContent = 'Menos';
+      btnExp.textContent = '▲ Menos';
     } else {
       const rows = tabela.querySelectorAll('.hist-row');
-      rows.forEach(function (r, i) { if (i < rows.length - 3) r.classList.add('hist-oculto'); });
-      btnExp.textContent = 'Mais';
+      rows.forEach(function (r, i) { if (i >= 3) r.classList.add('hist-oculto'); });
+      btnExp.textContent = '▼ Mais';
     }
   });
 }
