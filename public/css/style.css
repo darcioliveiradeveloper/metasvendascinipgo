@@ -88,7 +88,7 @@ header {
 .topo-botoes .btn-header-icon.btn-sair:active { background: rgba(220,38,38,0.6); }
 
 /* ========================= MAIN ========================= */
-main { max-width: 480px; margin: -36px auto 0; padding: 0 14px 40px; }
+main { max-width: 480px; margin: -36px auto 0; padding: 12px 14px 40px; background: var(--card-bg); border-radius: 16px; }
 
 .data {
   text-align: center;
@@ -108,7 +108,7 @@ main { max-width: 480px; margin: -36px auto 0; padding: 0 14px 40px; }
 .mes-titulo h2 { margin: 0 0 4px; }
 
 /* ========================= CARDS ========================= */
-.cards { display: flex; flex-direction: column; gap: 10px; background: var(--card-bg); border-radius: 16px; padding: 12px; }
+.cards { display: flex; flex-direction: column; gap: 10px; }
 .card {
   background: #fff;
   border-radius: 16px;
