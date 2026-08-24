@@ -13,14 +13,17 @@ body {
 :root, [data-tema="azul"] {
   --c1: #1e1b4b; --c2: #4338ca; --c3: #06b6d4;
   --c2-hover: #3730a3; --bar-alc-a: #06b6d4; --bar-alc-b: #4338ca;
+  --card-bg: rgba(99,102,241,0.05);
 }
 [data-tema="vermelho"] {
   --c1: #450a0a; --c2: #dc2626; --c3: #f97316;
   --c2-hover: #b91c1c; --bar-alc-a: #f97316; --bar-alc-b: #dc2626;
+  --card-bg: rgba(220,38,38,0.05);
 }
 [data-tema="verde"] {
   --c1: #052e16; --c2: #16a34a; --c3: #a3e635;
   --c2-hover: #15803d; --bar-alc-a: #a3e635; --bar-alc-b: #16a34a;
+  --card-bg: rgba(22,163,74,0.05);
 }
 
 /* ========================= HEADER ========================= */
@@ -105,7 +108,7 @@ main { max-width: 480px; margin: -36px auto 0; padding: 0 14px 40px; }
 .mes-titulo h2 { margin: 0 0 4px; }
 
 /* ========================= CARDS ========================= */
-.cards { display: flex; flex-direction: column; gap: 10px; }
+.cards { display: flex; flex-direction: column; gap: 10px; background: var(--card-bg); border-radius: 16px; padding: 12px; }
 .card {
   background: #fff;
   border-radius: 16px;
