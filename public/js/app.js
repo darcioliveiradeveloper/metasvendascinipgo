@@ -966,7 +966,7 @@ function preencherFiltroVendedorSupervisor() {
       })
       .map(function (u) { return '<option value="' + u.id + '">' + (u.setor ? u.setor + ' - ' : '') + u.nome + '</option>'; })
       .join('');
-    $('sup-rel-vendedor').innerHTML = '<option value="">Todos os vendedores</option>' + opcoes;
+    $('sup-rel-vendedor').innerHTML = '<option value="">Vendedores</option>' + opcoes;
   }).catch(function () {});
 }
 
