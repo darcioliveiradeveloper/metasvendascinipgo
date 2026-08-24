@@ -837,18 +837,17 @@ async function gerarRelatorioVendedor() {
 
     let dados = dadosTodos;
 
-    if (periodo === 'atual') {
-      const chaveAtual = new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0');
-      dados = dados.filter(function (x) { return x.anoMes === chaveAtual; });
-    } else if (periodo === 'ano') {
+    if (periodo === 'ano') {
       dados = dados.filter(function (x) { return x.anoMes.substring(0, 4) === anoSel; });
     } else if (periodo === 'tudo') {
       if (anoSel) dados = dados.filter(function (x) { return x.anoMes.substring(0, 4) === anoSel; });
     } else {
       const n = Number(periodo);
+      const baseAno = anoSel ? Number(anoSel) : new Date().getFullYear();
+      const baseMes = anoSel ? 12 : new Date().getMonth() + 1;
       const meses = [];
-      let a = new Date().getFullYear();
-      let m = new Date().getMonth() + 1;
+      let a = baseAno;
+      let m = baseMes;
       for (let i = 0; i < n; i++) {
         meses.push(a + '-' + String(m).padStart(2, '0'));
         m--;
