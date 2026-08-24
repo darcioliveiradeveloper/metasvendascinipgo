@@ -169,6 +169,16 @@ function iniciarVendedor() {
   $('btn-print-fechar').addEventListener('click', desativarModoPrint);
   $('btn-print-limpo').addEventListener('click', ativarPrintLimpo);
   $('btn-print-limpo-fechar').addEventListener('click', desativarPrintLimpo);
+  $('btn-v-relatorios').addEventListener('click', function () {
+    $('view-vendedor').classList.add('hidden');
+    $('view-v-relatorios').classList.remove('hidden');
+    gerarRelatorioVendedor();
+  });
+  $('btn-v-rel-fechar').addEventListener('click', function () {
+    $('view-v-relatorios').classList.add('hidden');
+    $('view-vendedor').classList.remove('hidden');
+  });
+  $('btn-v-rel-gerar').addEventListener('click', gerarRelatorioVendedor);
   carregarPainelVendedor();
 }
 
@@ -809,7 +819,91 @@ async function salvarModalUsuario() {
   }
 }
 
-/* ============================= RELATÓRIOS ============================= */
+/* ============================= RELATÓRIO DO VENDEDOR ============================= */
+
+async function gerarRelatorioVendedor() {
+  try {
+    const d = await api('/api/me/relatorios');
+    const periodo = $('v-rel-periodo').value;
+    let dados = d.dados;
+    const hoje = new Date();
+    const chaveAtual = hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0');
+
+    if (periodo !== 'tudo') {
+      if (periodo === 'atual') {
+        dados = dados.filter(function (x) { return x.anoMes === chaveAtual; });
+      } else {
+        const n = Number(periodo);
+        const meses = [];
+        let a = hoje.getFullYear();
+        let m = hoje.getMonth() + 1;
+        for (let i = 0; i < n; i++) {
+          meses.push(a + '-' + String(m).padStart(2, '0'));
+          m--;
+          if (m < 1) { m = 12; a--; }
+        }
+        dados = dados.filter(function (x) { return meses.indexOf(x.anoMes) !== -1; });
+      }
+    }
+
+    const totalVendido = dados.reduce(function (s, x) { return s + x.atingido; }, 0);
+    const totalMeta = dados.reduce(function (s, x) { return s + x.meta; }, 0);
+    const pct = totalMeta > 0 ? (totalVendido / totalMeta) * 100 : 0;
+
+    $('v-rel-total').textContent = fmtQtd(totalVendido) + ' fardos';
+    $('v-rel-meta').textContent = fmtQtd(totalMeta) + ' fardos';
+    $('v-rel-pct').textContent = fmtPct(pct);
+    $('v-rel-cards-resumo').style.display = '';
+
+    if (dados.length) {
+      const ordenado = dados.slice().sort(function (a, b) { return b.atingido - a.atingido; });
+      const maior = ordenado[0];
+      const menor = ordenado[ordenado.length - 1];
+      const media = totalVendido / dados.length;
+
+      $('v-rel-maior').textContent = fmtQtd(maior.atingido) + ' fardos';
+      $('v-rel-maior-info').textContent = maior.nomeMes;
+      $('v-rel-menor').textContent = fmtQtd(menor.atingido) + ' fardos';
+      $('v-rel-menor-info').textContent = menor.nomeMes;
+      $('v-rel-media').textContent = fmtQtd(media) + ' fardos/mês';
+      $('v-rel-cards-insights').style.display = '';
+    } else {
+      $('v-rel-cards-insights').style.display = 'none';
+    }
+
+    if (dados.length > 1) {
+      novoGrafico('v-rel-grafico', {
+        type: 'bar',
+        data: {
+          labels: dados.map(function (x) { return x.nomeMes; }),
+          datasets: [
+            { label: 'Meta', data: dados.map(function (x) { return x.meta; }), backgroundColor: 'rgba(148,163,184,.55)' },
+            { label: 'Vendido', data: dados.map(function (x) { return x.atingido; }), backgroundColor: '#16a34a' }
+          ]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true } }, plugins: { legend: { position: 'bottom' } } }
+      });
+      $('v-rel-grafico-wrap').style.display = '';
+    } else {
+      destruirGrafico('v-rel-grafico');
+      $('v-rel-grafico-wrap').style.display = 'none';
+    }
+
+    if (dados.length) {
+      let linhas = '<tr><th>Mês</th><th>Meta</th><th>Vendido</th><th>%</th></tr>';
+      dados.slice().reverse().forEach(function (x) {
+        linhas += '<tr><td>' + x.nomeMes + '</td><td>' + fmtQtd(x.meta) + '</td><td>' + fmtQtd(x.atingido) + '</td><td class="tend">' + fmtPct(x.meta > 0 ? (x.atingido / x.meta) * 100 : 0) + '</td></tr>';
+      });
+      $('v-rel-tabela').innerHTML = linhas;
+      $('v-rel-tabela-wrap').style.display = '';
+    } else {
+      $('v-rel-tabela').innerHTML = '<tr><td class="vazio">Nenhum dado encontrado.</td></tr>';
+      $('v-rel-tabela-wrap').style.display = '';
+    }
+  } catch (e) { alert(e.message); }
+}
+
+/* ============================= RELATÓRIOS SUPERVISOR ============================= */
 
 function ultimosMeses(n) {
   const hoje = new Date();

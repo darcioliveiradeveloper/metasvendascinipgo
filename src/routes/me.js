@@ -201,4 +201,32 @@ router.post('/fechar-mes', async (req, res) => {
   }
 });
 
+router.get('/relatorios', async (req, res) => {
+  try {
+    const user = req.usuario;
+    const mesesComDados = new Set();
+    const metas = await MetaMensal.find({ usuario: user._id }, { anoMes: 1 });
+    metas.forEach((m) => mesesComDados.add(m.anoMes));
+    const lancs = await Lancamento.distinct('anoMes', { usuario: user._id });
+    lancs.forEach((m) => mesesComDados.add(m));
+
+    const dados = [];
+    for (const anoMes of [...mesesComDados].sort()) {
+      const m = await MetaMensal.findOne({ usuario: user._id, anoMes });
+      const tot = await dash.totalDoMes(user._id, anoMes);
+      dados.push({
+        anoMes,
+        nomeMes: negocio.nomeDoMes(anoMes),
+        meta: m ? m.meta : 0,
+        atingido: tot,
+        pct: m && m.meta > 0 ? (tot / m.meta) * 100 : 0
+      });
+    }
+    res.json({ dados });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ erro: 'Erro ao gerar relatório' });
+  }
+});
+
 module.exports = router;
