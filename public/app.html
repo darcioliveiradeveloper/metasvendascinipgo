@@ -291,19 +291,21 @@
         <h2>Relatórios</h2>
         <div class="filtros">
           <select id="sup-rel-ano">
-            <option value="">Ano</option>
+            <option value="">Todos</option>
           </select>
-          <select id="sup-rel-periodo" disabled>
+          <select id="sup-rel-periodo">
             <option value="">Escolha</option>
+            <option value="atual">Mês atual</option>
             <option value="anterior">Mês anterior</option>
             <option value="3">3 meses</option>
             <option value="6">6 meses</option>
             <option value="ano">Ano</option>
           </select>
           <select id="sup-rel-vendedor">
-            <option value="">Todos os vendedores</option>
+            <option value="">Vendedores</option>
           </select>
-          <button class="btn-lupa" id="btn-sup-rel-gerar">🔍</button>
+          <button class="btn-lupa" id="btn-sup-rel-gerar" style="flex:none; padding:10px 12px;">🔍</button>
+          <button class="btn" id="btn-sup-rel-fechar" style="flex:none; white-space:nowrap;">✕</button>
         </div>
         <div class="cards">
           <div class="card"><span class="card-rot">Meta total</span><span class="card-val" id="rel-meta">—</span></div>

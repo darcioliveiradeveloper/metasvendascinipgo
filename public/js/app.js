@@ -464,14 +464,12 @@ function iniciarSupervisor() {
   });
   $('btn-novo-vendedor').addEventListener('click', function () { abrirModalUsuario(null); });
   $('btn-sup-rel-gerar').addEventListener('click', carregarRelatorioSupervisor);
-  $('sup-rel-ano').addEventListener('change', function () {
-    const temAno = !!$('sup-rel-ano').value;
-    if (!temAno) {
-      $('sup-rel-periodo').value = 'ano';
-      $('sup-rel-periodo').disabled = true;
-    } else {
-      $('sup-rel-periodo').disabled = false;
-    }
+  $('btn-sup-rel-fechar').addEventListener('click', function () {
+    document.querySelectorAll('#view-supervisor .tab').forEach(function (t) { t.classList.remove('ativa'); });
+    document.querySelectorAll('#view-supervisor .aba').forEach(function (a) { a.classList.add('hidden'); });
+    document.querySelector('#view-supervisor .tab[data-tab="geral"]').classList.add('ativa');
+    $('aba-geral').classList.remove('hidden');
+    carregarGeral();
   });
   $('sp-btn-meta').addEventListener('click', function () { abrirModalValor('meta'); });
   $('sp-btn-lancar').addEventListener('click', function () { abrirModalValor('lancar'); });
@@ -949,8 +947,7 @@ function popularAnosRelatorioSupervisor() {
   return api('/api/supervisor/relatorios?de=2000-01&ate=2099-12').then(function (d) {
     const todos = (d.meses || []).map(function (m) { return m.anoMes; });
     const anos = [...new Set(todos.map(function (x) { return x.substring(0, 4); }))].sort().reverse();
-    $('sup-rel-ano').innerHTML = '<option value="">Ano</option>' + '<option value="">Todos</option>' + anos.map(function (a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
-    $('sup-rel-ano')._populado = true;
+    $('sup-rel-ano').innerHTML = '<option value="">Todos</option>' + anos.map(function (a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
   }).catch(function () {});
 }
 
@@ -975,7 +972,13 @@ function montarPeriodoSupervisor() {
   const anoAtual = hoje.getFullYear();
   let de, ate;
 
-  if (periodo === 'anterior') {
+  if (periodo === 'atual') {
+    let a = anoSel ? Number(anoSel) : anoAtual;
+    let m = mesAtual;
+    if (anoSel && Number(anoSel) < anoAtual) { m = 12; }
+    de = a + '-' + String(m).padStart(2, '0');
+    ate = de;
+  } else if (periodo === 'anterior') {
     let a = anoSel ? Number(anoSel) : anoAtual;
     let m = mesAtual - 1;
     if (m < 1) { m = 12; a--; }
@@ -989,7 +992,7 @@ function montarPeriodoSupervisor() {
       de = '2000-01';
       ate = '2099-12';
     }
-  } else {
+  } else if (periodo === '3' || periodo === '6') {
     const n = Number(periodo);
     const baseMes = (anoSel && Number(anoSel) < anoAtual) ? 12 : mesAtual - 1;
     const baseAno = anoSel ? Number(anoSel) : anoAtual;
@@ -1004,8 +1007,11 @@ function montarPeriodoSupervisor() {
     meses.reverse();
     de = meses[0];
     ate = meses[meses.length - 1];
+  } else {
+    de = '2000-01';
+    ate = '2099-12';
   }
-  return { de: de, ate: ate, n: periodo === 'ano' ? 12 : (periodo === 'anterior' ? 1 : Number(periodo)) };
+  return { de: de, ate: ate, n: periodo === 'ano' ? 12 : (periodo === 'atual' || periodo === 'anterior' ? 1 : Number(periodo)) };
 }
 
 async function carregarRelatorioSupervisor() {
