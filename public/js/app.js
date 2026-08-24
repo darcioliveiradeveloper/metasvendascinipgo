@@ -289,6 +289,23 @@ function montarTabelaHistorico(hist, prefixo, comAcoes) {
   return linhas;
 }
 
+function bindExpandirHistorico(tabela, prefixo) {
+  const btnExp = document.getElementById('btn-hist-expandir-' + prefixo);
+  const rowExp = document.getElementById('hist-expandir-' + prefixo);
+  if (!btnExp || !rowExp) return;
+  btnExp.addEventListener('click', function () {
+    const ocultos = tabela.querySelectorAll('.hist-oculto');
+    if (ocultos.length) {
+      ocultos.forEach(function (r) { r.classList.remove('hist-oculto'); });
+      btnExp.textContent = '▲ Ver menos';
+    } else {
+      const rows = tabela.querySelectorAll('.hist-row');
+      rows.forEach(function (r, i) { if (i < rows.length - 3) r.classList.add('hist-oculto'); });
+      btnExp.textContent = '▼ Ver todos (' + total + ' meses)';
+    }
+  });
+}
+
 function renderHistorico(hist) {
   const tabela = $('tabela-historico');
   if (!hist.length) {
@@ -297,14 +314,7 @@ function renderHistorico(hist) {
     return;
   }
   tabela.innerHTML = montarTabelaHistorico(hist, '', true);
-
-  const btnExp = document.getElementById('btn-hist-expandir-');
-  if (btnExp) {
-    btnExp.addEventListener('click', function () {
-      tabela.querySelectorAll('.hist-oculto').forEach(function (r) { r.classList.remove('hist-oculto'); });
-      document.getElementById('hist-expandir-').classList.add('hidden');
-    });
-  }
+  bindExpandirHistorico(tabela, '');
 
   tabela.querySelectorAll('[data-edita-mes]').forEach(function (b) {
     b.addEventListener('click', function () {
@@ -564,14 +574,7 @@ function renderSupervisorHistorico(hist) {
     return;
   }
   tabela.innerHTML = montarTabelaHistorico(hist, 'sp-', true);
-
-  const btnExp = document.getElementById('btn-hist-expandir-sp-');
-  if (btnExp) {
-    btnExp.addEventListener('click', function () {
-      tabela.querySelectorAll('.hist-oculto').forEach(function (r) { r.classList.remove('hist-oculto'); });
-      document.getElementById('hist-expandir-sp-').classList.add('hidden');
-    });
-  }
+  bindExpandirHistorico(tabela, 'sp-');
 
   tabela.querySelectorAll('[data-sp-edita-mes]').forEach(function (b) {
     b.addEventListener('click', function () {
@@ -706,14 +709,7 @@ function renderPainel(d) {
     return;
   }
   tabela.innerHTML = montarTabelaHistorico(d.historico, 'mp-', false);
-
-  const btnExp = document.getElementById('btn-hist-expandir-mp-');
-  if (btnExp) {
-    btnExp.addEventListener('click', function () {
-      tabela.querySelectorAll('.hist-oculto').forEach(function (r) { r.classList.remove('hist-oculto'); });
-      document.getElementById('hist-expandir-mp-').classList.add('hidden');
-    });
-  }
+  bindExpandirHistorico(tabela, 'mp-');
 
   novoGrafico('grafico-painel-hist', {
     type: 'bar',
