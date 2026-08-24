@@ -182,8 +182,10 @@ function iniciarVendedor() {
   $('btn-v-rel-gerar').addEventListener('click', gerarRelatorioVendedor);
   $('v-rel-ano').addEventListener('change', function () {
     const temAno = !!$('v-rel-ano').value;
-    $('v-rel-periodo').disabled = !temAno;
-    if (!temAno) $('v-rel-periodo').value = '';
+    if (!temAno) {
+      $('v-rel-periodo').value = 'ano';
+    }
+    $('v-rel-periodo').disabled = false;
   });
   carregarPainelVendedor();
 }
@@ -856,8 +858,6 @@ async function gerarRelatorioVendedor() {
     } else if (periodo === 'ano') {
       if (anoSel) {
         dados = dados.filter(function (x) { return x.anoMes.substring(0, 4) === anoSel; });
-      } else {
-        dados = [];
       }
     } else {
       const n = Number(periodo);
