@@ -184,8 +184,10 @@ function iniciarVendedor() {
     const temAno = !!$('v-rel-ano').value;
     if (!temAno) {
       $('v-rel-periodo').value = 'ano';
+      $('v-rel-periodo').disabled = true;
+    } else {
+      $('v-rel-periodo').disabled = false;
     }
-    $('v-rel-periodo').disabled = false;
   });
   carregarPainelVendedor();
 }
