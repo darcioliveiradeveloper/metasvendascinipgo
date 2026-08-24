@@ -127,14 +127,15 @@
     </section>
 
     <section id="view-v-relatorios" class="hidden">
-      <div class="card" style="margin-bottom:12px;">
+      <div class="card" style="margin-top:12px; margin-bottom:12px;">
         <div class="card-cab"><h2>Relatórios</h2></div>
         <div class="filtros">
+          <select id="v-rel-ano"></select>
           <select id="v-rel-periodo">
             <option value="atual">Mês atual</option>
             <option value="3">Últimos 3 meses</option>
             <option value="6">Últimos 6 meses</option>
-            <option value="12">Último ano</option>
+            <option value="ano">Ano</option>
             <option value="tudo">Tudo</option>
           </select>
           <button class="btn primario" id="btn-v-rel-gerar">Gerar</button>
@@ -142,13 +143,13 @@
         </div>
       </div>
 
-      <div class="cards" id="v-rel-cards-resumo" style="display:none;">
+      <div class="cards" id="v-rel-cards-resumo" style="display:none; margin-bottom:10px;">
         <div class="card"><span class="card-rot">Total vendido</span><span class="card-val" id="v-rel-total">—</span></div>
         <div class="card"><span class="card-rot">Meta total</span><span class="card-val" id="v-rel-meta">—</span></div>
         <div class="card"><span class="card-rot">Atingimento</span><span class="card-val" id="v-rel-pct">—</span></div>
       </div>
 
-      <div class="cards" id="v-rel-cards-insights" style="display:none;">
+      <div class="cards" id="v-rel-cards-insights" style="display:none; margin-bottom:10px;">
         <div class="card"><span class="card-rot">Maior venda</span><span class="card-val" id="v-rel-maior" style="font-size:1.1rem;">—</span><span class="card-info" id="v-rel-maior-info"></span></div>
         <div class="card"><span class="card-rot">Menor venda</span><span class="card-val" id="v-rel-menor" style="font-size:1.1rem;">—</span><span class="card-info" id="v-rel-menor-info"></span></div>
         <div class="card"><span class="card-rot">Média mensal</span><span class="card-val" id="v-rel-media" style="font-size:1.1rem;">—</span></div>

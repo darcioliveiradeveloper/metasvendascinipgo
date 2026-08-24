@@ -824,26 +824,37 @@ async function salvarModalUsuario() {
 async function gerarRelatorioVendedor() {
   try {
     const d = await api('/api/me/relatorios');
+    const dadosTodos = d.dados;
     const periodo = $('v-rel-periodo').value;
-    let dados = d.dados;
-    const hoje = new Date();
-    const chaveAtual = hoje.getFullYear() + '-' + String(hoje.getMonth() + 1).padStart(2, '0');
+    const anoSel = $('v-rel-ano').value;
 
-    if (periodo !== 'tudo') {
-      if (periodo === 'atual') {
-        dados = dados.filter(function (x) { return x.anoMes === chaveAtual; });
-      } else {
-        const n = Number(periodo);
-        const meses = [];
-        let a = hoje.getFullYear();
-        let m = hoje.getMonth() + 1;
-        for (let i = 0; i < n; i++) {
-          meses.push(a + '-' + String(m).padStart(2, '0'));
-          m--;
-          if (m < 1) { m = 12; a--; }
-        }
-        dados = dados.filter(function (x) { return meses.indexOf(x.anoMes) !== -1; });
+    if (!$('v-rel-ano')._populado) {
+      const anos = [...new Set(dadosTodos.map(function (x) { return x.anoMes.substring(0, 4); }))].sort().reverse();
+      $('v-rel-ano').innerHTML = '<option value="">Todos</option>' + anos.map(function (a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
+      $('v-rel-ano').value = new Date().getFullYear().toString();
+      $('v-rel-ano')._populado = true;
+    }
+
+    let dados = dadosTodos;
+
+    if (periodo === 'atual') {
+      const chaveAtual = new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0');
+      dados = dados.filter(function (x) { return x.anoMes === chaveAtual; });
+    } else if (periodo === 'ano') {
+      dados = dados.filter(function (x) { return x.anoMes.substring(0, 4) === anoSel; });
+    } else if (periodo === 'tudo') {
+      if (anoSel) dados = dados.filter(function (x) { return x.anoMes.substring(0, 4) === anoSel; });
+    } else {
+      const n = Number(periodo);
+      const meses = [];
+      let a = new Date().getFullYear();
+      let m = new Date().getMonth() + 1;
+      for (let i = 0; i < n; i++) {
+        meses.push(a + '-' + String(m).padStart(2, '0'));
+        m--;
+        if (m < 1) { m = 12; a--; }
       }
+      dados = dados.filter(function (x) { return meses.indexOf(x.anoMes) !== -1; });
     }
 
     const totalVendido = dados.reduce(function (s, x) { return s + x.atingido; }, 0);
