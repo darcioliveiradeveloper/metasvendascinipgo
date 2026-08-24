@@ -2,7 +2,7 @@
 html { height: 100%; }
 body {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  background: #f1f5f9;
+  background: var(--card-bg);
   color: #0f172a;
   min-height: 100%;
   padding-bottom: env(safe-area-inset-bottom);
@@ -13,17 +13,17 @@ body {
 :root, [data-tema="azul"] {
   --c1: #1e1b4b; --c2: #4338ca; --c3: #06b6d4;
   --c2-hover: #3730a3; --bar-alc-a: #06b6d4; --bar-alc-b: #4338ca;
-  --card-bg: rgba(99,102,241,0.05);
+  --card-bg: #eef2ff;
 }
 [data-tema="vermelho"] {
   --c1: #450a0a; --c2: #dc2626; --c3: #f97316;
   --c2-hover: #b91c1c; --bar-alc-a: #f97316; --bar-alc-b: #dc2626;
-  --card-bg: rgba(220,38,38,0.05);
+  --card-bg: #fef2f2;
 }
 [data-tema="verde"] {
   --c1: #052e16; --c2: #16a34a; --c3: #a3e635;
   --c2-hover: #15803d; --bar-alc-a: #a3e635; --bar-alc-b: #16a34a;
-  --card-bg: rgba(22,163,74,0.05);
+  --card-bg: #f0fdf4;
 }
 
 /* ========================= HEADER ========================= */
@@ -88,7 +88,7 @@ header {
 .topo-botoes .btn-header-icon.btn-sair:active { background: rgba(220,38,38,0.6); }
 
 /* ========================= MAIN ========================= */
-main { max-width: 480px; margin: -36px auto 0; padding: 12px 14px 40px; background: var(--card-bg); border-radius: 16px; }
+main { max-width: 480px; margin: -36px auto 0; padding: 0 14px 40px; }
 
 .data {
   text-align: center;
