@@ -172,15 +172,19 @@ function iniciarVendedor() {
   $('btn-v-relatorios').addEventListener('click', function () {
     $('view-vendedor').classList.add('hidden');
     $('view-v-relatorios').classList.remove('hidden');
-    const d = new Date();
-    $('v-rel-data').textContent = d.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
-    gerarRelatorioVendedor();
+    $('v-rel-data').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+    if (!$('v-rel-ano')._populado) popularAnosRelatorio();
   });
   $('btn-v-rel-fechar').addEventListener('click', function () {
     $('view-v-relatorios').classList.add('hidden');
     $('view-vendedor').classList.remove('hidden');
   });
   $('btn-v-rel-gerar').addEventListener('click', gerarRelatorioVendedor);
+  $('v-rel-ano').addEventListener('change', function () {
+    const temAno = !!$('v-rel-ano').value;
+    $('v-rel-periodo').disabled = !temAno;
+    if (!temAno) $('v-rel-periodo').value = '';
+  });
   carregarPainelVendedor();
 }
 
@@ -823,23 +827,22 @@ async function salvarModalUsuario() {
 
 /* ============================= RELATÓRIO DO VENDEDOR ============================= */
 
+function popularAnosRelatorio() {
+  return api('/api/me/relatorios').then(function (d) {
+    const anos = [...new Set(d.dados.map(function (x) { return x.anoMes.substring(0, 4); }))].sort().reverse();
+    $('v-rel-ano').innerHTML = '<option value="">Ano</option>' + '<option value="">Todos</option>' + anos.map(function (a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
+    $('v-rel-ano')._populado = true;
+  });
+}
+
 async function gerarRelatorioVendedor() {
   try {
-    const d = await api('/api/me/relatorios');
-    const dadosTodos = d.dados;
     const periodo = $('v-rel-periodo').value;
     const anoSel = $('v-rel-ano').value;
+    if (!periodo) return;
 
-    if (!$('v-rel-ano')._populado) {
-      const anos = [...new Set(dadosTodos.map(function (x) { return x.anoMes.substring(0, 4); }))].sort().reverse();
-      $('v-rel-ano').innerHTML = '<option value="">Todos</option>' + anos.map(function (a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
-      $('v-rel-ano').value = new Date().getFullYear().toString();
-      $('v-rel-ano')._populado = true;
-    }
-
-    $('v-rel-ano').disabled = (periodo === 'tudo');
-
-    let dados = dadosTodos;
+    const d = await api('/api/me/relatorios');
+    let dados = d.dados;
     const hoje = new Date();
     const mesAtual = hoje.getMonth() + 1;
     const anoAtual = hoje.getFullYear();
@@ -856,7 +859,6 @@ async function gerarRelatorioVendedor() {
       } else {
         dados = [];
       }
-    } else if (periodo === 'tudo') {
     } else {
       const n = Number(periodo);
       const baseMes = (anoSel && Number(anoSel) < anoAtual) ? 12 : mesAtual - 1;

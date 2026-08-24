@@ -131,13 +131,15 @@
       <div class="card" style="margin-top:12px; margin-bottom:12px;">
         <div class="card-cab"><h2>Relatórios</h2></div>
         <div class="filtros">
-          <select id="v-rel-ano"></select>
-          <select id="v-rel-periodo">
+          <select id="v-rel-ano">
+            <option value="">Ano</option>
+          </select>
+          <select id="v-rel-periodo" disabled>
+            <option value="">Escolha</option>
             <option value="anterior">Mês anterior</option>
             <option value="3">3 meses</option>
             <option value="6">6 meses</option>
             <option value="ano">Ano</option>
-            <option value="tudo">Tudo</option>
           </select>
           <button class="btn-lupa" id="btn-v-rel-gerar">🔍</button>
           <button class="btn" id="btn-v-rel-fechar" style="flex:none; white-space:nowrap;">✕</button>
@@ -145,8 +147,8 @@
       </div>
 
       <div class="cards" id="v-rel-cards-resumo" style="display:none; margin-bottom:10px;">
-        <div class="card"><span class="card-rot">Total vendido</span><span class="card-val" id="v-rel-total">—</span></div>
         <div class="card"><span class="card-rot">Meta total</span><span class="card-val" id="v-rel-meta">—</span></div>
+        <div class="card"><span class="card-rot">Total vendido</span><span class="card-val" id="v-rel-total">—</span></div>
         <div class="card"><span class="card-rot">Atingimento</span><span class="card-val" id="v-rel-pct">—</span></div>
       </div>
 
