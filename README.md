@@ -1,10 +1,11 @@
-# Metas de Venda — Acompanhamento de Vendas
+# VendaCerta — Acompanhamento de Vendas
 
-Sistema completo de acompanhamento de vendas para vendedores e supervisor.
+Sistema completo de acompanhamento de vendas para vendedores, supervisores e suporte.
 
 - Vendedor lança o **total acumulado vendido no mês** (em fardos).
 - O sistema calcula **tendência**, **meta diária restante** e **dias úteis** automaticamente (segunda a sexta).
-- Supervisor define **metas individuais**, acompanha o **painel geral** e gera **relatórios e gráficos** mensal, trimestral, semestral, anual e comparativo mês a mês.
+- Supervisor define **metas individuais**, acompanha o **painel geral** e gera **relatórios e gráficos** mensal, trimestral, semestral e anual.
+- Suporte gerencia **vendedores** (criar, editar, inativar, excluir) e acompanha todos os painéis.
 
 ## Tecnologias
 
@@ -102,3 +103,23 @@ metasvendascinipgo/
 - **Tendência:** `(vendas ÷ dias trabalhados) × dias úteis do mês ÷ meta × 100`.
 - **Meta diária:** `(meta − vendas) ÷ dias úteis restantes`.
 - O vendedor pode trabalhar com um **mês diferente do calendário** (ex.: lançar o mês passado alguns dias depois).
+
+## Histórico de Versões
+
+### v2.0.0 — Ago 2026
+App renomeado para **VendaCerta**. Trocar senha simplificado. Crédito desenvolvedor no login. Inativar/excluir vendedor. Botões do header reordenados (✏️🔒🎨✕). Fundo temático. Relatório individual do vendedor. Select de ano. Botões lupa/✕. Filtro mês anterior/3 meses/6 meses/ano. Histórico 3 meses recentes.
+
+### v1.4.0 — Jul 2026
+Fechar mês disponível (após incluir). Relatório supervisor: filtrar período, gráfico barras, insights (maior/menor venda, média mensal).
+
+### v1.3.0 — Jul 2026
+Login redesenhado com gradiente. Tema com 5 cores (🎨). Nome-setor no header. Fundo suave muda com o tema.
+
+### v1.2.0 — Jul 2026
+Painel suporte: CRUD completo de vendedores. Definir metas individuais. Resetar senha. 3 abas (Usuários / Visão Geral / Relatórios).
+
+### v1.1.0 — Jun 2026
+Modo print 📷 e print limpo 🖼️. Histórico mensal com gráfico de barras. Botões incluir e fechar mês.
+
+### v1.0.0 — Jun 2026
+Lançamento inicial. Login com JWT. Painel vendedor: meta, tendência, meta diária. Painel supervisor. Cálculo automático de dias úteis (seg–sex). Testes da API.
