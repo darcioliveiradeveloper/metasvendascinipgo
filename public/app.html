@@ -127,13 +127,15 @@
     </section>
 
     <section id="view-v-relatorios" class="hidden">
+      <span class="data" id="v-rel-data"></span>
       <div class="card" style="margin-top:12px; margin-bottom:12px;">
         <div class="card-cab"><h2>Relatórios</h2></div>
         <div class="filtros">
           <select id="v-rel-ano"></select>
           <select id="v-rel-periodo">
-            <option value="3">Últimos 3 meses</option>
-            <option value="6">Últimos 6 meses</option>
+            <option value="anterior">Mês anterior</option>
+            <option value="3">3 meses</option>
+            <option value="6">6 meses</option>
             <option value="ano">Ano</option>
             <option value="tudo">Tudo</option>
           </select>

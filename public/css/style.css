@@ -270,8 +270,9 @@ tr:last-child td { border-bottom: none; }
 .tab.ativa { background: #0f172a; color: #fff; border-color: #0f172a; }
 
 /* ========================= FILTROS ========================= */
-.filtros { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
-.filtros select { width: auto; }
+.filtros { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+.filtros select { width: auto; font-size: 0.85rem; padding: 6px 8px; }
+.filtros .btn { font-size: 0.85rem; padding: 6px 12px; flex: none; }
 
 /* ========================= INPUTS ========================= */
 input, select {

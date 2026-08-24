@@ -172,6 +172,8 @@ function iniciarVendedor() {
   $('btn-v-relatorios').addEventListener('click', function () {
     $('view-vendedor').classList.add('hidden');
     $('view-v-relatorios').classList.remove('hidden');
+    const d = new Date();
+    $('v-rel-data').textContent = d.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
     gerarRelatorioVendedor();
   });
   $('btn-v-rel-fechar').addEventListener('click', function () {
@@ -837,7 +839,12 @@ async function gerarRelatorioVendedor() {
 
     let dados = dadosTodos;
 
-    if (periodo === 'ano') {
+    if (periodo === 'anterior') {
+      const a = new Date();
+      a.setMonth(a.getMonth() - 1);
+      const chave = a.getFullYear() + '-' + String(a.getMonth() + 1).padStart(2, '0');
+      dados = dados.filter(function (x) { return x.anoMes === chave; });
+    } else if (periodo === 'ano') {
       dados = dados.filter(function (x) { return x.anoMes.substring(0, 4) === anoSel; });
     } else if (periodo === 'tudo') {
       if (anoSel) dados = dados.filter(function (x) { return x.anoMes.substring(0, 4) === anoSel; });
