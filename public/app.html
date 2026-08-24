@@ -365,7 +365,10 @@
       <label id="mu-senha-linha">Senha<input id="mu-senha" type="password" placeholder="Nova senha (para criar, obrigatória)"></label>
       <div id="mu-advanced" class="hidden">
         <label class="check"><input id="mu-ativo" type="checkbox" checked> Usuário ativo</label>
-        <button class="btn perigo" id="btn-mu-resetar" type="button">Resetar senha (senha = setor)</button>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button class="btn perigo" id="btn-mu-resetar" type="button">Resetar senha</button>
+          <button class="btn perigo" id="btn-mu-excluir" type="button">Excluir</button>
+        </div>
       </div>
       <div class="modal-acoes">
         <button class="btn" id="btn-mu-cancelar">Cancelar</button>

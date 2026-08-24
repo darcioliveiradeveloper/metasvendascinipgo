@@ -202,6 +202,31 @@ router.put('/usuarios/:id', async (req, res) => {
   }
 });
 
+router.delete('/usuarios/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!idValido(id)) return res.status(400).json({ erro: 'Id inválido' });
+    const user = await User.findById(id);
+    if (!user) return res.status(404).json({ erro: 'Usuário não encontrado' });
+    if (!podeGerenciar(req.usuario, user)) {
+      return res.status(403).json({ erro: 'Sem permissão para excluir este usuário' });
+    }
+    if (user.perfil === 'suporte') {
+      const quantos = await User.countDocuments({ perfil: 'suporte' });
+      if (quantos <= 1) return res.status(400).json({ erro: 'Deve existir pelo menos um suporte' });
+    }
+    if (user.perfil === 'supervisor') {
+      const quantos = await User.countDocuments({ perfil: 'supervisor' });
+      if (quantos <= 1) return res.status(400).json({ erro: 'Deve existir pelo menos um supervisor' });
+    }
+    await User.deleteOne({ _id: user._id });
+    res.json({ ok: true });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ erro: 'Erro ao excluir usuário' });
+  }
+});
+
 router.post('/usuarios/:id/resetar-senha', async (req, res) => {
   try {
     const { id } = req.params;

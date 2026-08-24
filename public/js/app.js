@@ -701,6 +701,18 @@ async function resetarSenhaUsuario(u) {
   } catch (e) { alert(e.message); }
 }
 
+async function excluirUsuario() {
+  if (!confirm('Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.')) return;
+  try {
+    await api('/api/supervisor/usuarios/' + ID_USUARIO, { method: 'DELETE' });
+    fecharModalUsuario();
+    carregarVendedores();
+  } catch (e) {
+    $('mu-erro').textContent = e.message;
+    $('mu-erro').classList.remove('hidden');
+  }
+}
+
 let MODO_USUARIO = 'novo';
 let ID_USUARIO = null;
 
@@ -743,7 +755,7 @@ async function salvarModalUsuario() {
   };
   const senha = $('mu-senha').value;
   if (senha) corpo.senha = senha;
-  if (MODO_USUARIO === 'novo') corpo.ativo = $('mu-ativo').checked;
+  if (MODO_USUARIO === 'novo' || MODO_USUARIO === 'editar') corpo.ativo = $('mu-ativo').checked;
   if (!corpo.nome || !corpo.email || (MODO_USUARIO === 'novo' && !senha)) {
     $('mu-erro').textContent = 'Nome, e-mail e senha são obrigatórios para novo vendedor.';
     $('mu-erro').classList.remove('hidden');
@@ -892,6 +904,7 @@ function preencherFiltroVendedor() {
   $('btn-mu-cancelar').addEventListener('click', fecharModalUsuario);
   $('btn-mu-salvar').addEventListener('click', salvarModalUsuario);
   $('btn-mu-resetar').addEventListener('click', resetarSenhaModal);
+  $('btn-mu-excluir').addEventListener('click', excluirUsuario);
 $('btn-mp-fechar').addEventListener('click', fecharModalPainel);
 $('btn-valor-cancelar').addEventListener('click', fecharModalValor);
 $('btn-valor-ok').addEventListener('click', salvarModalValor);
