@@ -463,7 +463,16 @@ function iniciarSupervisor() {
     });
   });
   $('btn-novo-vendedor').addEventListener('click', function () { abrirModalUsuario(null); });
-  $('btn-gerar').addEventListener('click', carregarRelatorio);
+  $('btn-sup-rel-gerar').addEventListener('click', carregarRelatorioSupervisor);
+  $('sup-rel-ano').addEventListener('change', function () {
+    const temAno = !!$('sup-rel-ano').value;
+    if (!temAno) {
+      $('sup-rel-periodo').value = 'ano';
+      $('sup-rel-periodo').disabled = true;
+    } else {
+      $('sup-rel-periodo').disabled = false;
+    }
+  });
   $('sp-btn-meta').addEventListener('click', function () { abrirModalValor('meta'); });
   $('sp-btn-lancar').addEventListener('click', function () { abrirModalValor('lancar'); });
   $('sp-btn-iniciar-mes').addEventListener('click', iniciarMesAtual);
@@ -484,7 +493,8 @@ function iniciarSupervisor() {
     $('modal-mes').classList.remove('hidden');
     $('mm-anoMes').focus();
   });
-  preencherFiltroVendedor();
+  popularAnosRelatorioSupervisor();
+  preencherFiltroVendedorSupervisor();
   carregarGeral();
 }
 
@@ -935,24 +945,78 @@ async function gerarRelatorioVendedor() {
 
 /* ============================= RELATÓRIOS SUPERVISOR ============================= */
 
-function ultimosMeses(n) {
-  const hoje = new Date();
-  const arr = [];
-  for (let i = n; i >= 1; i--) {
-    const dd = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
-    arr.push(dd.getFullYear() + '-' + String(dd.getMonth() + 1).padStart(2, '0'));
-  }
-  return { de: arr[0], ate: arr[arr.length - 1] };
+function popularAnosRelatorioSupervisor() {
+  return api('/api/supervisor/relatorios?de=2000-01&ate=2099-12').then(function (d) {
+    const todos = (d.meses || []).map(function (m) { return m.anoMes; });
+    const anos = [...new Set(todos.map(function (x) { return x.substring(0, 4); }))].sort().reverse();
+    $('sup-rel-ano').innerHTML = '<option value="">Ano</option>' + '<option value="">Todos</option>' + anos.map(function (a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
+    $('sup-rel-ano')._populado = true;
+  }).catch(function () {});
 }
 
-async function carregarRelatorio() {
-  const n = Number($('filtro-tipo').value);
-  const rango = ultimosMeses(n);
-  const usuario = $('filtro-vendedor').value;
+function preencherFiltroVendedorSupervisor() {
+  return api('/api/supervisor/usuarios').then(function (lista) {
+    const opcoes = lista.filter(function (u) { return u.perfil === 'vendedor'; })
+      .sort(function (a, b) {
+        const sa = (a.setor || '').localeCompare(b.setor || '', undefined, { numeric: true });
+        return sa !== 0 ? sa : (a.nome || '').localeCompare(b.nome || '');
+      })
+      .map(function (u) { return '<option value="' + u.id + '">' + (u.setor ? u.setor + ' - ' : '') + u.nome + '</option>'; })
+      .join('');
+    $('sup-rel-vendedor').innerHTML = '<option value="">Todos os vendedores</option>' + opcoes;
+  }).catch(function () {});
+}
+
+function montarPeriodoSupervisor() {
+  const periodo = $('sup-rel-periodo').value;
+  const anoSel = $('sup-rel-ano').value;
+  const hoje = new Date();
+  const mesAtual = hoje.getMonth() + 1;
+  const anoAtual = hoje.getFullYear();
+  let de, ate;
+
+  if (periodo === 'anterior') {
+    let a = anoSel ? Number(anoSel) : anoAtual;
+    let m = mesAtual - 1;
+    if (m < 1) { m = 12; a--; }
+    de = a + '-' + String(m).padStart(2, '0');
+    ate = de;
+  } else if (periodo === 'ano') {
+    if (anoSel) {
+      de = anoSel + '-01';
+      ate = anoSel + '-12';
+    } else {
+      de = '2000-01';
+      ate = '2099-12';
+    }
+  } else {
+    const n = Number(periodo);
+    const baseMes = (anoSel && Number(anoSel) < anoAtual) ? 12 : mesAtual - 1;
+    const baseAno = anoSel ? Number(anoSel) : anoAtual;
+    const meses = [];
+    let a = baseAno;
+    let m = baseMes;
+    for (let i = 0; i < n; i++) {
+      meses.push(a + '-' + String(m).padStart(2, '0'));
+      m--;
+      if (m < 1) { m = 12; a--; }
+    }
+    meses.reverse();
+    de = meses[0];
+    ate = meses[meses.length - 1];
+  }
+  return { de: de, ate: ate, n: periodo === 'ano' ? 12 : (periodo === 'anterior' ? 1 : Number(periodo)) };
+}
+
+async function carregarRelatorioSupervisor() {
+  const periodo = $('sup-rel-periodo').value;
+  if (!periodo) return;
+  const rango = montarPeriodoSupervisor();
+  const usuario = $('sup-rel-vendedor').value;
   try {
     const url = '/api/supervisor/relatorios?de=' + rango.de + '&ate=' + rango.ate + (usuario ? '&usuario=' + usuario : '');
     const d = await api(url);
-    renderRelatorio(d, n);
+    renderRelatorio(d, rango.n);
   } catch (e) { alert(e.message); }
 }
 
@@ -1005,7 +1069,7 @@ function renderRelatorio(d, n) {
     destruirGrafico('grafico-pct');
   }
 
-  if (!mensal && !$('filtro-vendedor').value) {
+  if (!mensal && !$('sup-rel-vendedor').value) {
     novoGrafico('grafico-comp', {
       type: 'line',
       data: {
@@ -1042,21 +1106,6 @@ function renderRelatorio(d, n) {
     });
   }
   $('tabela-relatorio').innerHTML = linhas;
-}
-
-function preencherFiltroVendedor() {
-  api('/api/supervisor/usuarios')
-    .then(function (lista) {
-      const opcoes = lista.filter((u) => u.perfil === 'vendedor')
-        .sort(function (a, b) {
-          const sa = (a.setor || '').localeCompare(b.setor || '', undefined, { numeric: true });
-          return sa !== 0 ? sa : (a.nome || '').localeCompare(b.nome || '');
-        })
-        .map((u) => '<option value="' + u.id + '">' + (u.setor ? u.setor + ' - ' : '') + u.nome + '</option>')
-        .join('');
-      $('filtro-vendedor').innerHTML = '<option value="">Todos os vendedores</option>' + opcoes;
-    })
-    .catch(function () {});
 }
 
   $('btn-mu-cancelar').addEventListener('click', fecharModalUsuario);

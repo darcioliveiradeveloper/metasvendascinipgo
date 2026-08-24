@@ -290,19 +290,25 @@
       <div id="aba-relatorios" class="aba hidden">
         <h2>Relatórios</h2>
         <div class="filtros">
-          <select id="filtro-tipo">
-            <option value="1">Mês atual</option>
-            <option value="3">Trimestre (3 meses)</option>
-            <option value="6">Semestre (6 meses)</option>
-            <option value="12">Ano (12 meses)</option>
+          <select id="sup-rel-ano">
+            <option value="">Ano</option>
           </select>
-          <select id="filtro-vendedor"></select>
-          <button class="btn primario" id="btn-gerar">Gerar</button>
+          <select id="sup-rel-periodo" disabled>
+            <option value="">Escolha</option>
+            <option value="anterior">Mês anterior</option>
+            <option value="3">3 meses</option>
+            <option value="6">6 meses</option>
+            <option value="ano">Ano</option>
+          </select>
+          <select id="sup-rel-vendedor">
+            <option value="">Todos os vendedores</option>
+          </select>
+          <button class="btn-lupa" id="btn-sup-rel-gerar">🔍</button>
         </div>
         <div class="cards">
-          <div class="card"><span class="card-rot">Meta do período</span><span class="card-val" id="rel-meta">—</span></div>
-          <div class="card"><span class="card-rot">Vendido no período</span><span class="card-val" id="rel-atingido">—</span></div>
-          <div class="card"><span class="card-rot">Atingido</span><span class="card-val" id="rel-pct">—</span></div>
+          <div class="card"><span class="card-rot">Meta total</span><span class="card-val" id="rel-meta">—</span></div>
+          <div class="card"><span class="card-rot">Total vendido</span><span class="card-val" id="rel-atingido">—</span></div>
+          <div class="card"><span class="card-rot">Atingimento</span><span class="card-val" id="rel-pct">—</span></div>
         </div>
         <div class="card hist"><h3>Meta × Vendido</h3><canvas id="grafico-meta"></canvas></div>
         <div class="card hist"><h3>Percentual atingido</h3><canvas id="grafico-pct"></canvas></div>
