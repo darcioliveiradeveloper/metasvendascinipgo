@@ -837,21 +837,30 @@ async function gerarRelatorioVendedor() {
       $('v-rel-ano')._populado = true;
     }
 
+    $('v-rel-ano').disabled = (periodo === 'tudo');
+
     let dados = dadosTodos;
+    const hoje = new Date();
+    const mesAtual = hoje.getMonth() + 1;
+    const anoAtual = hoje.getFullYear();
 
     if (periodo === 'anterior') {
-      const a = new Date();
-      a.setMonth(a.getMonth() - 1);
-      const chave = a.getFullYear() + '-' + String(a.getMonth() + 1).padStart(2, '0');
+      let a = anoSel ? Number(anoSel) : anoAtual;
+      let m = mesAtual - 1;
+      if (m < 1) { m = 12; a--; }
+      const chave = a + '-' + String(m).padStart(2, '0');
       dados = dados.filter(function (x) { return x.anoMes === chave; });
     } else if (periodo === 'ano') {
-      dados = dados.filter(function (x) { return x.anoMes.substring(0, 4) === anoSel; });
+      if (anoSel) {
+        dados = dados.filter(function (x) { return x.anoMes.substring(0, 4) === anoSel; });
+      } else {
+        dados = [];
+      }
     } else if (periodo === 'tudo') {
-      if (anoSel) dados = dados.filter(function (x) { return x.anoMes.substring(0, 4) === anoSel; });
     } else {
       const n = Number(periodo);
-      const baseAno = anoSel ? Number(anoSel) : new Date().getFullYear();
-      const baseMes = anoSel ? 12 : new Date().getMonth() + 1;
+      const baseMes = (anoSel && Number(anoSel) < anoAtual) ? 12 : mesAtual - 1;
+      const baseAno = anoSel ? Number(anoSel) : anoAtual;
       const meses = [];
       let a = baseAno;
       let m = baseMes;

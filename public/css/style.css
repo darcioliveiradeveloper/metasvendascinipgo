@@ -270,9 +270,10 @@ tr:last-child td { border-bottom: none; }
 .tab.ativa { background: #0f172a; color: #fff; border-color: #0f172a; }
 
 /* ========================= FILTROS ========================= */
-.filtros { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
-.filtros select { width: auto; font-size: 0.85rem; padding: 6px 8px; }
-.filtros .btn { font-size: 0.85rem; padding: 6px 12px; flex: none; }
+.filtros { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+.filtros select { width: auto; }
+.btn-lupa { background: #f1f5f9; color: #475569; border: none; border-radius: 12px; padding: 14px; font-size: 1rem; font-weight: 700; cursor: pointer; flex: 1; }
+.btn-lupa:active { background: var(--c2); color: #fff; }
 
 /* ========================= INPUTS ========================= */
 input, select {
