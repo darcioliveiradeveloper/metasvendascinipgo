@@ -284,24 +284,23 @@ function montarTabelaHistorico(hist, prefixo, comAcoes) {
   });
   if (total > visiveis) {
     const colspan = comAcoes ? 6 : 5;
-    linhas += '<tr id="hist-expandir-' + prefixo + '" class="hist-expandir"><td colspan="' + colspan + '" style="text-align:center"><button class="btn-link" id="btn-hist-expandir-' + prefixo + '">▼ Ver todos (' + total + ' meses)</button></td></tr>';
+    linhas += '<tr id="hist-expandir-' + prefixo + '" class="hist-expandir"><td colspan="' + colspan + '" style="text-align:center"><button class="btn-link" id="btn-hist-expandir-' + prefixo + '">Mais</button></td></tr>';
   }
   return linhas;
 }
 
 function bindExpandirHistorico(tabela, prefixo) {
   const btnExp = document.getElementById('btn-hist-expandir-' + prefixo);
-  const rowExp = document.getElementById('hist-expandir-' + prefixo);
-  if (!btnExp || !rowExp) return;
+  if (!btnExp) return;
   btnExp.addEventListener('click', function () {
     const ocultos = tabela.querySelectorAll('.hist-oculto');
     if (ocultos.length) {
       ocultos.forEach(function (r) { r.classList.remove('hist-oculto'); });
-      btnExp.textContent = '▲ Ver menos';
+      btnExp.textContent = 'Menos';
     } else {
       const rows = tabela.querySelectorAll('.hist-row');
       rows.forEach(function (r, i) { if (i < rows.length - 3) r.classList.add('hist-oculto'); });
-      btnExp.textContent = '▼ Ver todos (' + total + ' meses)';
+      btnExp.textContent = 'Mais';
     }
   });
 }
