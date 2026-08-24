@@ -123,43 +123,45 @@
         <div class="tabela-scroll"><table id="tabela-historico"></table></div>
       </div>
 
-      <div id="view-v-relatorios" class="hidden" style="margin-top:16px;">
-        <div class="card" style="margin-bottom:12px;">
-          <div class="card-cab"><h2>Relatórios</h2></div>
-          <div class="filtros">
-            <select id="v-rel-periodo">
-              <option value="atual">Mês atual</option>
-              <option value="3">Últimos 3 meses</option>
-              <option value="6">Últimos 6 meses</option>
-              <option value="12">Último ano</option>
-              <option value="tudo">Tudo</option>
-            </select>
-            <button class="btn primario" id="btn-v-rel-gerar">Gerar</button>
-            <button class="btn" id="btn-v-rel-fechar" style="flex:none; white-space:nowrap;">✕ Fechar</button>
-          </div>
-        </div>
+      </div>
+    </section>
 
-        <div class="cards" id="v-rel-cards-resumo" style="display:none;">
-          <div class="card"><span class="card-rot">Total vendido</span><span class="card-val" id="v-rel-total">—</span></div>
-          <div class="card"><span class="card-rot">Meta total</span><span class="card-val" id="v-rel-meta">—</span></div>
-          <div class="card"><span class="card-rot">Atingimento</span><span class="card-val" id="v-rel-pct">—</span></div>
+    <section id="view-v-relatorios" class="hidden">
+      <div class="card" style="margin-bottom:12px;">
+        <div class="card-cab"><h2>Relatórios</h2></div>
+        <div class="filtros">
+          <select id="v-rel-periodo">
+            <option value="atual">Mês atual</option>
+            <option value="3">Últimos 3 meses</option>
+            <option value="6">Últimos 6 meses</option>
+            <option value="12">Último ano</option>
+            <option value="tudo">Tudo</option>
+          </select>
+          <button class="btn primario" id="btn-v-rel-gerar">Gerar</button>
+          <button class="btn" id="btn-v-rel-fechar" style="flex:none; white-space:nowrap;">✕ Fechar</button>
         </div>
+      </div>
 
-        <div class="cards" id="v-rel-cards-insights" style="display:none;">
-          <div class="card"><span class="card-rot">Maior venda</span><span class="card-val" id="v-rel-maior" style="font-size:1.1rem;">—</span><span class="card-info" id="v-rel-maior-info"></span></div>
-          <div class="card"><span class="card-rot">Menor venda</span><span class="card-val" id="v-rel-menor" style="font-size:1.1rem;">—</span><span class="card-info" id="v-rel-menor-info"></span></div>
-          <div class="card"><span class="card-rot">Média mensal</span><span class="card-val" id="v-rel-media" style="font-size:1.1rem;">—</span></div>
-        </div>
+      <div class="cards" id="v-rel-cards-resumo" style="display:none;">
+        <div class="card"><span class="card-rot">Total vendido</span><span class="card-val" id="v-rel-total">—</span></div>
+        <div class="card"><span class="card-rot">Meta total</span><span class="card-val" id="v-rel-meta">—</span></div>
+        <div class="card"><span class="card-rot">Atingimento</span><span class="card-val" id="v-rel-pct">—</span></div>
+      </div>
 
-        <div class="card hist" id="v-rel-grafico-wrap" style="display:none;">
-          <h3>Vendas por mês</h3>
-          <canvas id="v-rel-grafico" height="180"></canvas>
-        </div>
+      <div class="cards" id="v-rel-cards-insights" style="display:none;">
+        <div class="card"><span class="card-rot">Maior venda</span><span class="card-val" id="v-rel-maior" style="font-size:1.1rem;">—</span><span class="card-info" id="v-rel-maior-info"></span></div>
+        <div class="card"><span class="card-rot">Menor venda</span><span class="card-val" id="v-rel-menor" style="font-size:1.1rem;">—</span><span class="card-info" id="v-rel-menor-info"></span></div>
+        <div class="card"><span class="card-rot">Média mensal</span><span class="card-val" id="v-rel-media" style="font-size:1.1rem;">—</span></div>
+      </div>
 
-        <div class="card hist" id="v-rel-tabela-wrap" style="display:none;">
-          <h3>Detalhamento</h3>
-          <div class="tabela-scroll"><table id="v-rel-tabela"></table></div>
-        </div>
+      <div class="card hist" id="v-rel-grafico-wrap" style="display:none;">
+        <h3>Vendas por mês</h3>
+        <canvas id="v-rel-grafico" height="180"></canvas>
+      </div>
+
+      <div class="card hist" id="v-rel-tabela-wrap" style="display:none;">
+        <h3>Detalhamento</h3>
+        <div class="tabela-scroll"><table id="v-rel-tabela"></table></div>
       </div>
     </section>
 
