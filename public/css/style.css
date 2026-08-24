@@ -234,6 +234,8 @@ main { max-width: 480px; margin: -36px auto 0; padding: 0 14px 40px; }
 .hist h3 { margin: 0 0 10px; }
 .hist-resumo { font-size: 0.8rem; color: #475569; background: #f8fafc; border-radius: 10px; padding: 10px 12px; line-height: 1.6; margin-bottom: 8px; }
 .hist-resumo b { color: #0f172a; }
+.hist-oculto { display: none; }
+.hist-expandir td { padding: 4px; }
 .atualizado { text-align: center; font-size: 0.75rem; color: #94a3b8; margin-top: 20px; }
 
 /* ========================= TABELA ========================= */

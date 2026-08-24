@@ -269,6 +269,26 @@ function renderVendedor(d) {
   renderHistorico(d.historico);
 }
 
+function montarTabelaHistorico(hist, prefixo, comAcoes) {
+  const total = hist.length;
+  const visiveis = 3;
+  let linhas = '<tr><th>Mês</th><th>Meta</th><th>Atingido</th><th>%</th><th>D.U.</th>';
+  if (comAcoes) linhas += '<th></th>';
+  linhas += '</tr>';
+  hist.forEach(function (h, i) {
+    const escondido = total > visiveis && i < total - visiveis;
+    const trAcao = comAcoes
+      ? '<td class="hist-acoes"><button class="btn-icon" data-' + prefixo + 'edita-mes="' + h.anoMes + '" title="Editar mês">✎</button> <button class="btn-icon perigo" data-' + prefixo + 'deleta-mes="' + h.anoMes + '" title="Excluir mês">✕</button></td>'
+      : '';
+    linhas += '<tr class="hist-row' + (escondido ? ' hist-oculto' : '') + '"><td>' + h.nomeMes + '</td><td>' + fmtQtd(h.meta) + '</td><td>' + fmtQtd(h.atingido) + '</td><td class="tend">' + fmtPct(h.pct) + '</td><td>' + h.utMes + '</td>' + trAcao + '</tr>';
+  });
+  if (total > visiveis) {
+    const colspan = comAcoes ? 6 : 5;
+    linhas += '<tr id="hist-expandir-' + prefixo + '" class="hist-expandir"><td colspan="' + colspan + '" style="text-align:center"><button class="btn-link" id="btn-hist-expandir-' + prefixo + '">▼ Ver todos (' + total + ' meses)</button></td></tr>';
+  }
+  return linhas;
+}
+
 function renderHistorico(hist) {
   const tabela = $('tabela-historico');
   if (!hist.length) {
@@ -276,13 +296,15 @@ function renderHistorico(hist) {
     destruirGrafico('grafico-historico');
     return;
   }
-  let linhas = '<tr><th>Mês</th><th>Meta</th><th>Atingido</th><th>%</th><th>D.U.</th><th></th></tr>';
-  hist.forEach(function (h) {
-    linhas += '<tr><td>' + h.nomeMes + '</td><td>' + fmtQtd(h.meta) + '</td><td>' + fmtQtd(h.atingido) + '</td><td class="tend">' + fmtPct(h.pct) + '</td><td>' + h.utMes + '</td>'
-      + '<td class="hist-acoes"><button class="btn-icon" data-edita-mes="' + h.anoMes + '" title="Editar mês">✎</button>'
-      + ' <button class="btn-icon perigo" data-deleta-mes="' + h.anoMes + '" title="Excluir mês">✕</button></td></tr>';
-  });
-  tabela.innerHTML = linhas;
+  tabela.innerHTML = montarTabelaHistorico(hist, '', true);
+
+  const btnExp = document.getElementById('btn-hist-expandir-');
+  if (btnExp) {
+    btnExp.addEventListener('click', function () {
+      tabela.querySelectorAll('.hist-oculto').forEach(function (r) { r.classList.remove('hist-oculto'); });
+      document.getElementById('hist-expandir-').classList.add('hidden');
+    });
+  }
 
   tabela.querySelectorAll('[data-edita-mes]').forEach(function (b) {
     b.addEventListener('click', function () {
@@ -541,13 +563,15 @@ function renderSupervisorHistorico(hist) {
     destruirGrafico('sp-grafico-historico');
     return;
   }
-  let linhas = '<tr><th>Mês</th><th>Meta</th><th>Atingido</th><th>%</th><th>D.U.</th><th></th></tr>';
-  hist.forEach(function (h) {
-    linhas += '<tr><td>' + h.nomeMes + '</td><td>' + fmtQtd(h.meta) + '</td><td>' + fmtQtd(h.atingido) + '</td><td class="tend">' + fmtPct(h.pct) + '</td><td>' + h.utMes + '</td>'
-      + '<td class="hist-acoes"><button class="btn-icon" data-sp-edita-mes="' + h.anoMes + '" title="Editar mês">✎</button>'
-      + ' <button class="btn-icon perigo" data-sp-deleta-mes="' + h.anoMes + '" title="Excluir mês">✕</button></td></tr>';
-  });
-  tabela.innerHTML = linhas;
+  tabela.innerHTML = montarTabelaHistorico(hist, 'sp-', true);
+
+  const btnExp = document.getElementById('btn-hist-expandir-sp-');
+  if (btnExp) {
+    btnExp.addEventListener('click', function () {
+      tabela.querySelectorAll('.hist-oculto').forEach(function (r) { r.classList.remove('hist-oculto'); });
+      document.getElementById('hist-expandir-sp-').classList.add('hidden');
+    });
+  }
 
   tabela.querySelectorAll('[data-sp-edita-mes]').forEach(function (b) {
     b.addEventListener('click', function () {
@@ -681,11 +705,15 @@ function renderPainel(d) {
     destruirGrafico('grafico-painel-hist');
     return;
   }
-  let linhas = '<tr><th>Mês</th><th>Meta</th><th>Atingido</th><th>%</th><th>D.U.</th></tr>';
-  d.historico.forEach(function (h) {
-    linhas += '<tr><td>' + h.nomeMes + '</td><td>' + fmtQtd(h.meta) + '</td><td>' + fmtQtd(h.atingido) + '</td><td class="tend">' + fmtPct(h.pct) + '</td><td>' + h.utMes + '</td></tr>';
-  });
-  tabela.innerHTML = linhas;
+  tabela.innerHTML = montarTabelaHistorico(d.historico, 'mp-', false);
+
+  const btnExp = document.getElementById('btn-hist-expandir-mp-');
+  if (btnExp) {
+    btnExp.addEventListener('click', function () {
+      tabela.querySelectorAll('.hist-oculto').forEach(function (r) { r.classList.remove('hist-oculto'); });
+      document.getElementById('hist-expandir-mp-').classList.add('hidden');
+    });
+  }
 
   novoGrafico('grafico-painel-hist', {
     type: 'bar',
