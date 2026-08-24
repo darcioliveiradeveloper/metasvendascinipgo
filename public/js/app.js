@@ -26,6 +26,17 @@ let MEU_USUARIO = null;
 
 
 function init() {
+  const temas = ['azul', 'vermelho', 'verde'];
+  const temaSalvo = localStorage.getItem('tema') || 'azul';
+  document.documentElement.setAttribute('data-tema', temaSalvo);
+  $('btn-tema').addEventListener('click', function () {
+    const atual = document.documentElement.getAttribute('data-tema') || 'azul';
+    const idx = (temas.indexOf(atual) + 1) % temas.length;
+    const novo = temas[idx];
+    document.documentElement.setAttribute('data-tema', novo);
+    localStorage.setItem('tema', novo);
+  });
+
   $('btn-sair').addEventListener('click', sairSistema);
   $('perfil-badge').addEventListener('click', abrirModalNome);
   api('/api/auth/me')

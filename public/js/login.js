@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
+  const temas = ['azul', 'vermelho', 'verde'];
+  const temaSalvo = localStorage.getItem('tema') || 'azul';
+  document.documentElement.setAttribute('data-tema', temaSalvo);
+
   const form = document.getElementById('form-login');
   const erro = document.getElementById('erro-login');
 
