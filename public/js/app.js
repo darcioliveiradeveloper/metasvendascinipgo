@@ -938,7 +938,7 @@ async function gerarRelatorioVendedor() {
 function ultimosMeses(n) {
   const hoje = new Date();
   const arr = [];
-  for (let i = n - 1; i >= 0; i--) {
+  for (let i = n; i >= 1; i--) {
     const dd = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
     arr.push(dd.getFullYear() + '-' + String(dd.getMonth() + 1).padStart(2, '0'));
   }
