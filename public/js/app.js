@@ -464,13 +464,6 @@ function iniciarSupervisor() {
   });
   $('btn-novo-vendedor').addEventListener('click', function () { abrirModalUsuario(null); });
   $('btn-sup-rel-gerar').addEventListener('click', carregarRelatorioSupervisor);
-  $('btn-sup-rel-fechar').addEventListener('click', function () {
-    document.querySelectorAll('#view-supervisor .tab').forEach(function (t) { t.classList.remove('ativa'); });
-    document.querySelectorAll('#view-supervisor .aba').forEach(function (a) { a.classList.add('hidden'); });
-    document.querySelector('#view-supervisor .tab[data-tab="geral"]').classList.add('ativa');
-    $('aba-geral').classList.remove('hidden');
-    carregarGeral();
-  });
   $('sp-btn-meta').addEventListener('click', function () { abrirModalValor('meta'); });
   $('sp-btn-lancar').addEventListener('click', function () { abrirModalValor('lancar'); });
   $('sp-btn-iniciar-mes').addEventListener('click', iniciarMesAtual);
@@ -1113,7 +1106,7 @@ function renderRelatorio(d, n) {
     });
   } else {
     linhas = '<tr><th>Mês</th><th>Meta</th><th>Vendido</th><th>%</th><th>D.U.</th></tr>';
-    d.meses.forEach(function (m) {
+    d.meses.slice().reverse().forEach(function (m) {
       linhas += '<tr><td>' + m.nomeMes + '</td><td>' + fmtQtd(m.meta) + '</td><td>' + fmtQtd(m.atingido) + '</td><td class="tend">' + fmtPct(m.pct) + '</td><td>' + m.utMes + '</td></tr>';
     });
   }
