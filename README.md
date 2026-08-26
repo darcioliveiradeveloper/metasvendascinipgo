@@ -106,6 +106,9 @@ metasvendascinipgo/
 
 ## Histórico de Versões
 
+### v2.1.0 — Ago 2026
+Relatório do supervisor reformulado: filtros Ano / Período / Setor (igual ao do vendedor), com lupa e botão fechar em linha. Mês atual em aberto não entra mais nos períodos (3/6 meses). Detalhamento da equipe com Vendas%, Tend.% e M. Diária em colunas separadas e números centralizados. Diferença entre meta geral do supervisor e soma da equipe aparece entre parênteses (verde/vermelho). Suporte agora vê o painel do supervisor preenchido, sem botões de edição. Filtro por setor no backend. Títulos de tabelas e caixas escurecidos.
+
 ### v2.0.0 — Ago 2026
 App renomeado para **VendaCerta**. Trocar senha simplificado. Crédito desenvolvedor no login. Inativar/excluir vendedor. Botões do header reordenados (✏️🔒🎨✕). Fundo temático. Relatório individual do vendedor. Select de ano. Botões lupa/✕. Filtro mês anterior/3 meses/6 meses/ano. Histórico 3 meses recentes.
 
