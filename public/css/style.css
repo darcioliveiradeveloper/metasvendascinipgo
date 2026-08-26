@@ -253,6 +253,7 @@ table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
 th { text-align: left; color: #94a3b8; font-weight: 700; text-transform: uppercase; font-size: 0.66rem; letter-spacing: 0.4px; padding: 6px 4px; border-bottom: 1px solid #e2e8f0; }
 td { padding: 8px 4px; border-bottom: 1px solid #f1f5f9; font-weight: 600; }
 td.tend { color: var(--c2); }
+td.num, th.num { text-align: center; }
 tr:last-child td { border-bottom: none; }
 .tabela-scroll { overflow-x: auto; }
 

@@ -655,12 +655,12 @@ function renderSupervisorEquipe(d) {
   $('sup-atingido').textContent = fmtQtd(d.totalAtingido) + ' fardos';
   $('sup-pct').textContent = d.pctGeral ? fmtPct(d.pctGeral) : '—';
 
-  let linhas = '<tr><th>Setor</th><th>Nome</th><th>Meta</th><th>Realizado</th><th>Vendas%</th><th>Tend.%</th><th>M. Diária</th></tr>';
+  let linhas = '<tr><th class="num">Setor</th><th>Nome</th><th class="num">Meta</th><th class="num">Realizado</th><th class="num">Vendas%</th><th class="num">Tend.%</th><th class="num">M. Diária</th></tr>';
   d.linhas.sort(function (a, b) {
     const sa = (a.setor || '').localeCompare(b.setor || '', undefined, { numeric: true });
     return sa !== 0 ? sa : (a.nome || '').localeCompare(b.nome || '');
   }).forEach(function (l) {
-    const linha = '<tr><td>' + esc(l.setor || '—') + '</td><td>' + esc(l.nome) + '</td><td>' + fmtQtd(l.meta) + '</td><td>' + fmtQtd(l.atingido) + '</td><td class="tend">' + fmtPct(l.calc.atingidoPct) + '</td><td class="tend">' + (l.calc.tendencia > 0 ? fmtPct(l.calc.tendencia) : '—') + '</td><td>' + (l.calc.metaDiaria > 0 ? fmtQtd(l.calc.metaDiaria) : '—') + '</td></tr>';
+    const linha = '<tr><td class="num">' + esc(l.setor || '—') + '</td><td>' + esc(l.nome) + '</td><td class="num">' + fmtQtd(l.meta) + '</td><td class="num">' + fmtQtd(l.atingido) + '</td><td class="tend num">' + fmtPct(l.calc.atingidoPct) + '</td><td class="tend num">' + (l.calc.tendencia > 0 ? fmtPct(l.calc.tendencia) : '—') + '</td><td class="num">' + (l.calc.metaDiaria > 0 ? fmtQtd(l.calc.metaDiaria) : '—') + '</td></tr>';
     linhas += linha;
   });
   $('tabela-geral').innerHTML = linhas || '<tr><td class="vazio">Nenhum vendedor cadastrado.</td></tr>';
@@ -1124,15 +1124,15 @@ function renderRelatorio(d, n) {
 
   let linhas;
   if (mensal) {
-    linhas = '<tr><th>Setor</th><th>Nome</th><th>Meta</th><th>Realizado</th><th>Vendas%</th></tr>';
+    linhas = '<tr><th class="num">Setor</th><th>Nome</th><th class="num">Meta</th><th class="num">Realizado</th><th class="num">Vendas%</th></tr>';
     d.porVendedor.forEach(function (v) {
       const x = v.valores[0] || { meta: 0, atingido: 0 };
-      linhas += '<tr><td>' + v.setor + '</td><td>' + v.nome + '</td><td>' + fmtQtd(x.meta) + '</td><td>' + fmtQtd(x.atingido) + '</td><td class="tend">' + fmtPct(x.meta > 0 ? (x.atingido / x.meta) * 100 : 0) + '</td></tr>';
+      linhas += '<tr><td class="num">' + v.setor + '</td><td>' + v.nome + '</td><td class="num">' + fmtQtd(x.meta) + '</td><td class="num">' + fmtQtd(x.atingido) + '</td><td class="tend num">' + fmtPct(x.meta > 0 ? (x.atingido / x.meta) * 100 : 0) + '</td></tr>';
     });
   } else {
-    linhas = '<tr><th>Mês</th><th>Meta</th><th>Vendido</th><th>%</th><th>D.U.</th></tr>';
+    linhas = '<tr><th>Mês</th><th class="num">Meta</th><th class="num">Realizado</th><th class="num">%</th><th class="num">D.U.</th></tr>';
     d.meses.slice().reverse().forEach(function (m) {
-      linhas += '<tr><td>' + m.nomeMes + '</td><td>' + fmtQtd(m.meta) + '</td><td>' + fmtQtd(m.atingido) + '</td><td class="tend">' + fmtPct(m.pct) + '</td><td>' + m.utMes + '</td></tr>';
+      linhas += '<tr><td>' + m.nomeMes + '</td><td class="num">' + fmtQtd(m.meta) + '</td><td class="num">' + fmtQtd(m.atingido) + '</td><td class="tend num">' + fmtPct(m.pct) + '</td><td class="num">' + m.utMes + '</td></tr>';
     });
   }
   $('tabela-relatorio').innerHTML = linhas;
