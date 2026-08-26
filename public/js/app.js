@@ -38,6 +38,12 @@ function init() {
   });
 
   $('btn-sair').addEventListener('click', sairSistema);
+  $('btn-info-app').addEventListener('click', function () {
+    $('modal-info').classList.remove('hidden');
+  });
+  $('btn-info-fechar').addEventListener('click', function () {
+    $('modal-info').classList.add('hidden');
+  });
   $('perfil-badge').addEventListener('click', abrirModalNome);
   api('/api/auth/me')
     .then(function (me) {
