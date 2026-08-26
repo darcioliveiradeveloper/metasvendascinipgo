@@ -106,6 +106,9 @@ metasvendascinipgo/
 
 ## Histórico de Versões
 
+### v2.1.1 — Ago 2026
+Ícone de informações e versões ℹ️ no cabeçalho do aplicativo (todos os perfis), ao lado do botão Sair, abrindo modal com o histórico completo de versões. Removido da tela de login, que agora mostra apenas a versão.
+
 ### v2.1.0 — Ago 2026
 Relatório do supervisor reformulado: filtros Ano / Período / Setor (igual ao do vendedor), com lupa e botão fechar em linha. Mês atual em aberto não entra mais nos períodos (3/6 meses). Detalhamento da equipe com Vendas%, Tend.% e M. Diária em colunas separadas e números centralizados. Diferença entre meta geral do supervisor e soma da equipe aparece entre parênteses (verde/vermelho). Suporte agora vê o painel do supervisor preenchido, sem botões de edição. Filtro por setor no backend. Títulos de tabelas e caixas escurecidos.
 
