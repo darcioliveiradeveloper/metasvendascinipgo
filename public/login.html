@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
@@ -11,9 +11,7 @@
     <div class="login-cabecalho">
       <div class="login-titulo">VendaCerta</div>
       <div class="login-sub">Acompanhamento de Vendas</div>
-      <div class="login-versao"><span>v2.1.0</span>
-        <button id="btn-login-info" style="background:none; border:none; padding:0; margin-left:6px; font-size:1rem; cursor:pointer; vertical-align:middle;" title="Informações e versões do sistema">ℹ️</button>
-      </div>
+      <div class="login-versao"><span>v2.1.0</span></div>
     </div>
     <form id="form-login">
       <label>E-mail
@@ -27,68 +25,6 @@
     </form>
   </main>
 
-  <div id="modal-info" class="modal hidden">
-    <div class="modal-box">
-      <h3>VendaCerta — v2.1.0</h3>
-      <p style="font-size:0.85rem; color:#475569; line-height:1.6; margin-bottom:14px;">
-        Sistema de acompanhamento de vendas com metas diárias e mensais, painéis individual e de equipe, relatórios e gráficos.
-      </p>
-      <p style="font-size:0.82rem; color:#64748b; line-height:1.6; margin-bottom:14px;">
-        <b style="color:#334155;">Desenvolvido por</b><br>
-        Darci Oliveira
-      </p>
-
-      <div class="versao-titulo">Histórico de Versões</div>
-      <div class="versao-lista">
-        <div class="versao-item">
-          <div class="versao-tag">v2.1.0 — Ago 2026</div>
-          <div class="versao-desc">
-            Relatório do supervisor reformulado: filtros Ano / Período / Setor (igual ao do vendedor). Mês atual em aberto não entra mais nos períodos. Detalhamento da equipe com Vendas%, Tend.% e M. Diária em colunas separadas, números centralizados. Diferença entre meta geral e soma da equipe aparece entre parênteses. Suporte agora vê o painel do supervisor preenchido.
-          </div>
-        </div>
-        <div class="versao-item">
-          <div class="versao-tag">v2.0.0 — Ago 2026</div>
-          <div class="versao-desc">
-            App renomeado para <b>VendaCerta</b>. Trocar senha simplificado. Crédito desenvolvedor no login. Inativar/excluir vendedor. Botões do header reordenados (✏️🔒🎨✕). Fundo temático. Relatório individual do vendedor. Select de ano. Botões lupa/✕. Filtro mês anterior/3 meses/6 meses/ano. Histórico 3 meses recentes.
-          </div>
-        </div>
-        <div class="versao-item">
-          <div class="versao-tag">v1.4.0 — Jul 2026</div>
-          <div class="versao-desc">
-            Fechar mês disponível (após incluir). Relatório supervisor: filtrar período, gráfico barras, insights (maior/menor venda, média mensal).
-          </div>
-        </div>
-        <div class="versao-item">
-          <div class="versao-tag">v1.3.0 — Jul 2026</div>
-          <div class="versao-desc">
-            Login redesenhado com gradiente. Tema com 5 cores (🎨). Nome-setor no header. Fundo suave muda com o tema.
-          </div>
-        </div>
-        <div class="versao-item">
-          <div class="versao-tag">v1.2.0 — Jul 2026</div>
-          <div class="versao-desc">
-            Painel suporte: CRUD completo de vendedores. Definir metas individuais. Resetar senha. 3 abas (Usuários / Visão Geral / Relatórios).
-          </div>
-        </div>
-        <div class="versao-item">
-          <div class="versao-tag">v1.1.0 — Jun 2026</div>
-          <div class="versao-desc">
-            Modo print 📷 e print limpo 🖼️. Histórico mensal com gráfico de barras. Botões incluir e fechar mês.
-          </div>
-        </div>
-        <div class="versao-item">
-          <div class="versao-tag">v1.0.0 — Jun 2026</div>
-          <div class="versao-desc">
-            Lançamento inicial. Login com JWT. Painel vendedor: meta, tendência, meta diária. Painel supervisor. Cálculo automático de dias úteis (seg–sex). Testes da API.
-          </div>
-        </div>
-      </div>
-
-      <div class="modal-acoes">
-        <button class="btn primario" id="btn-info-fechar">Fechar</button>
-      </div>
-    </div>
-  </div>
   <script src="/js/api.js"></script>
   <script src="/js/login.js"></script>
 </body>
