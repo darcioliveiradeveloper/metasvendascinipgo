@@ -484,8 +484,7 @@ function iniciarSupervisor() {
     $('modal-mes').classList.remove('hidden');
     $('mm-anoMes').focus();
   });
-  popularAnosRelatorioSupervisor();
-  preencherFiltroVendedorSupervisor();
+  popularFiltrosRelatorioSupervisor();
   carregarGeral();
 }
 
@@ -935,49 +934,40 @@ async function gerarRelatorioVendedor() {
 
 /* ============================= RELATÓRIOS SUPERVISOR ============================= */
 
-function popularAnosRelatorioSupervisor() {
+function popularFiltrosRelatorioSupervisor() {
   return api('/api/supervisor/usuarios').then(function (lista) {
-    const ids = lista.filter(function (u) { return u.perfil === 'vendedor'; }).map(function (u) { return u.id; });
-    if (!ids.length) return;
-    const q = ids.map(function (id) { return 'usuario=' + id; }).join('&');
+    const vends = lista.filter(function (u) { return u.perfil === 'vendedor'; });
+    const setores = [...new Set(vends.map(function (u) { return u.setor || ''; }))].filter(Boolean).sort();
+    $('sup-rel-setor').innerHTML = '<option value="">Setor</option><option value="todos">Todos</option>' + setores.map(function (s) { return '<option value="' + esc(s) + '">' + esc(s) + '</option>'; }).join('');
+    if (!vends.length) return null;
+    const q = vends.map(function (u) { return 'usuario=' + u.id; }).join('&');
     return api('/api/supervisor/relatorios?' + q + '&de=2000-01&ate=2099-12');
   }).then(function (d) {
     if (!d || !d.meses) return;
     const comDados = d.meses.filter(function (m) { return m.atingido > 0 || m.meta > 0; });
     const anos = [...new Set(comDados.map(function (m) { return m.anoMes.substring(0, 4); }))].sort().reverse();
-    $('sup-rel-ano').innerHTML = '<option value="">Todos</option>' + anos.map(function (a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
-  }).catch(function () {});
-}
-
-function preencherFiltroVendedorSupervisor() {
-  return api('/api/supervisor/usuarios').then(function (lista) {
-    const opcoes = lista.filter(function (u) { return u.perfil === 'vendedor'; })
-      .sort(function (a, b) {
-        const sa = (a.setor || '').localeCompare(b.setor || '', undefined, { numeric: true });
-        return sa !== 0 ? sa : (a.nome || '').localeCompare(b.nome || '');
-      })
-      .map(function (u) { return '<option value="' + u.id + '">' + (u.setor ? u.setor + ' - ' : '') + u.nome + '</option>'; })
-      .join('');
-    $('sup-rel-vendedor').innerHTML = '<option value="">Vendedores</option>' + opcoes;
+    $('sup-rel-ano')._anos = anos;
+    $('sup-rel-ano').innerHTML = '<option value="">Ano</option>' + '<option value="todos">Todos</option>' + anos.map(function (a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
   }).catch(function () {});
 }
 
 function montarPeriodoSupervisor() {
   const periodo = $('sup-rel-periodo').value;
-  const anoSel = $('sup-rel-ano').value;
+  const anoBruto = $('sup-rel-ano').value;
+  const anoSel = (anoBruto && anoBruto !== 'todos') ? Number(anoBruto) : null;
   const hoje = new Date();
   const mesAtual = hoje.getMonth() + 1;
   const anoAtual = hoje.getFullYear();
   let de, ate;
 
   if (periodo === 'atual') {
-    let a = anoSel ? Number(anoSel) : anoAtual;
+    let a = anoSel || anoAtual;
     let m = mesAtual;
-    if (anoSel && Number(anoSel) < anoAtual) { m = 12; }
+    if (anoSel && anoSel < anoAtual) { m = 12; }
     de = a + '-' + String(m).padStart(2, '0');
     ate = de;
   } else if (periodo === 'anterior') {
-    let a = anoSel ? Number(anoSel) : anoAtual;
+    let a = anoSel || anoAtual;
     let m = mesAtual - 1;
     if (m < 1) { m = 12; a--; }
     de = a + '-' + String(m).padStart(2, '0');
@@ -987,13 +977,19 @@ function montarPeriodoSupervisor() {
       de = anoSel + '-01';
       ate = anoSel + '-12';
     } else {
-      de = '2000-01';
-      ate = '2099-12';
+      const anos = $('sup-rel-ano')._anos || [];
+      if (anos.length) {
+        de = anos[anos.length - 1] + '-01';
+        ate = anos[0] + '-12';
+      } else {
+        de = anoAtual + '-01';
+        ate = anoAtual + '-12';
+      }
     }
   } else if (periodo === '3' || periodo === '6') {
     const n = Number(periodo);
-    const baseMes = (anoSel && Number(anoSel) < anoAtual) ? 12 : mesAtual - 1;
-    const baseAno = anoSel ? Number(anoSel) : anoAtual;
+    const baseMes = (anoSel && anoSel < anoAtual) ? 12 : mesAtual - 1;
+    const baseAno = anoSel || anoAtual;
     const meses = [];
     let a = baseAno;
     let m = baseMes;
@@ -1006,8 +1002,14 @@ function montarPeriodoSupervisor() {
     de = meses[0];
     ate = meses[meses.length - 1];
   } else {
-    de = '2000-01';
-    ate = '2099-12';
+    const anos = $('sup-rel-ano')._anos || [];
+    if (anos.length) {
+      de = anos[anos.length - 1] + '-01';
+      ate = anos[0] + '-12';
+    } else {
+      de = anoAtual + '-01';
+      ate = anoAtual + '-12';
+    }
   }
   return { de: de, ate: ate, n: periodo === 'ano' ? 12 : (periodo === 'atual' || periodo === 'anterior' ? 1 : Number(periodo)) };
 }
@@ -1016,9 +1018,10 @@ async function carregarRelatorioSupervisor() {
   const periodo = $('sup-rel-periodo').value;
   if (!periodo) return;
   const rango = montarPeriodoSupervisor();
-  const usuario = $('sup-rel-vendedor').value;
+  const setorVal = $('sup-rel-setor').value;
+  const extra = (setorVal && setorVal !== 'todos') ? '&setor=' + encodeURIComponent(setorVal) : '';
   try {
-    const url = '/api/supervisor/relatorios?de=' + rango.de + '&ate=' + rango.ate + (usuario ? '&usuario=' + usuario : '');
+    const url = '/api/supervisor/relatorios?de=' + rango.de + '&ate=' + rango.ate + extra;
     const d = await api(url);
     renderRelatorio(d, rango.n);
   } catch (e) { alert(e.message); }
@@ -1073,7 +1076,7 @@ function renderRelatorio(d, n) {
     destruirGrafico('grafico-pct');
   }
 
-  if (!mensal && !$('sup-rel-vendedor').value) {
+  if (!mensal) {
     novoGrafico('grafico-comp', {
       type: 'line',
       data: {
@@ -1098,7 +1101,7 @@ function renderRelatorio(d, n) {
 
   let linhas;
   if (mensal) {
-    linhas = '<tr><th>Setor</th><th>Vendedor</th><th>Meta</th><th>Vendido</th><th>%</th></tr>';
+    linhas = '<tr><th>Setor</th><th>Nome</th><th>Meta</th><th>Realizado</th><th>Vendas%</th></tr>';
     d.porVendedor.forEach(function (v) {
       const x = v.valores[0] || { meta: 0, atingido: 0 };
       linhas += '<tr><td>' + v.setor + '</td><td>' + v.nome + '</td><td>' + fmtQtd(x.meta) + '</td><td>' + fmtQtd(x.atingido) + '</td><td class="tend">' + fmtPct(x.meta > 0 ? (x.atingido / x.meta) * 100 : 0) + '</td></tr>';

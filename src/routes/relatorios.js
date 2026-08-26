@@ -44,6 +44,8 @@ router.get('/', async (req, res) => {
     let usuarios;
     if (req.query.usuario && mongoose.Types.ObjectId.isValid(req.query.usuario)) {
       usuarios = await User.find({ _id: req.query.usuario, perfil: 'vendedor', ativo: true });
+    } else if (req.query.setor) {
+      usuarios = await User.find({ perfil: 'vendedor', ativo: true, setor: req.query.setor }).sort({ setor: 1, nome: 1 });
     } else {
       usuarios = await User.find({ perfil: 'vendedor', ativo: true }).sort({ setor: 1, nome: 1 });
     }
