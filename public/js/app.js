@@ -633,13 +633,12 @@ function renderSupervisorEquipe(d) {
   $('sup-atingido').textContent = fmtQtd(d.totalAtingido) + ' fardos';
   $('sup-pct').textContent = d.pctGeral ? fmtPct(d.pctGeral) : '—';
 
-  let linhas = '<tr><th>Setor</th><th>Vendedor</th><th>Meta</th><th>Vendido</th><th>%</th></tr>';
+  let linhas = '<tr><th>Setor</th><th>Nome</th><th>Meta</th><th>Realizado</th><th>Vendas%</th><th>Tend.%</th><th>M. Diária</th></tr>';
   d.linhas.sort(function (a, b) {
     const sa = (a.setor || '').localeCompare(b.setor || '', undefined, { numeric: true });
     return sa !== 0 ? sa : (a.nome || '').localeCompare(b.nome || '');
   }).forEach(function (l) {
-    const tend = l.calc.tendencia > 0 ? ' · tendência ' + fmtPct(l.calc.tendencia) : '';
-    const linha = '<tr><td>' + esc(l.setor || '—') + '</td><td>' + esc(l.nome) + '</td><td>' + fmtQtd(l.meta) + '</td><td>' + fmtQtd(l.atingido) + '</td><td class="tend">' + fmtPct(l.calc.atingidoPct) + tend + '</td></tr>';
+    const linha = '<tr><td>' + esc(l.setor || '—') + '</td><td>' + esc(l.nome) + '</td><td>' + fmtQtd(l.meta) + '</td><td>' + fmtQtd(l.atingido) + '</td><td class="tend">' + fmtPct(l.calc.atingidoPct) + '</td><td class="tend">' + (l.calc.tendencia > 0 ? fmtPct(l.calc.tendencia) : '—') + '</td><td>' + (l.calc.metaDiaria > 0 ? fmtQtd(l.calc.metaDiaria) : '—') + '</td></tr>';
     linhas += linha;
   });
   $('tabela-geral').innerHTML = linhas || '<tr><td class="vazio">Nenhum vendedor cadastrado.</td></tr>';
