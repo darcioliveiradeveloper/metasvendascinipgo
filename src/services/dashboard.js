@@ -1,5 +1,6 @@
 const MetaMensal = require('../models/MetaMensal');
 const Lancamento = require('../models/Lancamento');
+const User = require('../models/User');
 const negocio = require('./negocio');
 
 async function totalDoMes(usuarioId, anoMes) {
@@ -37,23 +38,28 @@ async function mesAtual(user) {
 }
 
 async function montarDashboard(user) {
-  const chave = await mesAtual(user);
-  const metaRec = await MetaMensal.findOne({ usuario: user._id, anoMes: chave });
+  let alvo = user;
+  if (user.perfil === 'suporte') {
+    const sup = await User.findOne({ perfil: 'supervisor', ativo: true }).sort({ createdAt: 1 });
+    if (sup) alvo = sup;
+  }
+  const chave = await mesAtual(alvo);
+  const metaRec = await MetaMensal.findOne({ usuario: alvo._id, anoMes: chave });
   const meta = metaRec ? metaRec.meta : 0;
-  const total = await totalDoMes(user._id, chave);
+  const total = await totalDoMes(alvo._id, chave);
   const calc = negocio.calcular(meta, total, chave);
-  const atualizadoEm = await ultimaAtualizacao(user._id, chave);
+  const atualizadoEm = await ultimaAtualizacao(alvo._id, chave);
 
   const mesesComDados = new Set();
-  const metas = await MetaMensal.find({ usuario: user._id }, { anoMes: 1 });
+  const metas = await MetaMensal.find({ usuario: alvo._id }, { anoMes: 1 });
   metas.forEach((m) => mesesComDados.add(m.anoMes));
-  const lancs = await Lancamento.distinct('anoMes', { usuario: user._id });
+  const lancs = await Lancamento.distinct('anoMes', { usuario: alvo._id });
   lancs.forEach((m) => mesesComDados.add(m));
 
   const historico = [];
   for (const anoMes of [...mesesComDados].sort().reverse()) {
-    const m = await MetaMensal.findOne({ usuario: user._id, anoMes });
-    const tot = await totalDoMes(user._id, anoMes);
+    const m = await MetaMensal.findOne({ usuario: alvo._id, anoMes });
+    const tot = await totalDoMes(alvo._id, anoMes);
     if (anoMes === chave) continue;
     historico.push({
       anoMes,
@@ -67,8 +73,8 @@ async function montarDashboard(user) {
   }
 
   return {
-    nome: user.nome,
-    setor: user.setor,
+    nome: alvo.nome,
+    setor: alvo.setor,
     mes: chave,
     nomeMes: negocio.nomeDoMes(chave),
     meta,

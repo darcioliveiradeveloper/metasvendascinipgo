@@ -496,7 +496,24 @@ async function carregarGeral() {
     ]);
     renderSupervisorPessoal(d);
     renderSupervisorEquipe(equipe);
+    renderDiferencasEquipe(d, equipe);
   } catch (e) { alert(e.message); }
+}
+
+function renderDiferencasEquipe(pessoal, equipe) {
+  const pares = [
+    { el: 'sup-meta', ref: pessoal.meta || 0, val: equipe.totalMeta || 0 },
+    { el: 'sup-atingido', ref: pessoal.total || 0, val: equipe.totalAtingido || 0 }
+  ];
+  pares.forEach(function (x) {
+    const dif = x.val - x.ref;
+    const base = fmtQtd(x.val) + ' fardos';
+    const el = $(x.el);
+    if (!dif) { el.textContent = base; return; }
+    const sinal = dif > 0 ? '+' : '−';
+    const cor = dif < 0 ? '#ef4444' : '#16a34a';
+    el.innerHTML = base + ' <span style="color:' + cor + '; font-weight:700;">(' + sinal + fmtQtd(Math.abs(dif)) + ')</span>';
+  });
 }
 
 let spPlDados = null;
@@ -530,6 +547,12 @@ function desativarPrintLimpoSupervisor() {
 
 function renderSupervisorPessoal(d) {
   const c = d.calc;
+  if (MEU_USUARIO.perfil === 'suporte') {
+    ['sp-btn-meta', 'sp-btn-lancar', 'sp-btn-iniciar-mes', 'sp-btn-incluir-mes', 'sp-btn-fechar-mes'].forEach(function (id) {
+      const b = $(id);
+      if (b) b.classList.add('hidden');
+    });
+  }
   $('sp-chip-mes').textContent = c.utMes;
   $('sp-chip-trab').textContent = c.trab;
   $('sp-chip-rest').textContent = c.rest;
