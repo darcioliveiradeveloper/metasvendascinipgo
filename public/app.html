@@ -180,6 +180,10 @@
       <div id="aba-geral" class="aba">
         <p class="aviso hidden" id="sup-aviso-fechado"></p>
 
+        <div style="display:flex; justify-content:flex-start; margin-bottom:10px;">
+          <button class="btn" id="btn-feriados">📅 Feriados</button>
+        </div>
+
         <div class="cards">
           <article class="card card-meta-mes">
             <div class="card-cab">
@@ -511,6 +515,26 @@
       <div class="modal-acoes">
         <button class="btn primario" id="btn-info-fechar">Fechar</button>
       </div>
+    </div>
+  </div>
+
+  <div id="modal-feriados" class="modal hidden">
+    <div class="modal-box larga">
+      <h3>Feriados</h3>
+      <p class="dica">Feriados nacionais são automáticos (Carnaval, Páscoa, Natal…). Adicione aqui feriados municipais ou folgas especiais da empresa.</p>
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+        <select id="fer-mes" style="max-width:150px;"></select>
+      </div>
+      <div class="tabela-scroll" style="max-height:260px; margin-bottom:12px;"><table id="fer-tabela"></table></div>
+      <div style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+        <label style="flex:1; min-width:150px;">Data<input id="fer-data" type="date" style="padding:8px; border-radius:8px; border:1px solid #cbd5e1; width:100%;"></label>
+        <label style="flex:2; min-width:180px;">Nome<input id="fer-nome" type="text" maxlength="60" placeholder="Ex.: Aniversário da cidade" style="padding:8px; border-radius:8px; border:1px solid #cbd5e1; width:100%;"></label>
+        <button class="btn primario" id="btn-fer-adicionar" style="flex:none; white-space:nowrap;">+ Adicionar</button>
+      </div>
+      <div class="modal-acoes">
+        <button class="btn primario" id="btn-fer-fechar">Fechar</button>
+      </div>
+      <p class="erro hidden" id="fer-erro"></p>
     </div>
   </div>
 

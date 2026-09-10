@@ -490,6 +490,7 @@ function iniciarSupervisor() {
     $('modal-mes').classList.remove('hidden');
     $('mm-anoMes').focus();
   });
+  $('btn-feriados').addEventListener('click', abrirModalFeriados);
   popularFiltrosRelatorioSupervisor();
   carregarGeral();
 }
@@ -1162,7 +1163,7 @@ $('inp-nome').addEventListener('keydown', function (e) {
 $('btn-mm-cancelar').addEventListener('click', fecharModalMes);
 $('btn-mm-ok').addEventListener('click', salvarModalMes);
 window.addEventListener('keydown', function (e) {
-  if (e.key === 'Escape') { fecharModalUsuario(); fecharModalSenha(); fecharModalPainel(); fecharModalValor(); fecharModalNome(); fecharModalMes(); }
+  if (e.key === 'Escape') { fecharModalUsuario(); fecharModalSenha(); fecharModalPainel(); fecharModalValor(); fecharModalNome(); fecharModalMes(); fecharModalFeriados(); }
 });
 
 function abrirModalSenha() {
@@ -1192,6 +1193,98 @@ async function salvarModalSenha() {
 $('btn-trocar-senha').addEventListener('click', abrirModalSenha);
 $('btn-ms-cancelar').addEventListener('click', fecharModalSenha);
 $('btn-ms-salvar').addEventListener('click', salvarModalSenha);
+
+/* ============================= FERIADOS ============================= */
+
+let FER_MES_ATUAL = hojeKey();
+
+function negocioNomeMes(chave) {
+  const nomes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const p = chave.split('-');
+  return nomes[Number(p[1]) - 1] + ' ' + p[0];
+}
+
+async function abrirModalFeriados() {
+  FER_MES_ATUAL = hojeKey();
+  $('fer-erro').classList.add('hidden');
+  $('fer-data').value = '';
+  $('fer-nome').value = '';
+  $('modal-feriados').classList.remove('hidden');
+  const meses = [];
+  const h = new Date();
+  for (let i = 0; i < 24; i++) {
+    const d = new Date(h.getFullYear(), h.getMonth() - i, 1);
+    meses.push(d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'));
+  }
+  let html = '';
+  meses.forEach(function (m) {
+    html += '<option value="' + m + '"' + (m === FER_MES_ATUAL ? ' selected' : '') + '>' + negocioNomeMes(m) + '</option>';
+  });
+  $('fer-mes').innerHTML = html;
+  $('fer-mes').onchange = function () { FER_MES_ATUAL = this.value; carregarListaFeriados(); };
+  await carregarListaFeriados();
+}
+
+function fecharModalFeriados() {
+  $('modal-feriados').classList.add('hidden');
+}
+
+async function carregarListaFeriados() {
+  try {
+    const d = await api('/api/supervisor/feriados?mes=' + FER_MES_ATUAL);
+    const lista = d.feriados || [];
+    let html = '<tr><th>Data</th><th>Nome</th><th>Tipo</th><th></th></tr>';
+    lista.forEach(function (f) {
+      const dataFmt = f.data.slice(8, 10) + '/' + f.data.slice(5, 7) + '/' + f.data.slice(0, 4);
+      const tipo = f.automatico
+        ? '<span style="color:#64748b;">Nacional</span>'
+        : '<span style="color:#4338ca; font-weight:600;">Manual</span>';
+      const acao = f.automatico
+        ? ''
+        : '<button class="btn perigo" data-fer-del="' + f.id + '" style="padding:4px 8px; font-size:0.75rem;">Excluir</button>';
+      html += '<tr><td>' + dataFmt + '</td><td>' + esc(f.nome) + '</td><td>' + tipo + '</td><td class="num">' + acao + '</td></tr>';
+    });
+    if (!lista.length) {
+      html += '<tr><td colspan="4" style="text-align:center; color:#64748b;">Nenhum feriado neste mês</td></tr>';
+    }
+    $('fer-tabela').innerHTML = html;
+    $('fer-tabela').querySelectorAll('[data-fer-del]').forEach(function (btn) {
+      btn.onclick = function () { excluirFeriado(this.dataset.ferDel); };
+    });
+  } catch (e) {
+    $('fer-tabela').innerHTML = '<tr><td colspan="4">Erro ao carregar</td></tr>';
+  }
+}
+
+async function adicionarFeriado() {
+  const data = $('fer-data').value;
+  const nome = $('fer-nome').value.trim();
+  $('fer-erro').classList.add('hidden');
+  if (!data) { $('fer-erro').textContent = 'Informe a data'; $('fer-erro').classList.remove('hidden'); return; }
+  if (!nome) { $('fer-erro').textContent = 'Informe o nome do feriado'; $('fer-erro').classList.remove('hidden'); return; }
+  try {
+    await api('/api/supervisor/feriados', { method: 'POST', body: { data, nome } });
+    $('fer-data').value = '';
+    $('fer-nome').value = '';
+    FER_MES_ATUAL = data.slice(0, 7);
+    $('fer-mes').value = FER_MES_ATUAL;
+    await carregarListaFeriados();
+  } catch (e) {
+    $('fer-erro').textContent = e.message;
+    $('fer-erro').classList.remove('hidden');
+  }
+}
+
+async function excluirFeriado(id) {
+  try {
+    await api('/api/supervisor/feriados/' + id, { method: 'DELETE' });
+    await carregarListaFeriados();
+  } catch (e) { alert(e.message); }
+}
+
+$('btn-fer-fechar').addEventListener('click', fecharModalFeriados);
+$('btn-fer-adicionar').addEventListener('click', adicionarFeriado);
+$('fer-nome').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); adicionarFeriado(); } });
 
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', init);

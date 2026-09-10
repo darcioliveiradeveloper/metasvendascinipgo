@@ -4,7 +4,9 @@ const mongoose = require('mongoose');
 const User = require('../models/User');
 const MetaMensal = require('../models/MetaMensal');
 const Lancamento = require('../models/Lancamento');
+const Feriado = require('../models/Feriado');
 const negocio = require('../services/negocio');
+const feriados = require('../services/feriados');
 const dash = require('../services/dashboard');
 const { exigirLogin, exigirSupervisor, carregarUsuario } = require('../middleware/auth');
 
@@ -53,6 +55,8 @@ router.get('/dashboard', async (req, res) => {
     const mapaMeta = {};
     metas.forEach((m) => { mapaMeta[m.usuario.toString()] = m.meta; });
     const mapTotais = await totaisPorMes(ids, [chave]);
+    const manuais = await Feriado.find({});
+    const diasFeriado = feriados.diasFeriadosDoMes(chave, manuais);
 
     let totalMeta = 0;
     let totalAtingido = 0;
@@ -67,7 +71,7 @@ router.get('/dashboard', async (req, res) => {
         setor: u.setor,
         meta,
         atingido,
-        calc: negocio.calcular(meta, atingido, chave)
+        calc: negocio.calcular(meta, atingido, chave, undefined, diasFeriado)
       };
     });
 
@@ -76,7 +80,7 @@ router.get('/dashboard', async (req, res) => {
       nomeMes: negocio.nomeDoMes(chave),
       totalMeta,
       totalAtingido,
-      calc: negocio.calcular(totalMeta, totalAtingido, chave),
+      calc: negocio.calcular(totalMeta, totalAtingido, chave, undefined, diasFeriado),
       pctGeral: totalMeta > 0 ? (totalAtingido / totalMeta) * 100 : 0,
       linhas
     });
@@ -271,6 +275,57 @@ router.put('/usuarios/:id/meta', async (req, res) => {
   } catch (e) {
     console.error(e);
     res.status(500).json({ erro: 'Erro ao definir meta' });
+  }
+});
+
+// GET /api/supervisor/feriados?mes=YYYY-MM
+router.get('/feriados', async (req, res) => {
+  try {
+    const chave = /^\d{4}-\d{2}$/.test(req.query.mes || '') ? req.query.mes : negocio.chaveMesHoje();
+    const lista = await Feriado.find({}).sort({ data: 1 });
+    res.json({ mes: chave, nomeMes: negocio.nomeDoMes(chave), feriados: feriados.listaDoMes(chave, lista) });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ erro: 'Erro ao listar feriados' });
+  }
+});
+
+// POST /api/supervisor/feriados  { data: 'YYYY-MM-DD', nome: '...' }
+router.post('/feriados', async (req, res) => {
+  try {
+    const data = String(req.body.data || '').trim();
+    const nome = String(req.body.nome || '').trim();
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(data)) {
+      return res.status(400).json({ erro: 'Data inválida (use AAAA-MM-DD)' });
+    }
+    const dt = new Date(data + 'T12:00:00');
+    if (isNaN(dt.getTime())) return res.status(400).json({ erro: 'Data inválida' });
+    if (!nome) return res.status(400).json({ erro: 'Informe o nome do feriado' });
+    const chave = data.slice(0, 7);
+    const existente = await Feriado.findOne({ data });
+    if (existente) {
+      return res.status(400).json({ erro: 'Já existe feriado cadastrado nesta data' });
+    }
+    const fer = await Feriado.create({ data, nome });
+    res.status(201).json({ ok: true, feriado: { id: fer._id, data: fer.data, nome: fer.nome, automatico: false } });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ erro: 'Erro ao cadastrar feriado' });
+  }
+});
+
+// DELETE /api/supervisor/feriados/:id
+router.delete('/feriados/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!idValido(id)) return res.status(400).json({ erro: 'Id inválido' });
+    const fer = await Feriado.findById(id);
+    if (!fer) return res.status(404).json({ erro: 'Feriado não encontrado' });
+    await Feriado.deleteOne({ _id: fer._id });
+    res.json({ ok: true });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ erro: 'Erro ao excluir feriado' });
   }
 });
 

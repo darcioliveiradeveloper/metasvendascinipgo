@@ -1,7 +1,9 @@
 const MetaMensal = require('../models/MetaMensal');
 const Lancamento = require('../models/Lancamento');
 const User = require('../models/User');
+const Feriado = require('../models/Feriado');
 const negocio = require('./negocio');
+const feriados = require('./feriados');
 
 async function totalDoMes(usuarioId, anoMes) {
   const lanc = await Lancamento.findOne({ usuario: usuarioId, anoMes }).sort({ data: -1, createdAt: -1 });
@@ -44,10 +46,12 @@ async function montarDashboard(user) {
     if (sup) alvo = sup;
   }
   const chave = await mesAtual(alvo);
+  const manuais = await Feriado.find({});
+  const diasFeriado = feriados.diasFeriadosDoMes(chave, manuais);
   const metaRec = await MetaMensal.findOne({ usuario: alvo._id, anoMes: chave });
   const meta = metaRec ? metaRec.meta : 0;
   const total = await totalDoMes(alvo._id, chave);
-  const calc = negocio.calcular(meta, total, chave);
+  const calc = negocio.calcular(meta, total, chave, undefined, diasFeriado);
   const atualizadoEm = await ultimaAtualizacao(alvo._id, chave);
 
   const mesesComDados = new Set();
@@ -67,7 +71,8 @@ async function montarDashboard(user) {
       meta: m ? m.meta : 0,
       atingido: tot,
       pct: m && m.meta > 0 ? (tot / m.meta) * 100 : 0,
-      utMes: negocio.diasUteisMes(...Object.values(negocio.paraAnoMes0(anoMes))),
+      utMes: negocio.diasUteisMes(...Object.values(negocio.paraAnoMes0(anoMes)),
+        feriados.diasFeriadosDoMes(anoMes, manuais)),
       fechado: m ? m.fechado : false
     });
   }

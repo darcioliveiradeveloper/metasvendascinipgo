@@ -3,7 +3,9 @@ const mongoose = require('mongoose');
 const User = require('../models/User');
 const MetaMensal = require('../models/MetaMensal');
 const Lancamento = require('../models/Lancamento');
+const Feriado = require('../models/Feriado');
 const negocio = require('../services/negocio');
+const feriados = require('../services/feriados');
 const { exigirLogin, exigirSupervisor, carregarUsuario } = require('../middleware/auth');
 
 const router = express.Router();
@@ -55,6 +57,7 @@ router.get('/', async (req, res) => {
     const mapaMeta = {};
     metas.forEach((m) => { mapaMeta[m.anoMes + '|' + m.usuario.toString()] = m.meta; });
     const mapTotais = await totaisPorMes(ids, meses);
+    const manuais = await Feriado.find({});
 
     const serie = meses.map((anoMes) => {
       let meta = 0;
@@ -69,7 +72,8 @@ router.get('/', async (req, res) => {
         meta,
         atingido,
         pct: meta > 0 ? (atingido / meta) * 100 : 0,
-        utMes: negocio.diasUteisMes(...Object.values(negocio.paraAnoMes0(anoMes)))
+        utMes: negocio.diasUteisMes(...Object.values(negocio.paraAnoMes0(anoMes)),
+          feriados.diasFeriadosDoMes(anoMes, manuais))
       };
     });
 

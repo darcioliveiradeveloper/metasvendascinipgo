@@ -245,6 +245,50 @@ const negocio = require('../src/services/negocio');
     assert(c.rest === 0, 'restantes deveria ser 0 (mês passado)');
   });
 
+  await testar('logica: setembro 2026 desconta Independencia (07/09)', async () => {
+    const f = require('../src/services/feriados');
+    const dias = f.diasFeriadosDoMes('2026-09', []);
+    assert(dias.indexOf(7) !== -1, '07/09 deveria ser feriado nacional, veio ' + JSON.stringify(dias));
+    const c = negocio.calcular(1000, 0, '2026-09', new Date(2026, 8, 10), dias);
+    assert(c.utMes === 21, 'utMes setembro deveria ser 21, veio ' + c.utMes);
+    assert(c.trab === 6, 'trabalhados deveria ser 6, veio ' + c.trab);
+    assert(c.rest === 15, 'restantes deveria ser 15, veio ' + c.rest);
+  });
+
+  await testar('logica: feriados moveis 2026 (carnaval, sexta santa, pascoa, corpus christi)', async () => {
+    const n = negocio.feriadosNacionais(2026);
+    const dia = (mes0, nome) => {
+      const f = n.find((x) => x.mes0 === mes0 && x.nome === nome);
+      return f ? f.dia : -1;
+    };
+    assert(dia(1, 'Carnaval') === 17, 'Carnaval 2026 deveria ser 17/02, veio ' + dia(1, 'Carnaval'));
+    assert(dia(3, 'Sexta-feira Santa') === 3, 'Sexta-feira Santa deveria ser 03/04');
+    assert(dia(3, 'Páscoa') === 5, 'Páscoa deveria ser 05/04');
+    assert(dia(5, 'Corpus Christi') === 4, 'Corpus Christi deveria ser 04/06');
+  });
+
+  await testar('logica: feriado manual desconta dias uteis', async () => {
+    const c = negocio.calcular(1000, 0, '2026-09', new Date(2026, 8, 10), [7, 9]);
+    assert(c.utMes === 20, 'utMes deveria ser 20 com feriado manual em 09/09, veio ' + c.utMes);
+    assert(c.trab === 5, 'trabalhados deveria ser 5, veio ' + c.trab);
+  });
+
+  await testar('CRUD feriados pelo supervisor', async () => {
+    await req('POST', '/api/auth/login', { email: 'supervisor@exemplo.com', senha: 'admin123' });
+    const add = await req('POST', '/api/supervisor/feriados', { data: '2026-11-20', nome: 'Feriado de teste' });
+    assert(add.ok && add.j.feriado && add.j.feriado.automatico === false, 'criar feriado: ' + JSON.stringify(add.j));
+    const list = await req('GET', '/api/supervisor/feriados?mes=2026-11');
+    assert(list.ok, 'listar feriados');
+    const encontrado = list.j.feriados.find((f) => f.id === String(add.j.feriado.id));
+    assert(encontrado && !encontrado.automatico, 'feriado manual deveria aparecer na lista');
+    const zero = await req('GET', '/api/supervisor/feriados?mes=2025-11');
+    assert(zero.ok && zero.j.feriados.every((f) => f.automatico), 'novembro/2025 sem manuais: ' + JSON.stringify(zero.j.feriados));
+    const del = await req('DELETE', '/api/supervisor/feriados/' + add.j.feriado.id);
+    assert(del.ok, 'excluir feriado');
+    const list2 = await req('GET', '/api/supervisor/feriados?mes=2026-11');
+    assert(!list2.j.feriados.some((f) => f.id === String(add.j.feriado.id)), 'feriado deveria ter sido removido');
+  });
+
   console.log('\nResultado: ' + passou + ' ok, ' + falhou + ' falhas');
   await mongo.stop();
   process.exit(falhou ? 1 : 0);
