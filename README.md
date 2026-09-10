@@ -3,7 +3,8 @@
 Sistema completo de acompanhamento de vendas para vendedores, supervisores e suporte.
 
 - Vendedor lança o **total acumulado vendido no mês** (em fardos).
-- O sistema calcula **tendência**, **meta diária restante** e **dias úteis** automaticamente (segunda a sexta).
+- O sistema calcula **tendência**, **meta diária restante** e **dias úteis** automaticamente (segunda a sexta, descontando feriados).
+- Feriados **nacionais** (fixos e móveis) são descontados sozinhos; feriados **municipais ou folgas** da empresa podem ser adicionados pelo supervisor/suporte pela tela 📅 Feriados.
 - Supervisor define **metas individuais**, acompanha o **painel geral** e gera **relatórios e gráficos** mensal, trimestral, semestral e anual.
 - Suporte gerencia **vendedores** (criar, editar, inativar, excluir) e acompanha todos os painéis.
 
@@ -47,9 +48,10 @@ npm test
    (padrão: `supervisor@exemplo.com` / `admin123` — troque depois de entrar).
 2. Na aba **Vendedores**, o supervisor cria as contas (nome, setor, e-mail, senha).
 3. Na aba **Visão Geral**, o supervisor define a meta mensal de cada vendedor.
-4. Cada vendedor entra com sua conta, lança o total acumulado do mês e acompanha
+4. Se o mês tiver feriado municipal ou folga especial, o supervisor/suporte clica em **📅 Feriados**, escolhe o mês e adiciona (data + nome). Feriados nacionais já são descontados automaticamente.
+5. Cada vendedor entra com sua conta, lança o total acumulado do mês e acompanha
    tendência e meta diária.
-5. Em **Relatórios**, o supervisor escolhe o período (mês, trimestre, semestre, ano)
+6. Em **Relatórios**, o supervisor escolhe o período (mês, trimestre, semestre, ano)
    e gera gráficos e comparativos.
 
 ## Deploy no Render
@@ -86,10 +88,11 @@ metasvendascinipgo/
 ├─ src/
 │  ├─ server.js       # entrada do servidor
 │  ├─ config/db.js    # conexão com o MongoDB
-│  ├─ models/         # User, MetaMensal, Lancamento
+│  ├─ models/         # User, MetaMensal, Lancamento, Feriado
 │  ├─ middleware/auth.js
 │  ├─ routes/         # auth, me, supervisor, relatorios
-│  └─ services/negocio.js  # cálculo de dias úteis, tendência e meta diária
+│  └─ services/       # negocio.js (dias úteis, tendência, meta diária)
+│                     # dashboard.js (painéis) e feriados.js (nacionais + manuais)
 ├─ test/api.test.js   # testes da API
 ├─ .env.example
 └─ package.json
@@ -97,7 +100,9 @@ metasvendascinipgo/
 
 ## Regras de negócio
 
-- **Dias úteis:** segunda a sexta (sábado e domingo não contam).
+- **Dias úteis:** segunda a sexta, descontando feriados (sábado, domingo e feriados que caem em dia útil não contam).
+- **Feriados nacionais:** calculados automaticamente — fixos (01/01, 21/04, 01/05, 07/09, 12/10, 02/11, 15/11, 25/12) e móveis (Carnaval, Sexta-feira Santa, Páscoa e Corpus Christi, derivados da data da Páscoa).
+- **Feriados manuais:** o supervisor ou suporte pode adicionar/remover feriados municipais e folgas da empresa pela tela 📅 Feriados (modelo `Feriado`, rota `/api/supervisor/feriados`).
 - **Dias trabalhados:** dias úteis do mês até ontem (o dia atual ainda não conta; o cálculo é feito no início do dia).
 - **Dias restantes:** dias úteis de hoje até o fim do mês (inclusive hoje).
 - **Tendência:** `(vendas ÷ dias trabalhados) × dias úteis do mês ÷ meta × 100`.
@@ -105,6 +110,9 @@ metasvendascinipgo/
 - O vendedor pode trabalhar com um **mês diferente do calendário** (ex.: lançar o mês passado alguns dias depois).
 
 ## Histórico de Versões
+
+### v2.2.0 — Set 2026
+Feriados no cálculo de dias úteis. Feriados nacionais (fixos e móveis: Carnaval, Sexta-feira Santa, Páscoa, Corpus Christi) descontados automaticamente em todos os painéis, histórico e relatórios (coluna D.U.). Novo modelo `Feriado` e serviço `feriados.js`. Botão 📅 Feriados na Visão Geral do supervisor/suporte: escolhe o mês, vê a lista (nacionais marcados como automáticos) e adiciona/exclui feriados municipais ou folgas especiais da empresa. Testes da API ampliados para 32 casos (Independência, feriados móveis 2026, feriado manual e CRUD de feriados).
 
 ### v2.1.1 — Ago 2026
 Ícone de informações e versões ℹ️ no cabeçalho do aplicativo (todos os perfis), ao lado do botão Sair, abrindo modal com o histórico completo de versões. Removido da tela de login, que agora mostra apenas a versão.
