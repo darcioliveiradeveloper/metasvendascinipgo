@@ -5,6 +5,7 @@ Sistema completo de acompanhamento de vendas para vendedores, supervisores e sup
 - Vendedor lança o **total acumulado vendido no mês** (em fardos).
 - O sistema calcula **tendência**, **meta diária restante** e **dias úteis** automaticamente (segunda a sexta, descontando feriados).
 - Feriados **nacionais** (fixos e móveis) são descontados sozinhos; feriados **municipais ou folgas** da empresa podem ser adicionados pelo supervisor/suporte pela tela 📅 Feriados.
+- Modo **offline / carregamento rápido (PWA)**: o app é instalável na tela inicial do celular, guarda os dados num **banco local (IndexedDB)** e reabre instantaneamente, sincronizando com o servidor em segundo plano.
 - Supervisor define **metas individuais**, acompanha o **painel geral** e gera **relatórios e gráficos** mensal, trimestral, semestral e anual.
 - Suporte gerencia **vendedores** (criar, editar, inativar, excluir) e acompanha todos os painéis.
 
@@ -13,7 +14,9 @@ Sistema completo de acompanhamento de vendas para vendedores, supervisores e sup
 - **Backend:** Node.js + Express + MongoDB (Mongoose)
 - **Autenticação:** JWT em cookie httpOnly + senha com hash (bcrypt)
 - **Frontend:** HTML/CSS/JS puro + Chart.js
-- **Banco:** MongoDB Atlas (nuvem)
+- **PWA:** manifest + service worker (`public/sw.js`) para instalação e funcionamento offline do shell
+- **Banco local no dispositivo:** IndexedDB (`public/js/db.js`) com cache por URL; o app mostra os últimos dados instantaneamente e sincroniza com o servidor em segundo plano
+- **Banco central:** MongoDB Atlas (nuvem)
 - **Hospedagem:** Render
 
 ## Rodar localmente (desenvolvimento)
@@ -54,6 +57,21 @@ npm test
 6. Em **Relatórios**, o supervisor escolhe o período (mês, trimestre, semestre, ano)
    e gera gráficos e comparativos.
 
+## Modo offline e carregamento rápido (PWA)
+
+O VendaCerta é uma **PWA** (Progressive Web App) e usa um **banco local (IndexedDB)** no celular:
+
+- Na primeira abertura, o app baixa os dados e os guarda no aparelho.
+- Nas aberturas seguintes, **mostra os valores imediatamente** a partir do banco local e
+  sincroniza com o servidor em segundo plano — sem esperar o servidor acordar (Render free dorme após inatividade).
+- **Offline:** se não houver conexão, o app avisa no topo da tela e continua mostrando os
+  últimos dados salvos no dispositivo.
+- **Instalar no celular:** no menu do navegador (Chrome/Edge/Safari), escolha
+  "Adicionar à tela inicial" / "Instalar app". O app ganha ícone próprio e abre em tela cheia.
+
+O cache local é **invalidado automaticamente** sempre que há uma escrita (lançar venda, alterar
+meta, fechar mês, editar usuários etc.), garantindo que os dados não fiquem desatualizados.
+
 ## Deploy no Render
 
 1. Suba este projeto para um repositório no GitHub.
@@ -80,11 +98,14 @@ npm test
 
 ```
 metasvendascinipgo/
-├─ public/            # frontend (HTML, CSS, JS)
+├─ public/            # frontend (HTML, CSS, JS, PWA)
 │  ├─ login.html      # tela de login
 │  ├─ app.html        # aplicativo (vendedor e supervisor)
+│  ├─ manifest.json   # PWA (instalação)
+│  ├─ sw.js           # service worker (offline do shell)
+│  ├─ icons/          # ícones do app (192/512/apple-touch)
 │  ├─ css/style.css
-│  └─ js/api.js, login.js, app.js
+│  └─ js/db.js, api.js, login.js, app.js   # db.js = banco local (IndexedDB)
 ├─ src/
 │  ├─ server.js       # entrada do servidor
 │  ├─ config/db.js    # conexão com o MongoDB
@@ -110,6 +131,9 @@ metasvendascinipgo/
 - O vendedor pode trabalhar com um **mês diferente do calendário** (ex.: lançar o mês passado alguns dias depois).
 
 ## Histórico de Versões
+
+### v2.3.0 — Set 2026
+Modo **offline e carregamento rápido (PWA)**. O app vira uma PWA instalável (manifest, ícones e service worker `sw.js`) e passa a usar um banco local **IndexedDB** (`public/js/db.js`, cache por URL): painéis, equipe, usuários, relatórios e feriados carregam os últimos dados instantaneamente e sincronizam com o servidor em segundo plano. Se o servidor estiver dormindo (cold start do Render free) ou sem conexão, o app mostra os dados salvos no celular e exibe um aviso no topo. Cache invalidado automaticamente em qualquer escrita. Login offline não é permitido (segurança); relatórios e painéis continuam disponíveis com os dados locais.
 
 ### v2.2.0 — Set 2026
 Feriados no cálculo de dias úteis. Feriados nacionais (fixos e móveis: Carnaval, Sexta-feira Santa, Páscoa, Corpus Christi) descontados automaticamente em todos os painéis, histórico e relatórios (coluna D.U.). Novo modelo `Feriado` e serviço `feriados.js`. Botão 📅 Feriados na Visão Geral do supervisor/suporte: escolhe o mês, vê a lista (nacionais marcados como automáticos) e adiciona/exclui feriados municipais ou folgas especiais da empresa. Testes da API ampliados para 32 casos (Independência, feriados móveis 2026, feriado manual e CRUD de feriados).
