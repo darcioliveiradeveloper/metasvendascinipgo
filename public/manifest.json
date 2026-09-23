@@ -1,0 +1,23 @@
+{
+  "name": "VendaCerta — Acompanhamento de Vendas",
+  "short_name": "VendaCerta",
+  "description": "Acompanhamento de vendas com metas diárias e mensais, painéis de equipe, relatórios e gráficos. Funciona offline com os últimos dados salvos no dispositivo.",
+  "lang": "pt-BR",
+  "start_url": "/app.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f1f5f9",
+  "theme_color": "#4338ca",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -239,6 +239,12 @@ main { max-width: 480px; margin: -36px auto 0; padding: 0 14px 40px; }
   margin-bottom: 12px;
 }
 
+.offline-aviso {
+  background: #ffedd5;
+  border-color: #fb923c;
+  color: #9a3412;
+}
+
 /* ========================= HISTORICO ========================= */
 .hist { margin-top: 12px; }
 .hist h3 { margin: 0 0 10px; }

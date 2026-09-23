@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VendaCerta — Entrar</title>
+  <meta name="theme-color" content="#4338ca">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="icon" href="/icons/icon-192.png">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body class="tela-login">
@@ -11,7 +18,7 @@
     <div class="login-cabecalho">
       <div class="login-titulo">VendaCerta</div>
       <div class="login-sub">Acompanhamento de Vendas</div>
-      <div class="login-versao"><span>v2.2.0</span></div>
+      <div class="login-versao"><span>v2.3.0</span></div>
     </div>
     <form id="form-login">
       <label>E-mail
@@ -25,7 +32,13 @@
     </form>
   </main>
 
+  <script src="/js/db.js"></script>
   <script src="/js/api.js"></script>
   <script src="/js/login.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(function () {});
+    }
+  </script>
 </body>
 </html>

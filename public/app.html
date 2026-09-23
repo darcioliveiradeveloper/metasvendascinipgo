@@ -3,7 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Metas de Venda</title>
+  <title>VendaCerta — Metas de Venda</title>
+  <meta name="theme-color" content="#4338ca">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="icon" href="/icons/icon-192.png">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -24,6 +31,8 @@
   </header>
 
   <main class="container">
+
+    <p class="aviso offline-aviso hidden" id="offline-aviso">Sem conexão agora — mostrando os últimos dados salvos no celular. Os valores serão atualizados quando a conexão voltar.</p>
 
     <section id="view-vendedor" class="hidden">
       <span id="data-hoje" class="data"></span>
@@ -451,7 +460,7 @@
 
   <div id="modal-info" class="modal hidden">
     <div class="modal-box">
-      <h3>VendaCerta — v2.2.0</h3>
+      <h3>VendaCerta — v2.3.0</h3>
       <p style="font-size:0.85rem; color:#475569; line-height:1.6; margin-bottom:14px;">
         Sistema de acompanhamento de vendas com metas diárias e mensais, painéis individual e de equipe, relatórios e gráficos.
       </p>
@@ -462,6 +471,12 @@
 
       <div class="versao-titulo">Histórico de Versões</div>
       <div class="versao-lista">
+        <div class="versao-item">
+          <div class="versao-tag">v2.3.0 — Set 2026</div>
+          <div class="versao-desc">
+            Modo offline e carregamento rápido (PWA). O app pode ser instalado na tela inicial do celular e guarda os dados num banco local (IndexedDB): ao abrir, mostra os últimos valores instantaneamente e sincroniza com o servidor em segundo plano. Sem conexão, avisa e mantém os dados salvos no aparelho.
+          </div>
+        </div>
         <div class="versao-item">
           <div class="versao-tag">v2.2.0 — Set 2026</div>
           <div class="versao-desc">
@@ -545,7 +560,13 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="/js/db.js"></script>
   <script src="/js/api.js"></script>
   <script src="/js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(function () {});
+    }
+  </script>
 </body>
 </html>

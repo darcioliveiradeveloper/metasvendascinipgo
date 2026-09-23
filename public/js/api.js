@@ -4,6 +4,7 @@ async function api(url, opts) {
     opcoes.headers = Object.assign({ 'Content-Type': 'application/json' }, opcoes.headers || {});
     opcoes.body = JSON.stringify(opcoes.body);
   }
+  const metodo = String(opcoes.method || 'GET').toUpperCase();
   let res;
   try {
     res = await fetch(url, opcoes);
@@ -13,9 +14,26 @@ async function api(url, opts) {
   let corpo = null;
   try { corpo = await res.json(); } catch (e) { corpo = null; }
   if (!res.ok) {
-    throw new Error((corpo && corpo.erro) || 'Erro no servidor');
+    const err = new Error((corpo && corpo.erro) || 'Erro no servidor');
+    err.status = res.status;
+    throw err;
+  }
+  if (metodo !== 'GET' && window.localCache) {
+    window.localCache.cacheLimpar();
   }
   return corpo;
+}
+
+async function apiCacheavel(url) {
+  const d = await api(url);
+  if (window.localCache) window.localCache.cacheSet(url, d);
+  return d;
+}
+
+async function cacheLeia(url) {
+  if (!window.localCache) return null;
+  const r = await window.localCache.cacheGet(url);
+  return r ? r.valor : null;
 }
 
 async function sairSistema() {

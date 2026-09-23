@@ -13,6 +13,33 @@ const esc = (txt) => String(txt == null ? '' : txt)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
+function marcarOnline() { const el = $('offline-aviso'); if (el) el.classList.add('hidden'); }
+function marcarOffline() { const el = $('offline-aviso'); if (el) el.classList.remove('hidden'); }
+
+async function preencherViaCache(url, fnOk) {
+  const v = await cacheLeia(url);
+  if (v) { try { fnOk(v); } catch (e) {} }
+  return v;
+}
+
+async function buscarAtualizar(url, fnOk, fnErro) {
+  try {
+    const d = await apiCacheavel(url);
+    fnOk(d);
+    marcarOnline();
+    return d;
+  } catch (e) {
+    marcarOffline();
+    if (fnErro) fnErro(e);
+    return null;
+  }
+}
+
+async function carregarLocalPrimeiro(url, fnOk, fnErro) {
+  const cacheado = await preencherViaCache(url, fnOk);
+  await buscarAtualizar(url, fnOk, function (e) { if (!cacheado && fnErro) fnErro(e); });
+}
+
 const graficos = {};
 function destruirGrafico(id) {
   if (graficos[id]) { graficos[id].destroy(); delete graficos[id]; }
@@ -48,6 +75,7 @@ function init() {
   api('/api/auth/me')
     .then(function (me) {
       MEU_USUARIO = me;
+      if (window.localCache) window.localCache.cacheSet('/api/auth/me', me);
       $('saudacao').innerHTML = '<b>' + me.nome + '</b>' + (me.setor ? ' - ' + me.setor : '');
       if (me.perfil === 'vendedor') {
         iniciarVendedor();
@@ -55,7 +83,16 @@ function init() {
         iniciarSupervisor();
       }
     })
-    .catch(function () { window.location.href = '/login.html'; });
+    .catch(function () {
+      cacheLeia('/api/auth/me').then(function (me) {
+        if (!me) { window.location.href = '/login.html'; return; }
+        MEU_USUARIO = me;
+        marcarOffline();
+        $('saudacao').innerHTML = '<b>' + me.nome + '</b>' + (me.setor ? ' - ' + me.setor : '');
+        if (me.perfil === 'vendedor') iniciarVendedor();
+        else iniciarSupervisor();
+      });
+    });
 }
 
 function abrirModalNome() {
@@ -79,6 +116,7 @@ async function salvarModalNome() {
   }
   try {
     MEU_USUARIO = await api('/api/me/nome', { method: 'POST', body: { nome } });
+    if (window.localCache) window.localCache.cacheSet('/api/auth/me', MEU_USUARIO);
     $('saudacao').innerHTML = '<b>' + MEU_USUARIO.nome + '</b>' + (MEU_USUARIO.setor ? ' - ' + MEU_USUARIO.setor : '');
     fecharModalNome();
   } catch (e) { alert(e.message); }
@@ -141,10 +179,12 @@ async function salvarModalMes() {
       const d = await api('/api/me/historico/' + ANO_MES_EDITANDO, { method: 'PUT', body: { meta, total } });
       if (estaNoSupervisor()) renderSupervisorPessoal(d);
       else renderVendedor(d);
+      if (window.localCache) window.localCache.cacheSet('/api/me/dashboard', d);
     } else {
       const d = await api('/api/me/incluir-mes', { method: 'POST', body: { anoMes, meta, total } });
       if (estaNoSupervisor()) renderSupervisorPessoal(d);
       else renderVendedor(d);
+      if (window.localCache) window.localCache.cacheSet('/api/me/dashboard', d);
     }
     fecharModalMes();
   } catch (e) { alert(e.message); }
@@ -229,12 +269,9 @@ function desativarPrintLimpo() {
 }
 
 async function carregarPainelVendedor() {
-  try {
-    const d = await api('/api/me/dashboard');
-    renderVendedor(d);
-  } catch (e) {
+  await carregarLocalPrimeiro('/api/me/dashboard', renderVendedor, function (e) {
     alert(e.message);
-  }
+  });
 }
 
 function renderVendedor(d) {
@@ -412,10 +449,12 @@ async function salvarModalValor() {
       const d = await api('/api/me/meta', { method: 'POST', body: { meta: valor } });
       if (estaNoSupervisor()) renderSupervisorPessoal(d);
       else renderVendedor(d);
+      if (window.localCache) window.localCache.cacheSet('/api/me/dashboard', d);
     } else {
       const d = await api('/api/me/lancar', { method: 'POST', body: { total: valor } });
       if (estaNoSupervisor()) renderSupervisorPessoal(d);
       else renderVendedor(d);
+      if (window.localCache) window.localCache.cacheSet('/api/me/dashboard', d);
     }
     fecharModalValor();
   } catch (e) { alert(e.message); }
@@ -426,6 +465,7 @@ async function iniciarMesAtual() {
     const d = await api('/api/me/iniciar-mes', { method: 'POST' });
     if (estaNoSupervisor()) renderSupervisorPessoal(d);
     else renderVendedor(d);
+    if (window.localCache) window.localCache.cacheSet('/api/me/dashboard', d);
   } catch (e) { alert(e.message); }
 }
 
@@ -435,7 +475,10 @@ async function fecharMes() {
     const r = await api('/api/me/fechar-mes', { method: 'POST' });
     alert(r.fechado.nomeMes + ' foi fechado e salvo no histórico.');
     if (estaNoSupervisor()) carregarGeral();
-    else renderVendedor(r.dashboard);
+    else {
+      renderVendedor(r.dashboard);
+      if (window.localCache) window.localCache.cacheSet('/api/me/dashboard', r.dashboard);
+    }
   } catch (e) { alert(e.message); }
 }
 
@@ -496,15 +539,31 @@ function iniciarSupervisor() {
 }
 
 async function carregarGeral() {
+  const U1 = '/api/me/dashboard';
+  const U2 = '/api/supervisor/dashboard';
+  const c1 = await preencherViaCache(U1);
+  const c2 = await preencherViaCache(U2);
+  if (c1 && c2) {
+    try {
+      renderSupervisorPessoal(c1);
+      renderSupervisorEquipe(c2);
+      renderDiferencasEquipe(c1, c2);
+    } catch (e) {}
+  }
   try {
-    const [d, equipe] = await Promise.all([
-      api('/api/me/dashboard'),
-      api('/api/supervisor/dashboard')
-    ]);
-    renderSupervisorPessoal(d);
+    const [pessoal, equipe] = await Promise.all([api(U1), api(U2)]);
+    if (window.localCache) {
+      window.localCache.cacheSet(U1, pessoal);
+      window.localCache.cacheSet(U2, equipe);
+    }
+    renderSupervisorPessoal(pessoal);
     renderSupervisorEquipe(equipe);
-    renderDiferencasEquipe(d, equipe);
-  } catch (e) { alert(e.message); }
+    renderDiferencasEquipe(pessoal, equipe);
+    marcarOnline();
+  } catch (e) {
+    marcarOffline();
+    if (!c1) alert(e.message);
+  }
 }
 
 function renderDiferencasEquipe(pessoal, equipe) {
@@ -674,43 +733,52 @@ function renderSupervisorEquipe(d) {
 
 }
 
-async function carregarVendedores() {
-  try {
-    const lista = await api('/api/supervisor/usuarios');
-    const vendedores = lista.sort(function (a, b) {
-      const sa = (a.setor || '').localeCompare(b.setor || '', undefined, { numeric: true });
-      return sa !== 0 ? sa : (a.nome || '').localeCompare(b.nome || '');
-    });
-    let linhas = '<tr><th>Setor</th><th>Nome</th><th>Situação</th><th></th></tr>';
-    vendedores.forEach(function (u) {
-      linhas += '<tr><td>' + esc(u.setor || '—') + '</td><td>' + esc(u.nome) + '</td><td>' + (u.ativo ? 'Ativo' : 'Inativo') + '</td><td>'
-        + '<button class="btn fino" data-painel="' + u.id + '">Painel</button> '
-        + '<button class="btn fino" data-edita="' + u.id + '">Editar</button>'
-        + '</td></tr>';
-    });
-    $('tabela-vendedores').innerHTML = linhas || '<tr><td class="vazio">Nenhum usuário cadastrado.</td></tr>';
+function montarTabelaVendedores(lista) {
+  const vendedores = lista.sort(function (a, b) {
+    const sa = (a.setor || '').localeCompare(b.setor || '', undefined, { numeric: true });
+    return sa !== 0 ? sa : (a.nome || '').localeCompare(b.nome || '');
+  });
+  let linhas = '<tr><th>Setor</th><th>Nome</th><th>Situação</th><th></th></tr>';
+  vendedores.forEach(function (u) {
+    linhas += '<tr><td>' + esc(u.setor || '—') + '</td><td>' + esc(u.nome) + '</td><td>' + (u.ativo ? 'Ativo' : 'Inativo') + '</td><td>'
+      + '<button class="btn fino" data-painel="' + u.id + '">Painel</button> '
+      + '<button class="btn fino" data-edita="' + u.id + '">Editar</button>'
+      + '</td></tr>';
+  });
+  $('tabela-vendedores').innerHTML = linhas || '<tr><td class="vazio">Nenhum usuário cadastrado.</td></tr>';
 
-    document.querySelectorAll('[data-painel]').forEach(function (b) {
-      b.addEventListener('click', function () {
-        const u = vendedores.find((x) => x.id === b.dataset.painel);
-        abrirPainelUsuario(u);
-      });
+  document.querySelectorAll('[data-painel]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      const u = vendedores.find((x) => x.id === b.dataset.painel);
+      abrirPainelUsuario(u);
     });
-    document.querySelectorAll('[data-edita]').forEach(function (b) {
-      b.addEventListener('click', function () {
-        const u = vendedores.find((x) => x.id === b.dataset.edita);
-        abrirModalUsuario(u);
-      });
+  });
+  document.querySelectorAll('[data-edita]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      const u = vendedores.find((x) => x.id === b.dataset.edita);
+      abrirModalUsuario(u);
     });
-  } catch (e) { alert(e.message); }
+  });
+}
+
+async function carregarVendedores() {
+  await carregarLocalPrimeiro('/api/supervisor/usuarios', montarTabelaVendedores, function (e) {
+    alert(e.message);
+  });
 }
 
 async function abrirPainelUsuario(u) {
-  try {
-    const d = await api('/api/supervisor/usuarios/' + u.id + '/painel');
+  const url = '/api/supervisor/usuarios/' + u.id + '/painel';
+  const cacheado = await preencherViaCache(url, function (d) {
     renderPainel(d);
     $('modal-painel').classList.remove('hidden');
-  } catch (e) { alert(e.message); }
+  });
+  await buscarAtualizar(url, function (d) {
+    renderPainel(d);
+    $('modal-painel').classList.remove('hidden');
+  }, function (e) {
+    if (!cacheado) alert(e.message);
+  });
 }
 
 function fecharModalPainel() {
@@ -861,21 +929,26 @@ async function salvarModalUsuario() {
 /* ============================= RELATÓRIO DO VENDEDOR ============================= */
 
 function popularAnosRelatorio() {
-  return api('/api/me/relatorios').then(function (d) {
+  return apiCacheavel('/api/me/relatorios').then(function (d) {
     const anos = [...new Set(d.dados.map(function (x) { return x.anoMes.substring(0, 4); }))].sort().reverse();
     $('v-rel-ano').innerHTML = '<option value="">Ano</option>' + '<option value="">Todos</option>' + anos.map(function (a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
     $('v-rel-ano')._populado = true;
-  });
+  }).catch(function () {});
 }
 
 async function gerarRelatorioVendedor() {
-  try {
-    const periodo = $('v-rel-periodo').value;
-    const anoSel = $('v-rel-ano').value;
-    if (!periodo) return;
+  const periodo = $('v-rel-periodo').value;
+  if (!periodo) return;
+  await carregarLocalPrimeiro('/api/me/relatorios', montarRelatorioVendedor, function (e) {
+    alert(e.message);
+  });
+}
 
-    const d = await api('/api/me/relatorios');
-    let dados = d.dados;
+function montarRelatorioVendedor(d) {
+  const periodo = $('v-rel-periodo').value;
+  const anoSel = $('v-rel-ano').value;
+
+  let dados = d.dados;
     const hoje = new Date();
     const mesAtual = hoje.getMonth() + 1;
     const anoAtual = hoje.getFullYear();
@@ -959,19 +1032,18 @@ async function gerarRelatorioVendedor() {
       $('v-rel-tabela').innerHTML = '<tr><td class="vazio">Nenhum dado encontrado.</td></tr>';
       $('v-rel-tabela-wrap').style.display = '';
     }
-  } catch (e) { alert(e.message); }
 }
 
 /* ============================= RELATÓRIOS SUPERVISOR ============================= */
 
 function popularFiltrosRelatorioSupervisor() {
-  return api('/api/supervisor/usuarios').then(function (lista) {
+  return apiCacheavel('/api/supervisor/usuarios').then(function (lista) {
     const vends = lista.filter(function (u) { return u.perfil === 'vendedor'; });
     const setores = [...new Set(vends.map(function (u) { return u.setor || ''; }))].filter(Boolean).sort();
     $('sup-rel-setor').innerHTML = '<option value="">Setor</option><option value="todos">Todos</option>' + setores.map(function (s) { return '<option value="' + esc(s) + '">' + esc(s) + '</option>'; }).join('');
     if (!vends.length) return null;
     const q = vends.map(function (u) { return 'usuario=' + u.id; }).join('&');
-    return api('/api/supervisor/relatorios?' + q + '&de=2000-01&ate=2099-12');
+    return apiCacheavel('/api/supervisor/relatorios?' + q + '&de=2000-01&ate=2099-12');
   }).then(function (d) {
     if (!d || !d.meses) return;
     const comDados = d.meses.filter(function (m) { return m.atingido > 0 || m.meta > 0; });
@@ -1050,11 +1122,10 @@ async function carregarRelatorioSupervisor() {
   const rango = montarPeriodoSupervisor();
   const setorVal = $('sup-rel-setor').value;
   const extra = (setorVal && setorVal !== 'todos') ? '&setor=' + encodeURIComponent(setorVal) : '';
-  try {
-    const url = '/api/supervisor/relatorios?de=' + rango.de + '&ate=' + rango.ate + extra;
-    const d = await api(url);
-    renderRelatorio(d, rango.n);
-  } catch (e) { alert(e.message); }
+  const url = '/api/supervisor/relatorios?de=' + rango.de + '&ate=' + rango.ate + extra;
+  await carregarLocalPrimeiro(url, function (d) { renderRelatorio(d, rango.n); }, function (e) {
+    alert(e.message);
+  });
 }
 
 function renderRelatorio(d, n) {
@@ -1229,31 +1300,33 @@ function fecharModalFeriados() {
   $('modal-feriados').classList.add('hidden');
 }
 
-async function carregarListaFeriados() {
-  try {
-    const d = await api('/api/supervisor/feriados?mes=' + FER_MES_ATUAL);
-    const lista = d.feriados || [];
-    let html = '<tr><th>Data</th><th>Nome</th><th>Tipo</th><th></th></tr>';
-    lista.forEach(function (f) {
-      const dataFmt = f.data.slice(8, 10) + '/' + f.data.slice(5, 7) + '/' + f.data.slice(0, 4);
-      const tipo = f.automatico
-        ? '<span style="color:#64748b;">Nacional</span>'
-        : '<span style="color:#4338ca; font-weight:600;">Manual</span>';
-      const acao = f.automatico
-        ? ''
-        : '<button class="btn perigo" data-fer-del="' + f.id + '" style="padding:4px 8px; font-size:0.75rem;">Excluir</button>';
-      html += '<tr><td>' + dataFmt + '</td><td>' + esc(f.nome) + '</td><td>' + tipo + '</td><td class="num">' + acao + '</td></tr>';
-    });
-    if (!lista.length) {
-      html += '<tr><td colspan="4" style="text-align:center; color:#64748b;">Nenhum feriado neste mês</td></tr>';
-    }
-    $('fer-tabela').innerHTML = html;
-    $('fer-tabela').querySelectorAll('[data-fer-del]').forEach(function (btn) {
-      btn.onclick = function () { excluirFeriado(this.dataset.ferDel); };
-    });
-  } catch (e) {
-    $('fer-tabela').innerHTML = '<tr><td colspan="4">Erro ao carregar</td></tr>';
+function montarTabelaFeriados(d) {
+  const lista = d.feriados || [];
+  let html = '<tr><th>Data</th><th>Nome</th><th>Tipo</th><th></th></tr>';
+  lista.forEach(function (f) {
+    const dataFmt = f.data.slice(8, 10) + '/' + f.data.slice(5, 7) + '/' + f.data.slice(0, 4);
+    const tipo = f.automatico
+      ? '<span style="color:#64748b;">Nacional</span>'
+      : '<span style="color:#4338ca; font-weight:600;">Manual</span>';
+    const acao = f.automatico
+      ? ''
+      : '<button class="btn perigo" data-fer-del="' + f.id + '" style="padding:4px 8px; font-size:0.75rem;">Excluir</button>';
+    html += '<tr><td>' + dataFmt + '</td><td>' + esc(f.nome) + '</td><td>' + tipo + '</td><td class="num">' + acao + '</td></tr>';
+  });
+  if (!lista.length) {
+    html += '<tr><td colspan="4" style="text-align:center; color:#64748b;">Nenhum feriado neste mês</td></tr>';
   }
+  $('fer-tabela').innerHTML = html;
+  $('fer-tabela').querySelectorAll('[data-fer-del]').forEach(function (btn) {
+    btn.onclick = function () { excluirFeriado(this.dataset.ferDel); };
+  });
+}
+
+async function carregarListaFeriados() {
+  const url = '/api/supervisor/feriados?mes=' + FER_MES_ATUAL;
+  await carregarLocalPrimeiro(url, montarTabelaFeriados, function () {
+    $('fer-tabela').innerHTML = '<tr><td colspan="4">Erro ao carregar</td></tr>';
+  });
 }
 
 async function adicionarFeriado() {
